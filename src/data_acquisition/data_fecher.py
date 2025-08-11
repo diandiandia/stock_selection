@@ -1,0 +1,48 @@
+
+
+import pandas as pd
+from abc import abstractmethod
+from src.data_storage.data_sqlite_saver import SqliteSaver
+from src.utils.log_helper import LogHelper
+
+
+class DataFetcher:
+    def __init__(self, url):
+        self.logger = LogHelper().get_logger(__name__)
+        self.data_saver = SqliteSaver(file_path='./data', file_name='stock_data.db')
+
+    @abstractmethod
+    def login(self, url, token):
+        pass
+
+    @abstractmethod
+    def get_all_stock_codes(self):
+        pass
+
+    @abstractmethod
+    def batch_fetch_historical_data(self, df_stock_codes:pd.DataFrame, start_date:str, end_date:str)->list[pd.DataFrame]:
+        pass
+
+    @abstractmethod
+    def get_history_stock_data(self, stock_code, start_date, end_date):
+        pass
+
+    @abstractmethod
+    def get_lhb_data(self, start_date, end_date):
+        pass
+
+    @abstractmethod
+    def get_stock_news(self, stock_code, start_date, end_date):
+        pass
+
+    @abstractmethod
+    def batch_fetch_stock_news(self, df_stock_codes:pd.DataFrame, start_date:str, end_date:str)->list[pd.DataFrame]:
+        pass
+
+    @abstractmethod
+    def get_latest_trade_date(self, stock_code:str):
+        pass
+
+
+    def __del__(self):
+        pass

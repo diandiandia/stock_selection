@@ -1,0 +1,6 @@
+# https://pypi.tuna.tsinghua.edu.cn/simple/
+pyyaml
+pandas
+akshare
+tushare
+baostock
