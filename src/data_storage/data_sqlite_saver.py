@@ -72,55 +72,27 @@ class SqliteSaver(DataSaver):
         self.conn.commit()
 
         '''
-        column = {
-            '序号': 'rank',
-            '代码': 'ts_code',
-            '名称': 'name',
-            '上榜日': 'trade_date',
-            '解读': 'interpretation',
-            '收盘价': 'close',
-            '涨跌幅': 'change',
-            '龙虎榜净买额': 'net_buy_amount',
-            '龙虎榜买入额': 'buy_amount',
-            '龙虎榜卖出额': 'sell_amount',
-            '龙虎榜成交额': 'amount',
-            '市场总成交额': 'total_amount',
-            '净买额占总成交比': 'net_buy_amount_ratio',
-            '成交额占总成交比': 'amount_ratio',
-            '换手率': 'turnover',
-            '流通市值': 'market_value',
-            '上榜原因': 'reason',
-            '上榜后1日': 'change_1d',
-            '上榜后2日': 'change_2d',
-            '上榜后5日': 'change_5d',
-            '上榜后10日': 'change_10d',
-        }
+        df = df[['ts_code', 'name', 'trade_date', 'close', 'change', 'net_buy_amount', 'buy_amount', 
+                'sell_amount', 'amount', 'net_buy_amount_ratio', 'turnover', 
+                'reason']]
         '''
 
         sql_command = '''
             CREATE TABLE IF NOT EXISTS lhb_data (
-                rank INTEGER,
                 ts_code TEXT,
                 name TEXT,
                 trade_date TEXT,
-                interpretation TEXT,
                 close REAL,
                 change REAL,
                 net_buy_amount REAL,
                 buy_amount REAL,
                 sell_amount REAL,
                 amount REAL,
-                total_amount INTEGER,
                 net_buy_amount_ratio REAL,
-                amount_ratio REAL,
                 turnover REAL,
-                market_value REAL,
                 reason TEXT,
-                change_1d REAL,
-                change_2d REAL,
-                change_5d REAL,
-                change_10d REAL,
-                PRIMARY KEY (rank, ts_code, trade_date)
+                PRIMARY KEY (ts_code, name, trade_date)
+
             )
         '''
         self.cursor.execute(sql_command)
@@ -174,6 +146,23 @@ class SqliteSaver(DataSaver):
 
         df = pd.read_sql(sql_command, self.conn)
         return df
+    
+    def query(self, df:pd.DataFrame, table_name:str)->pd.DataFrame:
+        '''
+        df['ts_code']数据是股票代码['600000','600001']，
+        从table_name查询出来的数据ts_code数据格式为['600000.SH','600001.SZ, '600002.BJ']
+        将df['ts_code']替换为['600000.SH','600001.SH']格式
+        '''
+        def get_ts_code(ts_code:str):
+            sql_commend = f'select * from {table_name} where ts_code like "%{ts_code}%" limit 1'
+            df = pd.read_sql(sql_commend, self.conn)
+            if df is None or df.empty:
+                return ts_code
+            else:
+                return df['ts_code'].values[0]
+        df['ts_code'] = df['ts_code'].apply(get_ts_code)
+        return df
+
     
     def read_latest_trade_date(self, table_name:str, ts_code:str)->str:
         sql_command = f'select max(trade_date) as latest_trade_date from {table_name}'

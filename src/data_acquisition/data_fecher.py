@@ -7,16 +7,18 @@ from src.utils.log_helper import LogHelper
 
 
 class DataFetcher:
-    def __init__(self, url):
+    def __init__(self, file_path='./data', file_name='stock_data.db'):
         self.logger = LogHelper().get_logger(__name__)
-        self.data_saver = SqliteSaver(file_path='./data', file_name='stock_data.db')
+        self.data_saver = SqliteSaver(file_path=file_path, file_name=file_name)
+        self.login()
 
     @abstractmethod
-    def login(self, url, token):
+    def login(self, token=''):
         pass
 
+
     @abstractmethod
-    def get_all_stock_codes(self):
+    def get_all_stock_codes(self, save:bool=True)->pd.DataFrame:
         pass
 
     @abstractmethod
@@ -24,11 +26,11 @@ class DataFetcher:
         pass
 
     @abstractmethod
-    def get_history_stock_data(self, stock_code, start_date, end_date):
+    def get_history_stock_data(self, stock_code:str, start_date:str, end_date:str, save:bool=True)->pd.DataFrame:
         pass
 
     @abstractmethod
-    def get_lhb_data(self, start_date, end_date):
+    def get_lhb_data(self, start_date, end_date, save:bool=True):
         pass
 
     @abstractmethod

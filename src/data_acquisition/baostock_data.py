@@ -19,7 +19,7 @@ class BaostockDataFetcher(DataFetcher):
         # Baostock无需额外token登录，已在__init__中处理
         pass
 
-    def get_all_stock_codes(self) -> pd.DataFrame:
+    def get_all_stock_codes(self, save:bool=True) -> pd.DataFrame:
         """获取所有A股股票代码列表"""
         # 查询所有A股股票
         rs = bs.query_stock_basic(code_name="A股")
