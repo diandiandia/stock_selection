@@ -2,11 +2,11 @@ from src.data_storage.data_saver import DataSaver
 import sqlite3
 import pandas as pd
 import os
-from src.utils.helpers import get_ts_code
+from src.utils.helpers import add_exchange_suffix, get_ts_code
 
 
 class SqliteSaver(DataSaver):
-    def __init__(self, file_path, file_name:str):
+    def __init__(self, file_path='./data', file_name='stock_data.db'):
         super().__init__(file_path, file_name)
         
 
@@ -79,6 +79,7 @@ class SqliteSaver(DataSaver):
 
         sql_command = '''
             CREATE TABLE IF NOT EXISTS lhb_data (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 ts_code TEXT,
                 name TEXT,
                 trade_date TEXT,
@@ -90,9 +91,7 @@ class SqliteSaver(DataSaver):
                 amount REAL,
                 net_buy_amount_ratio REAL,
                 turnover REAL,
-                reason TEXT,
-                PRIMARY KEY (ts_code, name, trade_date)
-
+                reason TEXT
             )
         '''
         self.cursor.execute(sql_command)
@@ -157,7 +156,8 @@ class SqliteSaver(DataSaver):
             sql_commend = f'select * from {table_name} where ts_code like "%{ts_code}%" limit 1'
             df = pd.read_sql(sql_commend, self.conn)
             if df is None or df.empty:
-                return ts_code
+                return add_exchange_suffix(ts_code)
+
             else:
                 return df['ts_code'].values[0]
         df['ts_code'] = df['ts_code'].apply(get_ts_code)
@@ -178,6 +178,15 @@ class SqliteSaver(DataSaver):
                 return ''
             else:
                 return latest_trade_date
+            
+    def read_all_data(self, table_name: str, ts_code: str = None) -> pd.DataFrame:
+        sql_command = f'select * from {table_name}'
+        if ts_code is not None:
+            sql_command += f' where ts_code = "{ts_code}"'
+        self.logger.info(f'read {table_name} data from sqlite, sql command: {sql_command}')
+        df = pd.read_sql(sql_command, self.conn)
+        return df
+
 
     def close(self):
         self.conn.close()

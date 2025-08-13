@@ -2,20 +2,25 @@
 
 import pandas as pd
 from abc import abstractmethod
+from src.data_storage.data_csv_saver import CsvSaver
 from src.data_storage.data_sqlite_saver import SqliteSaver
 from src.utils.log_helper import LogHelper
 
 
 class DataFetcher:
-    def __init__(self, file_path='./data', file_name='stock_data.db'):
+    def __init__(self):
         self.logger = LogHelper().get_logger(__name__)
-        self.data_saver = SqliteSaver(file_path=file_path, file_name=file_name)
+        self.data_saver = SqliteSaver()
         self.login()
 
     @abstractmethod
     def login(self, token=''):
         pass
 
+
+    @abstractmethod
+    def get_stock_codes_by_symbol(self, symbol:str, save:bool=True)->pd.DataFrame:
+        pass
 
     @abstractmethod
     def get_all_stock_codes(self, save:bool=True)->pd.DataFrame:
@@ -44,6 +49,12 @@ class DataFetcher:
     @abstractmethod
     def get_latest_trade_date(self, stock_code:str):
         pass
+
+
+    @abstractmethod
+    def get_all_historical_data_from_db(self, stock_code:str):
+        pass
+
 
 
     def __del__(self):

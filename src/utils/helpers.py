@@ -25,3 +25,31 @@ def get_new_trade_date(data_saver:DataSaver, table_name:str, ts_code:str, start_
         return trade_date
     else:
         return start_date
+
+
+def add_exchange_suffix(code: str) -> str:
+    """
+    根据股票代码添加交易所后缀（sh, sz, bj）
+    
+    参数:
+        code (str): 股票代码，去除空格或后缀
+    
+    返回:
+        str: 带交易所后缀的代码，如 "600000.sh"
+    """
+    code = str(code).strip()
+    
+    # 北交所规则：83, 87, 43 开头
+    if code.startswith(('83', '87', '43', '92')) and len(code) == 6:
+        return f"{code}.BJ"
+    
+    # 上交所规则：60, 688, 900 开头
+    elif code.startswith(('60', '688', '900', '113')):
+        return f"{code}.SH"
+    
+    # 深交所规则：00, 30, 200 开头
+    elif code.startswith(('000', '001', '002', '300', '301', '200', '123')):
+        return f"{code}.SZ"
+    
+    else:
+        return code

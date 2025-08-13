@@ -24,7 +24,12 @@ class DataSaver:
 
     @abstractmethod
     def close(self):
-        pass    
+        pass
+
+    @abstractmethod
+    def read_all_data(self, table_name:str, ts_code:str):
+        pass
+
 
 
     def __del__(self):

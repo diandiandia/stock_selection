@@ -14,10 +14,47 @@ class AkshareDataFetcher(DataFetcher):
     def login(self, token=''):
         pass
 
+
+    def get_stock_codes_by_symbol(self, symbol:str='000906', save:bool=False) ->pd.DataFrame:
+        """
+        获取指定交易市场的股票代码列表
+        """
+        '''
+        名称	类型	描述
+        日期	object	-
+        指数代码	object	-
+        指数名称	object	-
+        指数英文名称	object	-
+        成分券代码	object	-
+        成分券名称	object	-
+        成分券英文名称	object	-
+        交易所	object	-
+        交易所英文名称	object	-
+        '''
+        df = ak.index_stock_cons_csindex(symbol=symbol)
+        columns = {
+            '成分券代码': 'ts_code',
+            '成分券名称': 'name',
+            '成分券英文名称': 'stock_exchange',
+        }
+        df = df.rename(columns=columns)
+        df['ts_code'] = df['ts_code'].apply(ak.stock_a_code_to_symbol)
+        # 将ts_code的值从sz000688转化为000688.SZ
+        df['ts_code'] = df['ts_code'].str[2:] + '.' + df['ts_code'].str[0:2].str.upper()
+
+        df = df[['ts_code', 'name']]
+        df['industry'] = ''
+
+        if save:
+            self.data_saver.save(df, 'stocks_info')
+
+        return df.sort_values('ts_code', ascending=False)
+
+
     def get_all_stock_codes(self, save:bool=True) ->pd.DataFrame:
 
         '''
-        
+        获取所有的股票代码
         '''
         df_sh = ak.stock_info_sh_name_code(symbol="主板A股")
         df_sz = ak.stock_info_sz_name_code(symbol="A股列表")
@@ -67,6 +104,7 @@ class AkshareDataFetcher(DataFetcher):
     def get_history_stock_data(self, stock_code:str, start_date:str, end_date:str, save:bool=False) ->pd.DataFrame:
 
         '''
+        名称	类型	描述
         日期	object	交易日
         股票代码	object	不带市场标识的股票代码
         开盘	float64	开盘价
@@ -84,6 +122,7 @@ class AkshareDataFetcher(DataFetcher):
         ts_code = stock_code
         stock_code = get_ts_code(stock_code)
         start_date = get_new_trade_date(self.data_saver, 'stock_daily', ts_code,start_date)
+
         df = ak.stock_zh_a_hist(symbol=stock_code, period="daily", start_date=start_date, end_date=end_date, adjust="qfq")
         if df is not None and not df.empty:
             columns = {
@@ -107,16 +146,23 @@ class AkshareDataFetcher(DataFetcher):
             df['trade_date'] = pd.to_datetime(df['trade_date'], format='%Y%m%d').dt.strftime('%Y%m%d')
 
             # 修改数据标识形式
-            df['volume'] = df['volume'].astype(float)
-            df['amount'] = df['amount'].astype(float)
-            df['change'] = df['change'].astype(float)
-            df['change_amount'] = df['change_amount'].astype(float)
-            df['turnover'] = df['turnover'].astype(float)
-            df['amplitude'] = df['amplitude'].astype(float)
+            df['open'] = df['open'].astype(float).round(2)
+            df['close'] = df['close'].astype(float).round(2)
+            df['high'] = df['high'].astype(float).round(2)
+            df['low'] = df['low'].astype(float).round(2)
+            df['volume'] = df['volume'].astype(float).round(2)
+            df['amount'] = df['amount'].astype(float).round(2)
+            df['change'] = df['change'].astype(float).round(2)
+            df['change_amount'] = df['change_amount'].astype(float).round(2)
+            df['turnover'] = df['turnover'].astype(float).round(2)
+            df['amplitude'] = df['amplitude'].astype(float).round(2)
+
+
 
             if save:
                 self.data_saver.save(df, 'stock_daily')
-            return df
+            return df.sort_values('trade_date', ascending=False)
+
         else:
             return pd.DataFrame()
        
@@ -162,6 +208,10 @@ class AkshareDataFetcher(DataFetcher):
         '''
         # 先从数据表里面查询最新的时间，然后从最新的时间开始获取数据
         start_date = get_new_trade_date(self.data_saver, 'lhb_data', '', start_date)
+        if pd.to_datetime(start_date) > pd.to_datetime(end_date):
+            self.logger.error('开始日期不能大于结束日期')
+            return pd.DataFrame()
+
 
         df = ak.stock_lhb_detail_em(start_date=start_date, end_date=end_date)
         column = {
@@ -195,14 +245,17 @@ class AkshareDataFetcher(DataFetcher):
             df = df[['ts_code', 'name', 'trade_date', 'close', 'change', 'net_buy_amount', 'buy_amount', 
                          'sell_amount', 'amount', 'net_buy_amount_ratio', 'turnover', 
                          'reason']]
+            
             # 根据ts_code判断术语哪个交易所
-            df = self.data_saver.query(df, 'stocks_info')
+            df['ts_code'] = df['ts_code'].apply(ak.stock_a_code_to_symbol)
+            # 将ts_code的值从sz000688转化为000688.SZ
+            df['ts_code'] = df['ts_code'].str[2:] + '.' + df['ts_code'].str[0:2].str.upper()
             
             if save:
                 self.data_saver.save(df, 'lhb_data')
             
             self.logger.info(f"获取龙虎榜数据完成，日期范围：{start_date} 至 {end_date}")
-            for index, row in df.iterrows():
+            for _, row in df.iterrows():
                 self.logger.info(f"获取龙虎榜数据完成， 股票代码：{row['ts_code']}，股票名称：{row['name']}，上榜时间：{row['trade_date']}，"
                                 f"收盘价：{row['close']}，涨跌幅：{row['change']}，净买入额：{row['net_buy_amount']}，"
                                 f"买入额：{row['buy_amount']}，卖出额：{row['sell_amount']}，龙虎榜成交额：{row['amount']}， "
@@ -262,3 +315,7 @@ class AkshareDataFetcher(DataFetcher):
     
     def get_latest_trade_date(self, table_name:str, ts_code:str):
         self.data_saver.read_latest_trade_date(table_name, ts_code)
+
+
+    def get_all_historical_data_from_db(self, table_name:str, ts_code:str= None):
+        self.data_saver.read_all_data(table_name, ts_code)

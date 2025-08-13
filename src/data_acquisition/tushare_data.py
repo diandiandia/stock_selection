@@ -1,3 +1,5 @@
+import random
+import time
 import tushare as ts
 import pandas as pd
 from src.data_acquisition.data_fecher import DataFetcher
@@ -30,8 +32,42 @@ class TushareDataFetcher(DataFetcher):
         else:
             self.logger.error('获取股票代码失败')
             return pd.DataFrame()
+        
+    def get_stock_codes_by_symbol(self, symbol:str='', save:bool=True) -> pd.DataFrame:
+        """根据股票代码获取股票信息"""
+        # 获取沪深300成分股
+        df_csi300 = self.pro.index_weight(index_code='000300.SH')
+        df_csi300 = df_csi300.sort_values('trade_date', ascending=False)
+        latest_date = df_csi300['trade_date'].iloc[0]
+        df_csi300 = df_csi300[df_csi300['trade_date'] == latest_date]
 
-    def get_history_stock_data(self, stock_code: str, start_date: str, end_date: str, save:bool=False) -> pd.DataFrame:
+        # 获取中证500成分股
+        df_csi500 = self.pro.index_weight(index_code='000905.SH')
+        df_csi500 = df_csi500.sort_values('trade_date', ascending=False)
+        latest_date = df_csi500['trade_date'].iloc[0]
+        df_csi500 = df_csi500[df_csi500['trade_date'] == latest_date]
+
+
+        df = pd.concat([df_csi300, df_csi500]).drop_duplicates()
+        columns = {
+            'con_code': 'ts_code'
+        }
+        df = df.rename(columns=columns)
+
+        df = df[['ts_code']].drop_duplicates()
+        df['name'] = ''
+        df['industry'] = ''
+
+        if df is not None:
+            if save:
+                self.data_saver.save(df, 'stocks_info')
+            return df.sort_values('ts_code', ascending=False)
+        else:
+            self.logger.error('获取股票代码失败')
+            return pd.DataFrame()
+
+
+    def get_history_stock_data(self, stock_code: str, start_date: str, end_date: str, save:bool=True) -> pd.DataFrame:
 
         """获取股票历史行情数据"""
         ts_code = stock_code
@@ -74,33 +110,42 @@ class TushareDataFetcher(DataFetcher):
             df = df.rename(columns=columns)
             df = df[['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'change']]
             
+            # 修改数据标识方法
+            df['open'] = df['open'].astype(float).round(2)
+            df['close'] = df['close'].astype(float).round(2)
+            df['high'] = df['high'].astype(float).round(2)
+            df['low'] = df['low'].astype(float).round(2)
+            df['volume'] = df['volume'].astype(float).round(2)
+            df['amount'] = (df['amount'].astype(float) * 1000).round(2)
+            df['change'] = df['change'].astype(float).round(2)
+            
             # 计算振幅
             df['amplitude'] = (df['high'] - df['low']) / df['open'] * 100
 
             # 计算涨跌额
-            df['change_amount'] = (df['close'] - df['open'])
+            df['change_amount'] = df['close'] - df['close'].shift(-1)
+
 
             # 计算换手率
             df_turnover = self._get_turnover(df, start_date, end_date)
             df = pd.merge(df, df_turnover, on=['trade_date', 'ts_code'], how='left')
             df = df.rename(columns={'turnover_rate':'turnover'})
 
+            df['amplitude'] = df['amplitude'].astype(float).round(2)
+            df['change_amount'] = df['change_amount'].astype(float).round(2)
+            df['turnover'] = df['turnover'].astype(float).round(2)
+
             # 转换日期格式为字符串格式
             df['trade_date'] = pd.to_datetime(df['trade_date'], format='%Y%m%d').dt.strftime('%Y%m%d')
 
+            # 调整顺序
+            df = df[['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'amplitude', 'change', 'change_amount', 'turnover']]
 
-            # 修改数据标识方法
-            df['volume'] = df['volume'].astype(float)
-            df['amount'] = df['amount'].astype(float)
-            df['change'] = df['change'].astype(float)
-            df['change_amount'] = df['change_amount'].astype(float)
-            df['turnover'] = df['turnover'].astype(float)
-            df['amplitude'] = df['amplitude'].astype(float)
 
             
             if save:
                 self.data_saver.save(df, 'stock_daily')
-            return df
+            return df.sort_values('trade_date', ascending=False)
         else:
             return pd.DataFrame()
         
@@ -113,11 +158,14 @@ class TushareDataFetcher(DataFetcher):
 
 
 
-    def get_lhb_data(self, start_date, end_date, save:bool=False):
+    def get_lhb_data(self, start_date, end_date, save:bool=True):
 
         """获取龙虎榜数据"""
         # 获取最新交易日之后的数据
         start_date = get_new_trade_date(self.data_saver, 'lhb_data', '', start_date)
+        if pd.to_datetime(start_date) > pd.to_datetime(end_date):
+            self.logger.error('开始日期不能大于结束日期')
+            return pd.DataFrame()
         
         # 调用Tushare龙虎榜接口
         start_date = pd.to_datetime(start_date, format='%Y%m%d')
@@ -186,7 +234,7 @@ class TushareDataFetcher(DataFetcher):
                 continue
         df_all = pd.concat(df_list, axis=0)
         self.logger.info(f"获取龙虎榜数据完成，日期范围：{start_date} 至 {end_date}")
-        for index, row in df_all.iterrows():
+        for _, row in df_all.iterrows():
             self.logger.info(f"获取龙虎榜数据完成， 股票代码：{row['ts_code']}，股票名称：{row['name']}，上榜时间：{row['trade_date']}，"
                              f"收盘价：{row['close']}，涨跌幅：{row['change']}，净买入额：{row['net_buy_amount']}，"
                              f"买入额：{row['buy_amount']}，卖出额：{row['sell_amount']}，龙虎榜成交额：{row['amount']}，"
@@ -200,6 +248,8 @@ class TushareDataFetcher(DataFetcher):
         """批量获取股票历史数据"""
         df_all_list = []
         for stock_code in df_stock_codes['ts_code']:
+            # 没钱，人家不让太快
+            time.sleep(random.random())
             df = self.get_history_stock_data(stock_code, start_date, end_date)
             if not df.empty:
                 df_all_list.append(df)
@@ -209,3 +259,6 @@ class TushareDataFetcher(DataFetcher):
 
     def get_latest_trade_date(self, table_name: str, ts_code: str):
         return self.data_saver.read_latest_trade_date(table_name, ts_code)
+    
+    def get_all_historical_data_from_db(self, table_name: str, ts_code: str= None):
+        return self.data_saver.read_all_data(table_name, ts_code)
