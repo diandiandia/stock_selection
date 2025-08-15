@@ -27,7 +27,8 @@ class DataSaver:
         pass
 
     @abstractmethod
-    def read_all_data(self, table_name:str, ts_code:str):
+    def read_all_data(self, table_name:str, ts_code:str = None, start_date:str = None, end_date:str = None):
+
         pass
 
 

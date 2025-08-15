@@ -52,7 +52,8 @@ class DataFetcher:
 
 
     @abstractmethod
-    def get_all_historical_data_from_db(self, stock_code:str):
+    def get_all_historical_data_from_db(self, stock_code:str, start_date:str, end_date:str):
+
         pass
 
 

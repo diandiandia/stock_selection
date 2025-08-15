@@ -1,5 +1,5 @@
 import pandas as pd
-
+import datetime
 from src.data_storage.data_saver import DataSaver
 
 
@@ -53,3 +53,14 @@ def add_exchange_suffix(code: str) -> str:
     
     else:
         return code
+    
+
+def get_latest_trade_date()->str:
+    day = datetime.datetime.today().strftime('%Y%m%d')
+    time_of_day = datetime.datetime.now().strftime("%H:%M:%S")
+    if time_of_day < '17:00:00':
+        day = datetime.datetime.today() - datetime.timedelta(days=1)
+        day = day.strftime('%Y%m%d')
+    return day
+
+

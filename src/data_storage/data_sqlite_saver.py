@@ -2,7 +2,7 @@ from src.data_storage.data_saver import DataSaver
 import sqlite3
 import pandas as pd
 import os
-from src.utils.helpers import add_exchange_suffix, get_ts_code
+from src.utils.helpers import add_exchange_suffix
 
 
 class SqliteSaver(DataSaver):
@@ -179,10 +179,15 @@ class SqliteSaver(DataSaver):
             else:
                 return latest_trade_date
             
-    def read_all_data(self, table_name: str, ts_code: str = None) -> pd.DataFrame:
+    def read_all_data(self, table_name: str, ts_code: str = None, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         sql_command = f'select * from {table_name}'
         if ts_code is not None:
             sql_command += f' where ts_code = "{ts_code}"'
+        if start_date is not None and end_date is not None:
+            if sql_command.find('ts_code') == -1:
+                sql_command += f' where trade_date >= {start_date} and trade_date <= {end_date}'
+            else:
+                sql_command += f' and trade_date >= {start_date} and trade_date <= {end_date}'
         self.logger.info(f'read {table_name} data from sqlite, sql command: {sql_command}')
         df = pd.read_sql(sql_command, self.conn)
         return df

@@ -260,5 +260,5 @@ class TushareDataFetcher(DataFetcher):
     def get_latest_trade_date(self, table_name: str, ts_code: str):
         return self.data_saver.read_latest_trade_date(table_name, ts_code)
     
-    def get_all_historical_data_from_db(self, table_name: str, ts_code: str= None):
-        return self.data_saver.read_all_data(table_name, ts_code)
+    def get_all_historical_data_from_db(self, table_name: str, ts_code: str= None, start_date: str= None, end_date: str= None):
+        return self.data_saver.read_all_data(table_name, ts_code, start_date, end_date)
