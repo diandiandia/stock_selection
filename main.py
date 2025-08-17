@@ -169,12 +169,11 @@ def main():
         logger.info("====== 训练流程完成 ======")
         
         # 测试模式下打印关键信息
-        if test_mode:
-            logger.info("=== 测试模式总结 ===")
-            logger.info(f"使用的股票: {stock_codes[:3]}...")
-            logger.info(f"数据时间范围: {min(dates)} 到 {max(dates)}")
-            logger.info(f"最终样本数: {len(X_sequence)}")
-            logger.info("测试运行成功完成！")
+        logger.info("=== 测试模式总结 ===")
+        logger.info(f"使用的股票: {stock_codes[:3]}...")
+        logger.info(f"数据时间范围: {min(dates)} 到 {max(dates)}")
+        logger.info(f"最终样本数: {len(X_sequence)}")
+        logger.info("测试运行成功完成！")
 
     except Exception as e:
         logger.error(f"系统执行失败: {str(e)}", exc_info=True)
