@@ -1,111 +1,254 @@
-import pandas as pd
+from typing import Dict, Optional, List
 import numpy as np
+import pandas as pd
 import talib
-import logging
+from src.utils.log_helper import LogHelper
+from concurrent.futures import ThreadPoolExecutor
 
 class TechnicalIndicators:
-    def __init__(self, df: pd.DataFrame):
-        """初始化技术指标计算器"""
-        self.df = df.copy()
-    
-    def calculate_all_indicators(self) -> pd.DataFrame:
-        """计算所有技术指标"""
-        if not self.validate_data(self.df):
-            raise ValueError("Input data validation failed")
-        
-        logging.info("Starting technical indicator calculations...")
-        
-        # 按股票代码分组计算
-        for code in self.df['ts_code'].unique():
-            mask = self.df['ts_code'] == code
-            stock_data = self.df.loc[mask].copy()
-            
-            # 确保数据按时间排序
-            stock_data = stock_data.sort_values('trade_date')
-            close_prices = stock_data['close'].values
-            
-            try:
-                # 移动平均线
-                self.df.loc[mask, 'MA5'] = talib.SMA(close_prices, timeperiod=5)
-                self.df.loc[mask, 'MA10'] = talib.SMA(close_prices, timeperiod=10)
-                self.df.loc[mask, 'MA20'] = talib.SMA(close_prices, timeperiod=20)
-                
-                # RSI指标
-                self.df.loc[mask, 'RSI6'] = talib.RSI(close_prices, timeperiod=6)
-                self.df.loc[mask, 'RSI12'] = talib.RSI(close_prices, timeperiod=12)
-                
-                # MACD指标
-                macd, signal, hist = talib.MACD(close_prices)
-                self.df.loc[mask, 'MACD'] = macd
-                self.df.loc[mask, 'MACD_signal'] = signal
-                self.df.loc[mask, 'MACD_hist'] = hist
-                
-                # 布林带
-                upper, middle, lower = talib.BBANDS(close_prices, timeperiod=20)
-                self.df.loc[mask, 'BB_upper'] = upper
-                self.df.loc[mask, 'BB_middle'] = middle
-                self.df.loc[mask, 'BB_lower'] = lower
-                
-                # 成交量指标
-                volume = stock_data['volume'].values
-                self.df.loc[mask, 'VOL_MA5'] = talib.SMA(volume, timeperiod=5)
-                self.df.loc[mask, 'VOL_MA10'] = talib.SMA(volume, timeperiod=10)
-                
-                # 动量指标
-                self.df.loc[mask, 'MOM'] = talib.MOM(close_prices, timeperiod=10)
-                
-                # 计算未来收益率（作为标签）
-                self.df.loc[mask, 'future_return'] = stock_data['close'].shift(-1) / stock_data['close'] - 1
-                
-            except Exception as e:
-                logging.error(f"Error calculating indicators for stock {code}: {str(e)}")
-                continue
-        
-        # 移除无效数据
-        self.df = self.df.replace([np.inf, -np.inf], np.nan)  # 替换无穷值为NaN
-        self.df = self.df.dropna()  # 删除所有包含NaN的行
-        
-        logging.info(f"Completed technical indicator calculations. Shape: {self.df.shape}")
-        logging.info(f"Columns available: {self.df.columns.tolist()}")
-        
-        return self.df
-        
+    """股票技术指标计算器，用于A股T+1交易推荐"""
+    def __init__(self, df: Optional[pd.DataFrame] = None):
+        self.logger = LogHelper.get_logger(__name__)
+        self._df: Optional[pd.DataFrame] = None
+        if df is not None:
+            self._df = df.copy().sort_values('trade_date').reset_index(drop=True)
+            numeric_cols = ['open', 'high', 'low', 'close', 'volume']
+            if all(col in self._df.columns for col in numeric_cols):
+                self._df[numeric_cols] = self._df[numeric_cols].astype(np.float64)
+                self._df = self._df.replace([np.inf, -np.inf], np.nan)
+            else:
+                raise ValueError("Missing required numeric columns.")
 
-    def prepare_features(self) -> tuple:
-        """准备模型训练所需的特征"""
-        feature_columns = ['MA5', 'MA10', 'MA20', 'RSI6', 'RSI12', 
-                         'MACD', 'MACD_signal', 'MACD_hist',
-                         'BB_upper', 'BB_middle', 'BB_lower',
-                         'VOL_MA5', 'VOL_MA10', 'MOM']
-        
-        X = self.df[feature_columns].values
-        y = self.df['future_return'].values
-        
-        return X, y
+    def _empty_indicators(self, keys: List[str], length: int = 0) -> Dict[str, np.ndarray]:
+        return {k: np.full(length, np.nan) for k in keys}
 
-    def prepare_single_stock_features(self, row: pd.Series) -> np.ndarray:
-        """准备单个股票的特征"""
-        feature_columns = ['MA5', 'MA10', 'MA20', 'RSI6', 'RSI12', 
-                         'MACD', 'MACD_signal', 'MACD_hist',
-                         'BB_upper', 'BB_middle', 'BB_lower',
-                         'VOL_MA5', 'VOL_MA10', 'MOM']
+    def calculate_moving_averages(self, close: np.ndarray, periods: List[int] = [5, 10, 20, 60], 
+                                 use_ema: bool = False) -> Dict[str, np.ndarray]:
+        if len(close) == 0:
+            return self._empty_indicators([f'{"EMA" if use_ema else "MA"}{p}' for p in periods])
         
-        try:
-            features = row[feature_columns].values
-            if np.any(pd.isna(features)):
-                return None
-            return features
-        except Exception as e:
-            print(f"Error preparing features for row: {e}")
-            return None
+        max_period = max(periods)
+        if len(close) < max_period:
+            self.logger.warning(f"Data too short ({len(close)} < {max_period}), returning NaNs.")
+            return self._empty_indicators([f'{"EMA" if use_ema else "MA"}{p}' for p in periods], len(close))
         
-    def validate_data(self, df: pd.DataFrame) -> bool:
-        """验证输入数据的完整性"""
-        required_columns = ['ts_code', 'trade_date', 'open', 'high', 'low', 'close', 'volume', 'amount']
+        if use_ema:
+            return {f'EMA{p}': talib.EMA(close, timeperiod=p) for p in periods}
+        return {f'MA{p}': talib.SMA(close, timeperiod=p) for p in periods}
+
+    def calculate_momentum_indicators(self, high: np.ndarray, low: np.ndarray, close: np.ndarray,
+                                     rsi_periods: List[int] = [6, 12], mom_period: int = 10,
+                                     kdj_fastk: int = 5, kdj_slowk: int = 3, kdj_slowd: int = 3,
+                                     cci_period: int = 14, adx_period: int = 14,
+                                     macd_fast: int = 12, macd_slow: int = 26, macd_signal: int = 9) -> Dict[str, np.ndarray]:
+        if len(close) == 0:
+            keys = [f'RSI{p}' for p in rsi_periods] + ['MOM', 'KDJ_K', 'KDJ_D', 'KDJ_J', 'CCI', 'ADX', 'MACD', 'MACD_Signal', 'MACD_Hist']
+            return self._empty_indicators(keys)
         
-        missing_columns = [col for col in required_columns if col not in df.columns]
-        if missing_columns:
-            logging.error(f"Missing required columns: {missing_columns}")
-            return False
+        min_length = max(max(rsi_periods, default=0), mom_period, kdj_fastk, cci_period, adx_period, macd_slow)
+        if len(close) < min_length:
+            self.logger.warning(f"Data too short ({len(close)} < {min_length}), returning NaNs.")
+            return self._empty_indicators(keys, len(close))
+        
+        rsi_dict = {f'RSI{p}': talib.RSI(close, timeperiod=p) for p in rsi_periods}
+        mom = talib.MOM(close, timeperiod=mom_period)
+        kdj_k, kdj_d = talib.STOCH(high, low, close, fastk_period=kdj_fastk, slowk_period=kdj_slowk, slowd_period=kdj_slowd)
+        kdj_j = 3 * kdj_k - 2 * kdj_d
+        cci = talib.CCI(high, low, close, timeperiod=cci_period)
+        adx = talib.ADX(high, low, close, timeperiod=adx_period)
+        macd, signal, hist = talib.MACD(close, fastperiod=macd_fast, slowperiod=macd_slow, signalperiod=macd_signal)
+        
+        return {
+            **rsi_dict, 'MOM': mom, 'KDJ_K': kdj_k, 'KDJ_D': kdj_d, 'KDJ_J': kdj_j,
+            'CCI': cci, 'ADX': adx, 'MACD': macd, 'MACD_Signal': signal, 'MACD_Hist': hist
+        }
+
+    def calculate_volatility_indicators(self, high: np.ndarray, low: np.ndarray, close: np.ndarray,
+                                       bb_period: int = 20, bb_nbdev_up: float = 2.5, bb_nbdev_dn: float = 2.5, 
+                                       bb_matype: int = 0, atr_period: int = 14) -> Dict[str, np.ndarray]:
+        if len(close) == 0:
+            return self._empty_indicators(['BB_upper', 'BB_middle', 'BB_lower', 'ATR'])
+        
+        min_length = max(bb_period, atr_period)
+        if len(close) < min_length:
+            self.logger.warning(f"Data too short ({len(close)} < {min_length}), returning NaNs.")
+            return self._empty_indicators(['BB_upper', 'BB_middle', 'BB_lower', 'ATR'], len(close))
+        
+        upper, middle, lower = talib.BBANDS(close, timeperiod=bb_period, nbdevup=bb_nbdev_up, nbdevdn=bb_nbdev_dn, matype=bb_matype)
+        return {
+            'BB_upper': upper, 'BB_middle': middle, 'BB_lower': lower,
+            'ATR': talib.ATR(high, low, close, timeperiod=atr_period)
+        }
+
+    def calculate_volume_indicators(self, volume: np.ndarray, close: np.ndarray, high: np.ndarray, low: np.ndarray,
+                                   vol_ma_periods: List[int] = [5, 10], cmf_period: int = 20) -> Dict[str, np.ndarray]:
+        if len(volume) == 0:
+            keys = [f'VOL_MA{p}' for p in vol_ma_periods] + ['OBV', 'CMF']
+            return self._empty_indicators(keys)
+        
+        max_period = max(vol_ma_periods + [cmf_period])
+        if len(volume) < max_period:
+            self.logger.warning(f"Data too short ({len(volume)} < {max_period}), returning NaNs.")
+            return self._empty_indicators(keys, len(volume))
+        
+        vol_ma_dict = {f'VOL_MA{p}': talib.SMA(volume, timeperiod=p) for p in vol_ma_periods}
+        obv = talib.OBV(close, volume)
+        cmf = talib.ADOSC(high, low, close, volume, fastperiod=3, slowperiod=cmf_period)
+        
+        return {**vol_ma_dict, 'OBV': obv, 'CMF': cmf}
+
+    def calculate_candlestick_patterns(self, open: np.ndarray, high: np.ndarray, low: np.ndarray, close: np.ndarray) -> Dict[str, np.ndarray]:
+        if len(close) == 0:
+            keys = ['CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS']
+            return self._empty_indicators(keys)
+        
+        return {
+            'CDL_BULLISH_ENGULFING': talib.CDLENGULFING(open, high, low, close),
+            'CDL_HAMMER': talib.CDLHAMMER(open, high, low, close),
+            'CDL_DOJI': talib.CDLDOJI(open, high, low, close),
+            'CDL_MORNINGSTAR': talib.CDLMORNINGSTAR(open, high, low, close),
+            'CDL_THREEWHITESOLDIERS': talib.CDL3WHITESOLDIERS(open, high, low, close)
+        }
+
+    def calculate_sar(self, high: np.ndarray, low: np.ndarray, acceleration: float = 0.015, maximum: float = 0.15) -> np.ndarray:
+        if len(high) == 0:
+            return np.array([])
+        return talib.SAR(high, low, acceleration=acceleration, maximum=maximum)
+
+    def calculate_derivative_features(self, df: pd.DataFrame) -> Dict[str, np.ndarray]:
+        """计算衍生技术指标特征"""
+        indicators = {}
+        close = df['close'].values
+        volume = df['volume'].values
+
+        # 价格和成交量动量
+        indicators['price_momentum'] = np.concatenate([[np.nan]*3, np.diff(close, n=1)[2:]/close[:-3]])
+        indicators['volume_momentum'] = np.concatenate([[np.nan]*3, np.diff(volume, n=1)[2:]/volume[:-3]])
+
+        # RSI衍生特征
+        rsi_cols = [col for col in df.columns if 'RSI' in col]
+        for rsi_col in rsi_cols:
+            rsi_values = df[rsi_col].values
+            indicators[f'{rsi_col}_slope'] = np.gradient(rsi_values)
+            indicators[f'{rsi_col}_overbought'] = (rsi_values > 70).astype(int)
+            indicators[f'{rsi_col}_oversold'] = (rsi_values < 30).astype(int)
+
+        # MACD衍生特征
+        if 'MACD' in df.columns and 'MACD_Signal' in df.columns:
+            macd = df['MACD'].values
+            signal = df['MACD_Signal'].values
+            indicators['macd_signal_diff'] = macd - signal
+            indicators['macd_crossover'] = np.sign(indicators['macd_signal_diff']).diff()
+
+        # 布林带衍生特征
+        bb_cols = ['BB_upper', 'BB_lower', 'BB_middle']
+        if all(col in df.columns for col in bb_cols):
+            upper, lower, middle = df[bb_cols].values.T
+            indicators['bb_position'] = (close - lower) / (upper - lower)
+            indicators['bb_width'] = (upper - lower) / middle
+
+        # KDJ衍生特征
+        kdj_cols = ['KDJ_K', 'KDJ_D', 'KDJ_J']
+        if all(col in df.columns for col in kdj_cols):
+            k, d, j = df[kdj_cols].values.T
+            indicators['kdj_kd_diff'] = k - d
+            indicators['kdj_j_extreme'] = ((j > 100) | (j < 0)).astype(int)
+
+        # 成交量均线比率
+        vol_ma_cols = [col for col in df.columns if 'VOL_MA' in col]
+        for vol_ma_col in vol_ma_cols:
+            ma_values = df[vol_ma_col].values
+            indicators[f'{vol_ma_col}_ratio'] = volume / ma_values
+
+        # 均线排列特征
+        ma_cols = [col for col in df.columns if 'MA' in col and 'VOL' not in col]
+        if len(ma_cols) >= 3:
+            ma_values = df[ma_cols].values
+            indicators['ma_bullish'] = (ma_values[:, 0] > ma_values[:, 1]).astype(int)
+            indicators['ma_alignment'] = np.std(ma_values, axis=1)
+
+        # 价格相对均线位置
+        for ma_col in ma_cols:
+            ma_values = df[ma_col].values
+            indicators[f'price_vs_{ma_col}'] = close / ma_values - 1
+
+        # ATR比率
+        if 'ATR' in df.columns:
+            indicators['atr_ratio'] = df['ATR'].values / close
+
+        return indicators
+
+    def calculate_all_indicators(self, fillna_method: Optional[str] = 'ffill',
+                                indicators_to_compute: List[str] = ['all'],  # e.g., ['ma', 'momentum', 'volatility', 'volume', 'candlestick', 'sar']
+                                ma_periods: List[int] = [5, 10, 20, 60], use_ema: bool = False,
+                                rsi_periods: List[int] = [6, 12], mom_period: int = 10,
+                                kdj_fastk: int = 5, kdj_slowk: int = 3, kdj_slowd: int = 3, cci_period: int = 14,
+                                bb_period: int = 20, bb_nbdev_up: float = 2.5, bb_nbdev_dn: float = 2.5, bb_matype: int = 0,
+                                atr_period: int = 14, vol_ma_periods: List[int] = [5, 10],
+                                macd_fast: int = 12, macd_slow: int = 26, macd_signal: int = 9,
+                                adx_period: int = 14, cmf_period: int = 20,
+                                sar_acceleration: float = 0.015, sar_maximum: float = 0.15) -> pd.DataFrame:
+        if self._df is None or self._df.empty:
+            self.logger.warning("Empty DataFrame. Returning empty result.")
+            return pd.DataFrame()
+        
+        required_columns = ['trade_date', 'ts_code', 'open', 'high', 'low', 'close', 'volume']
+        missing = [col for col in required_columns if col not in self._df.columns]
+        if missing:
+            raise ValueError(f"Missing columns: {missing}")
+        
+        def compute_group(group: pd.DataFrame) -> pd.DataFrame:
+            ti = TechnicalIndicators(group)
+            result = group.copy()
+            close = group['close'].values
+            high = group['high'].values
+            low = group['low'].values
+            volume = group['volume'].values
+            open_ = group['open'].values
             
-        return True
+            indicators = {}
+            if 'all' in indicators_to_compute or 'ma' in indicators_to_compute:
+                indicators.update(ti.calculate_moving_averages(close, ma_periods, use_ema))
+            if 'all' in indicators_to_compute or 'momentum' in indicators_to_compute:
+                indicators.update(ti.calculate_momentum_indicators(high, low, close, rsi_periods, mom_period,
+                                                                  kdj_fastk, kdj_slowk, kdj_slowd, cci_period, adx_period,
+                                                                  macd_fast, macd_slow, macd_signal))
+            if 'all' in indicators_to_compute or 'volatility' in indicators_to_compute:
+                indicators.update(ti.calculate_volatility_indicators(high, low, close, bb_period, bb_nbdev_up, bb_nbdev_dn, bb_matype, atr_period))
+            if 'all' in indicators_to_compute or 'volume' in indicators_to_compute:
+                indicators.update(ti.calculate_volume_indicators(volume, close, high, low, vol_ma_periods, cmf_period))
+            if 'all' in indicators_to_compute or 'candlestick' in indicators_to_compute:
+                indicators.update(ti.calculate_candlestick_patterns(open_, high, low, close))
+            if 'all' in indicators_to_compute or 'sar' in indicators_to_compute:
+                indicators['SAR'] = ti.calculate_sar(high, low, sar_acceleration, sar_maximum)
+
+            # 添加衍生特征
+            indicators.update(ti.calculate_derivative_features(result))
+
+            for name, values in indicators.items():
+                result[name] = values
+            return result
+        
+        if 'ts_code' in self._df.columns:
+            groups = [group for _, group in self._df.groupby('ts_code')]
+            with ThreadPoolExecutor(max_workers=4) as executor:  # 调整workers
+                results = list(executor.map(compute_group, groups))
+            result_df = pd.concat(results)
+        else:
+            result_df = compute_group(self._df)
+        
+        # 统一NaN填充
+        indicator_cols = [col for col in result_df.columns if col not in required_columns]
+        if fillna_method == 'ffill':
+            result_df[indicator_cols] = result_df[indicator_cols].ffill().fillna(0)
+        elif fillna_method == 'bfill':
+            result_df[indicator_cols] = result_df[indicator_cols].bfill().fillna(0)
+        elif fillna_method == 'mean':
+            result_df[indicator_cols] = result_df[indicator_cols].fillna(result_df[indicator_cols].mean()).fillna(0)
+            
+        elif fillna_method is None:
+            pass
+        else:
+            raise ValueError(f"Unsupported fillna_method: {fillna_method}")
+        
+        return result_df
