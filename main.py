@@ -4,8 +4,6 @@ import datetime
 import os
 import pandas as pd
 import sys
-from sklearn.model_selection import TimeSeriesSplit
-from sklearn.metrics import accuracy_score, classification_report
 from src.data_acquisition.tushare_data import TushareDataFetcher
 from src.utils.helpers import get_latest_trade_date
 from src.data_preprocessing.technical_indicators import TechnicalIndicators
@@ -16,26 +14,19 @@ from src.utils.log_helper import LogHelper
 # 配置日志
 logger = LogHelper().get_logger(__name__)
 
-def main(test_mode=False):
+def main():
     """
     主函数：完整的股票预测模型训练流程
     
-    Args:
-        test_mode (bool): 测试模式，如果为True则使用较少数据快速测试
     """
     try:
         # ====================== 1. 获取数据 ======================
         logger.info("====== 开始数据获取 ======")
         end_date = get_latest_trade_date()
         
-        if test_mode:
-            # 测试模式：使用较少数据
-            start_date = (datetime.datetime.strptime(end_date, '%Y%m%d').date() - datetime.timedelta(days=60)).strftime('%Y%m%d')
-            logger.info("测试模式：使用最近60天数据")
-        else:
-            # 正常模式：使用3年数据
-            start_date = (datetime.datetime.strptime(end_date, '%Y%m%d').date() - datetime.timedelta(days=365*3)).strftime('%Y%m%d')
-            logger.info("正常模式：使用3年数据")
+        # 正常模式：使用3年数据
+        start_date = (datetime.datetime.strptime(end_date, '%Y%m%d').date() - datetime.timedelta(days=365*3)).strftime('%Y%m%d')
+        logger.info("正常模式：使用3年数据")
         
         fetcher = TushareDataFetcher()
         df = fetcher.get_all_historical_data_from_db('stock_daily', start_date=start_date, end_date=end_date)
@@ -45,12 +36,6 @@ def main(test_mode=False):
             return
         
         logger.info(f"获取数据完成: {df['trade_date'].min()}至{df['trade_date'].max()}, 共{len(df)}条记录, {df['ts_code'].nunique()}支股票")
-        
-        # 测试模式下限制股票数量
-        if test_mode:
-            test_stocks = df['ts_code'].unique()[:5]  # 只取前5支股票
-            df = df[df['ts_code'].isin(test_stocks)]
-            logger.info(f"测试模式：仅使用{len(test_stocks)}支股票")
         
         # ====================== 2. 计算技术指标和信号 ======================
         logger.info("====== 开始计算技术指标 ======")
@@ -122,21 +107,12 @@ def main(test_mode=False):
         logger.info("====== 开始训练混合模型 ======")
         model = HybridPredictor()
         
-        if test_mode:
-            logger.info("测试模式：使用较少epoch快速训练")
-            # 测试模式下减少训练时间
-            training_results = model.fit(
-                X_static=None, 
-                X_sequence=X_train, 
-                y=y_train,
-                epochs=5  # 测试模式下减少epoch
-            )
-        else:
-            training_results = model.fit(
-                X_static=None, 
-                X_sequence=X_train, 
-                y=y_train
-            )
+
+        training_results = model.fit(
+            X_static=None, 
+            X_sequence=X_train, 
+            y=y_train
+        )
         
         logger.info("模型训练完成")
 
@@ -205,9 +181,4 @@ def main(test_mode=False):
         raise
 
 if __name__ == "__main__":
-    # 支持命令行参数控制测试模式
-    test_mode = '--test' in sys.argv or '-t' in sys.argv
-    if test_mode:
-        logger.info("启动测试模式...")
-    
-    main(test_mode=test_mode)
+    main()
