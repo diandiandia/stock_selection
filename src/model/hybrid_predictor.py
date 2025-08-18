@@ -60,7 +60,7 @@ class HybridPredictor:
             'dropout_rate': 0.3,
             'recurrent_dropout': 0.2,
             'batch_size': 64,
-            'epochs': 2,
+            'epochs': 50,
             'learning_rate': 0.001,
             'patience': 15,
             

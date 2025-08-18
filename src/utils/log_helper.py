@@ -4,7 +4,8 @@ import os
 import yaml
 
 class LogHelper:
-    def __init__(self, log_config_path='./config/log_config.yaml', default_log_level=logging.INFO):
+    # src\config\log_config.yaml
+    def __init__(self, log_config_path='./src/config/log_config.yaml', default_log_level=logging.INFO):
         self.log_config_path = log_config_path
         self.default_log_level = default_log_level
         self.init_log()

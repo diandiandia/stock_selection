@@ -1,9 +1,11 @@
-
-import logging
 import datetime
 import os
+
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
 import pandas as pd
 import sys
+from src.data_acquisition.akshare_data import AkshareDataFetcher
 from src.data_acquisition.tushare_data import TushareDataFetcher
 from src.utils.helpers import get_latest_trade_date
 from src.data_preprocessing.technical_indicators import TechnicalIndicators
@@ -28,7 +30,11 @@ def main():
         start_date = (datetime.datetime.strptime(end_date, '%Y%m%d').date() - datetime.timedelta(days=365*3)).strftime('%Y%m%d')
         logger.info("正常模式：使用3年数据")
         
-        fetcher = TushareDataFetcher()
+        fetcher = AkshareDataFetcher()
+        # stock_codes = fetcher.get_stock_codes_by_symbol()
+        # logger.info(f"获取股票列表完成: 共{len(stock_codes)}支股票")
+        # fetcher.batch_fetch_historical_data(stock_codes, start_date, end_date)
+
         df = fetcher.get_all_historical_data_from_db('stock_daily', start_date=start_date, end_date=end_date)
         
         if df.empty:

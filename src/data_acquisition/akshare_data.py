@@ -1,3 +1,5 @@
+import random
+import time
 import akshare as ak
 import pandas as pd
 
@@ -102,7 +104,7 @@ class AkshareDataFetcher(DataFetcher):
             self.logger.error('获取股票代码失败')
             return pd.DataFrame()
         
-    def get_history_stock_data(self, stock_code:str, start_date:str, end_date:str, save:bool=False) ->pd.DataFrame:
+    def get_history_stock_data(self, stock_code:str, start_date:str, end_date:str, save:bool=True) ->pd.DataFrame:
 
         '''
         名称	类型	描述
@@ -173,6 +175,7 @@ class AkshareDataFetcher(DataFetcher):
         '''
         df_all_list = []
         for stock_code in df_stock_codes['ts_code']:
+            time.sleep(random.random())  # 随机休眠0-2秒，防止被封IP
             df = self.get_history_stock_data(stock_code, start_date, end_date)
             if not df.empty:
                 df_all_list.append(df)
@@ -319,4 +322,4 @@ class AkshareDataFetcher(DataFetcher):
 
 
     def get_all_historical_data_from_db(self, table_name:str, ts_code:str= None, start_date:str= None, end_date:str= None):
-        self.data_saver.read_all_data(table_name, ts_code, start_date, end_date)
+        return self.data_saver.read_all_data(table_name, ts_code, start_date, end_date)
