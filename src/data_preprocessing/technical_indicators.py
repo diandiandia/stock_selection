@@ -1,4 +1,4 @@
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Tuple
 import numpy as np
 import pandas as pd
 import talib
@@ -22,7 +22,7 @@ class TechnicalIndicators:
     def _empty_indicators(self, keys: List[str], length: int = 0) -> Dict[str, np.ndarray]:
         return {k: np.full(length, np.nan) for k in keys}
 
-    def calculate_moving_averages(self, close: np.ndarray, periods: List[int] = [5, 10, 20, 60], 
+    def calculate_moving_averages(self, close: np.ndarray, periods: List[int] = [5, 10, 20], 
                                  use_ema: bool = False) -> Dict[str, np.ndarray]:
         if len(close) == 0:
             return self._empty_indicators([f'{"EMA" if use_ema else "MA"}{p}' for p in periods])
@@ -38,9 +38,9 @@ class TechnicalIndicators:
 
     def calculate_momentum_indicators(self, high: np.ndarray, low: np.ndarray, close: np.ndarray,
                                      rsi_periods: List[int] = [6, 12], mom_period: int = 10,
-                                     kdj_fastk: int = 5, kdj_slowk: int = 3, kdj_slowd: int = 3,
+                                     kdj_fastk: int = 3, kdj_slowk: int = 3, kdj_slowd: int = 3,
                                      cci_period: int = 14, adx_period: int = 14,
-                                     macd_fast: int = 12, macd_slow: int = 26, macd_signal: int = 9) -> Dict[str, np.ndarray]:
+                                     macd_fast: int = 6, macd_slow: int = 13, macd_signal: int = 5) -> Dict[str, np.ndarray]:
         if len(close) == 0:
             keys = [f'RSI{p}' for p in rsi_periods] + ['MOM', 'KDJ_K', 'KDJ_D', 'KDJ_J', 'CCI', 'ADX', 'MACD', 'MACD_Signal', 'MACD_Hist']
             return self._empty_indicators(keys)
@@ -56,11 +56,13 @@ class TechnicalIndicators:
         kdj_j = 3 * kdj_k - 2 * kdj_d
         cci = talib.CCI(high, low, close, timeperiod=cci_period)
         adx = talib.ADX(high, low, close, timeperiod=adx_period)
+        plus_di = talib.PLUS_DI(high, low, close, timeperiod=adx_period)
+        minus_di = talib.MINUS_DI(high, low, close, timeperiod=adx_period)
         macd, signal, hist = talib.MACD(close, fastperiod=macd_fast, slowperiod=macd_slow, signalperiod=macd_signal)
         
         return {
             **rsi_dict, 'MOM': mom, 'KDJ_K': kdj_k, 'KDJ_D': kdj_d, 'KDJ_J': kdj_j,
-            'CCI': cci, 'ADX': adx, 'MACD': macd, 'MACD_Signal': signal, 'MACD_Hist': hist
+            'CCI': cci, 'ADX': adx, 'PLUS_DI': plus_di, 'MINUS_DI': minus_di, 'MACD': macd, 'MACD_Signal': signal, 'MACD_Hist': hist
         }
 
     def calculate_volatility_indicators(self, high: np.ndarray, low: np.ndarray, close: np.ndarray,
@@ -81,7 +83,8 @@ class TechnicalIndicators:
         }
 
     def calculate_volume_indicators(self, volume: np.ndarray, close: np.ndarray, high: np.ndarray, low: np.ndarray,
-                                   vol_ma_periods: List[int] = [5, 10], cmf_period: int = 20) -> Dict[str, np.ndarray]:
+                                     vol_ma_periods: List[int] = [5, 10], cmf_period: int = 20,
+                                     mfi_period: int = 14) -> Dict[str, np.ndarray]: 
         if len(volume) == 0:
             keys = [f'VOL_MA{p}' for p in vol_ma_periods] + ['OBV', 'CMF']
             return self._empty_indicators(keys)
@@ -94,8 +97,9 @@ class TechnicalIndicators:
         vol_ma_dict = {f'VOL_MA{p}': talib.SMA(volume, timeperiod=p) for p in vol_ma_periods}
         obv = talib.OBV(close, volume)
         cmf = talib.ADOSC(high, low, close, volume, fastperiod=3, slowperiod=cmf_period)
+        mfi = talib.MFI(high, low, close, volume, timeperiod=mfi_period)
         
-        return {**vol_ma_dict, 'OBV': obv, 'CMF': cmf}
+        return {**vol_ma_dict, 'OBV': obv, 'CMF': cmf, 'MFI': mfi}
 
     def calculate_candlestick_patterns(self, open: np.ndarray, high: np.ndarray, low: np.ndarray, close: np.ndarray) -> Dict[str, np.ndarray]:
         if len(close) == 0:
@@ -111,6 +115,21 @@ class TechnicalIndicators:
         }
 
     def calculate_sar(self, high: np.ndarray, low: np.ndarray, acceleration: float = 0.015, maximum: float = 0.15) -> np.ndarray:
+        if len(high) == 0:
+            return np.array([])
+        return talib.SAR(high, low, acceleration=acceleration, maximum=maximum)
+    
+    def calculate_vwap(self, open: np.ndarray, high: np.ndarray, low: np.ndarray, close: np.ndarray, volume: np.ndarray) -> np.ndarray:
+        if len(close) == 0:
+            return np.array([])
+        typical_price = (high + low + close) / 3
+        return np.cumsum(typical_price * volume) / np.cumsum(volume)
+    
+    def calculate_stoch_rsi(self, close: np.ndarray, rsi_period: int = 14, stoch_period: int = 14, smooth_k: int = 3, smooth_d: int = 3) -> Tuple[np.ndarray, np.ndarray]:
+        if len(close) == 0:
+            return np.array([]), np.array([])
+        rsi = talib.RSI(close, timeperiod=rsi_period)
+        return talib.STOCH(rsi, rsi, rsi, fastk_period=stoch_period, slowk_period=smooth_k, slowd_period=smooth_d)
         if len(high) == 0:
             return np.array([])
         return talib.SAR(high, low, acceleration=acceleration, maximum=maximum)
@@ -180,7 +199,7 @@ class TechnicalIndicators:
 
     def calculate_all_indicators(self, fillna_method: Optional[str] = 'ffill',
                                 indicators_to_compute: List[str] = ['all'],  # e.g., ['ma', 'momentum', 'volatility', 'volume', 'candlestick', 'sar']
-                                ma_periods: List[int] = [5, 10, 20, 60], use_ema: bool = False,
+                                ma_periods: List[int] = [5, 10, 20], use_ema: bool = False,
                                 rsi_periods: List[int] = [6, 12], mom_period: int = 10,
                                 kdj_fastk: int = 5, kdj_slowk: int = 3, kdj_slowd: int = 3, cci_period: int = 14,
                                 bb_period: int = 20, bb_nbdev_up: float = 2.5, bb_nbdev_dn: float = 2.5, bb_matype: int = 0,
@@ -221,6 +240,10 @@ class TechnicalIndicators:
                 indicators.update(ti.calculate_candlestick_patterns(open_, high, low, close))
             if 'all' in indicators_to_compute or 'sar' in indicators_to_compute:
                 indicators['SAR'] = ti.calculate_sar(high, low, sar_acceleration, sar_maximum)
+            indicators['VWAP'] = ti.calculate_vwap(open_, high, low, close, volume)
+            stoch_rsi_k, stoch_rsi_d = ti.calculate_stoch_rsi(close)
+            indicators['StochRSI_K'] = stoch_rsi_k
+            indicators['StochRSI_D'] = stoch_rsi_d
 
             # 添加衍生特征
             indicators.update(ti.calculate_derivative_features(result))

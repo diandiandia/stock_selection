@@ -73,6 +73,9 @@ class TushareDataFetcher(DataFetcher):
         ts_code = stock_code
         # 获取最新交易日之后的数据
         start_date = get_new_trade_date(self.data_saver, 'stock_daily', ts_code, start_date)
+        if pd.to_datetime(start_date) > pd.to_datetime(end_date):
+            self.logger.warning('开始日期不能大于结束日期')
+            return pd.DataFrame()
         
         # 调用Tushare接口获取日线数据
         df = self.pro.daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
@@ -244,13 +247,13 @@ class TushareDataFetcher(DataFetcher):
 
         return df_all
 
-    def batch_fetch_historical_data(self, df_stock_codes: pd.DataFrame, start_date: str, end_date: str) -> list[pd.DataFrame]:
+    def batch_fetch_historical_data(self, df_stock_codes: pd.DataFrame, start_date: str, end_date: str, save:bool=True) -> list[pd.DataFrame]:
         """批量获取股票历史数据"""
         df_all_list = []
         for stock_code in df_stock_codes['ts_code']:
             # 没钱，人家不让太快
             time.sleep(random.random())
-            df = self.get_history_stock_data(stock_code, start_date, end_date)
+            df = self.get_history_stock_data(stock_code, start_date, end_date, save)
             if not df.empty:
                 df_all_list.append(df)
             else:

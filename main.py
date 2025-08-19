@@ -2,6 +2,7 @@ import datetime
 import os
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import pandas as pd
 import sys
@@ -69,33 +70,21 @@ def main():
         
         # 数据质量检查
         logger.info("数据质量检查...")
-        total_rows = len(df_with_indicators)
         null_counts = df_with_indicators.isnull().sum().sum()
         if null_counts > 0:
             logger.warning(f"发现{null_counts}个空值，将在预处理中处理")
         
-        # 准备所有股票的训练数据
-        X_sequence, y, stock_codes, dates = preprocessor.prepare_all_stocks(df_with_indicators)
+        # 一站式数据准备和模型拟合
+        X_sequence_scaled, y_scaled, stock_codes, dates = preprocessor.prepare_and_fit(df_with_indicators)
         
-        if len(X_sequence) == 0:
+        if len(X_sequence_scaled) == 0:
             logger.error("没有有效的训练数据，请检查数据质量和参数设置")
             return
             
-        logger.info(f"数据预处理完成: 获得{len(X_sequence)}个样本，{len(stock_codes)}支股票")
-        logger.info(f"时序数据维度: X_sequence={X_sequence.shape}, y={y.shape}")
+        logger.info(f"数据预处理完成: 获得{len(X_sequence_scaled)}个样本，{len(stock_codes)}支股票")
+        logger.info(f"时序数据维度: X_sequence={X_sequence_scaled.shape}, y={y_scaled.shape}")
 
-        # ====================== 4. 拟合缩放器 ======================
-        logger.info("====== 拟合数据缩放器 ======")
-        preprocessor.fit_scalers(X_sequence, y)
-        logger.info("数据缩放器拟合完成")
-
-        # ====================== 5. 转换数据 ======================
-        logger.info("====== 转换数据 ======")
-        X_sequence_scaled = preprocessor.transform_features(X_sequence)
-        y_scaled = preprocessor.transform_target(y)
-        logger.info(f"数据转换完成: X_scaled={X_sequence_scaled.shape}, y_scaled={y_scaled.shape}")
-
-        # ====================== 6. 创建训练测试集 ======================
+        # ====================== 4. 创建训练测试集 ======================
         logger.info("====== 创建训练测试集 ======")
         X_train, X_test, y_train, y_test = preprocessor.create_train_test_split(
             X_sequence_scaled, y_scaled, split_method='time_series'
@@ -104,27 +93,29 @@ def main():
         if len(X_train) < 10:
             logger.error("训练数据不足，请增加数据量或减少测试比例")
             return
+            
+        if len(X_test) == 0:
+            logger.error("测试数据为空，请检查数据质量和参数设置")
+            return
 
         logger.info(f"数据分割完成:")
-        logger.info(f"  训练集: {len(X_train)}个样本 ({len(X_train)/len(X_sequence)*100:.1f}%)")
-        logger.info(f"  测试集: {len(X_test)}个样本 ({len(X_test)/len(X_sequence)*100:.1f}%)")
+        logger.info(f"  训练集: {len(X_train)}个样本 ({len(X_train)/len(X_sequence_scaled)*100:.1f}%)")
+        logger.info(f"  测试集: {len(X_test)}个样本 ({len(X_test)/len(X_sequence_scaled)*100:.1f}%)")
 
-        # ====================== 7. 训练混合模型 ======================
+        # ====================== 5. 训练混合模型 ======================
         logger.info("====== 开始训练混合模型 ======")
         model = HybridPredictor()
         
-
         training_results = model.fit(
-            X_static=None, 
             X_sequence=X_train, 
             y=y_train
         )
         
         logger.info("模型训练完成")
 
-        # ====================== 8. 评估模型 ======================
+        # ====================== 6. 评估模型 ======================
         logger.info("====== 评估模型性能 ======")
-        evaluation_results = model.evaluate(None, X_test, y_test)
+        evaluation_results = model.evaluate(X_test, y_test)
         
         logger.info("模型评估结果:")
         for metric, value in evaluation_results.items():
@@ -133,9 +124,9 @@ def main():
             else:
                 logger.info(f"  {metric}: {value}")
 
-        # 生成T+1股票推荐
+        # ====================== 7. 生成T+1股票推荐
         logger.info("生成T+1股票推荐...")
-        test_predictions = model.predict(None, X_test)
+        test_predictions = model.predict(X_test)
         
         # 准备测试集股票代码
         test_stock_codes = stock_codes[len(X_train):]
@@ -161,7 +152,7 @@ def main():
         for rank, (code, score) in enumerate(recommendations, 1):
             logger.info(f"{rank}. {code}: 预测收益率 {score:.4f}")
 
-        # ====================== 9. 保存预处理器和模型 ======================
+        # ====================== 8. 保存预处理器和模型 ======================
         logger.info("====== 保存模型和预处理器 ======")
         os.makedirs('models', exist_ok=True)
         
@@ -175,10 +166,43 @@ def main():
         logger.info("====== 训练流程完成 ======")
         
         # 测试模式下打印关键信息
-        logger.info("=== 测试模式总结 ===")
+        # 初始化交易策略
+        from src.strategy.trading_strategy import TradingStrategy
+        strategy = TradingStrategy()
+        
+        # 获取今日市场数据（此处简化处理，实际应获取实时数据）
+        # 为演示，使用最近一个交易日的数据作为当前数据
+        latest_date = max(dates)
+        current_market_data = {
+            code: df_with_indicators[df_with_indicators['ts_code'] == code]
+            for code in latest_predictions['stock_code'].unique()
+        }
+        
+        # 模拟持仓（实际应从交易记录获取）
+        portfolio = {
+            row['stock_code']: (df[df['ts_code'] == row['stock_code']]['close'].iloc[-2], 100) 
+            for _, row in latest_predictions.iterrows()
+        }
+        
+        # 生成卖出建议
+        sell_recommendations = strategy.generate_sell_recommendations(
+            portfolio=portfolio,
+            market_data=current_market_data,
+            market_trend='neutral'
+        )
+        
+        # 输出卖出建议
+        logger.info("\n=== T+1卖出建议 ===")
+        if sell_recommendations:
+            for i, rec in enumerate(sell_recommendations, 1):
+                logger.info(f"{i}. {rec['stock_code']}: 当前价{rec['current_price']:.2f}, 收益率{rec['profit_rate']:.2%}, 理由: {rec['reason']}")
+        else:
+            logger.info("暂无卖出建议")
+
+        logger.info(f"=== 测试模式总结 ===")
         logger.info(f"使用的股票: {stock_codes[:3]}...")
         logger.info(f"数据时间范围: {min(dates)} 到 {max(dates)}")
-        logger.info(f"最终样本数: {len(X_sequence)}")
+        logger.info(f"最终样本数: {len(X_sequence_scaled)}")
         logger.info("测试运行成功完成！")
 
     except Exception as e:

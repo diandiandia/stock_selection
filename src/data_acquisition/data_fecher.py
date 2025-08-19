@@ -27,7 +27,7 @@ class DataFetcher:
         pass
 
     @abstractmethod
-    def batch_fetch_historical_data(self, df_stock_codes:pd.DataFrame, start_date:str, end_date:str)->list[pd.DataFrame]:
+    def batch_fetch_historical_data(self, df_stock_codes:pd.DataFrame, start_date:str, end_date:str, save:bool=True)->list[pd.DataFrame]:
         pass
 
     @abstractmethod

@@ -109,11 +109,11 @@ class BaostockDataFetcher(DataFetcher):
         self.data_saver.save(df, 'stock_daily')
         return df
 
-    def batch_fetch_historical_data(self, df_stock_codes: pd.DataFrame, start_date: str, end_date: str) -> list[pd.DataFrame]:
+    def batch_fetch_historical_data(self, df_stock_codes: pd.DataFrame, start_date: str, end_date: str, save:bool=True) -> list[pd.DataFrame]:
         """批量获取股票历史数据"""
         df_all_list = []
         for stock_code in df_stock_codes['ts_code']:
-            df = self.get_history_stock_data(stock_code, start_date, end_date)
+            df = self.get_history_stock_data(stock_code, start_date, end_date, save)
             if not df.empty:
                 df_all_list.append(df)
             else:

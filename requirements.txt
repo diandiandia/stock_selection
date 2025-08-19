@@ -13,6 +13,7 @@ baostock
 scikit-learn
 xgboost
 lightgbm
+statsmodels
 
 # 深度学习
 torch

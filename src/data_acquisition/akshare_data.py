@@ -125,6 +125,9 @@ class AkshareDataFetcher(DataFetcher):
         ts_code = stock_code
         stock_code = get_ts_code(stock_code)
         start_date = get_new_trade_date(self.data_saver, 'stock_daily', ts_code,start_date)
+        if pd.to_datetime(start_date) > pd.to_datetime(end_date):
+            self.logger.warning('开始日期不能大于结束日期')
+            return pd.DataFrame()
 
         df = ak.stock_zh_a_hist(symbol=stock_code, period="daily", start_date=start_date, end_date=end_date, adjust="qfq")
         if df is not None and not df.empty:
@@ -169,14 +172,14 @@ class AkshareDataFetcher(DataFetcher):
         else:
             return pd.DataFrame()
        
-    def batch_fetch_historical_data(self, df_stock_codes:pd.DataFrame, start_date:str, end_date:str) ->list[pd.DataFrame]:
+    def batch_fetch_historical_data(self, df_stock_codes:pd.DataFrame, start_date:str, end_date:str, save:bool=True) ->list[pd.DataFrame]:
         '''
         批量获取股票历史数据
         '''
         df_all_list = []
         for stock_code in df_stock_codes['ts_code']:
             time.sleep(random.random())  # 随机休眠0-2秒，防止被封IP
-            df = self.get_history_stock_data(stock_code, start_date, end_date)
+            df = self.get_history_stock_data(stock_code, start_date, end_date, save)
             if not df.empty:
                 df_all_list.append(df)
             else:
