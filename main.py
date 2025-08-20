@@ -32,9 +32,9 @@ def main():
         logger.info("正常模式：使用3年数据")
         
         fetcher = AkshareDataFetcher()
-        # stock_codes = fetcher.get_stock_codes_by_symbol()
-        # logger.info(f"获取股票列表完成: 共{len(stock_codes)}支股票")
-        # fetcher.batch_fetch_historical_data(stock_codes, start_date, end_date)
+        stock_codes = fetcher.get_stock_codes_by_symbol()
+        logger.info(f"获取股票列表完成: 共{len(stock_codes)}支股票")
+        fetcher.batch_fetch_historical_data(stock_codes, start_date, end_date)
 
         df = fetcher.get_all_historical_data_from_db('stock_daily', start_date=start_date, end_date=end_date)
         
@@ -170,7 +170,7 @@ def main():
         from src.strategy.trading_strategy import TradingStrategy
         strategy = TradingStrategy()
         
-        # 获取今日市场数据（此处简化处理，实际应获取实时数据）
+        # 获取今日市场数据（此处简化处理，实际应获取实时数据） 
         # 为演示，使用最近一个交易日的数据作为当前数据
         latest_date = max(dates)
         current_market_data = {

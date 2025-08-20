@@ -57,12 +57,12 @@ class HybridPredictor:
             },
             
             # GRU配置 - 优化网络结构
-            'gru_units': [256, 128, 64],
+            'gru_units': [64, 32],
             'dropout_rate': 0.4,
             'recurrent_dropout': 0.3,
-            'batch_size': 32,
+            'batch_size': 128,
             # 'epochs': 100,
-            'epochs': 1, # 测试时设置为1以加快速度
+            'epochs': 50, # 测试时设置为1以加快速度
             'learning_rate': 0.001,
             'patience': 15,
             
@@ -108,7 +108,7 @@ class HybridPredictor:
             x = BatchNormalization()(x)
             x = Dropout(self.config['dropout_rate'])(x)
         
-        # 全连接层 - 改进结构
+        # 全连接层
         x = Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-4))(x)
         x = BatchNormalization()(x)
         x = Dropout(self.config['dropout_rate'])(x)
@@ -125,19 +125,9 @@ class HybridPredictor:
         
         model = Model(inputs=inputs, outputs=outputs)
         
-        # 编译模型 - 添加学习率调度
-        initial_learning_rate = self.config['learning_rate']
-        lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-            initial_learning_rate,
-            decay_steps=1000,
-            decay_rate=0.95,
-            staircase=True
-        )
+        # 使用固定学习率而不是学习率调度器
+        optimizer = Adam(learning_rate=self.config['learning_rate'])
         
-        optimizer = Adam(
-            learning_rate=lr_schedule,
-            clipnorm=1.0
-        )
         model.compile(
             optimizer=optimizer,
             loss='mse',
