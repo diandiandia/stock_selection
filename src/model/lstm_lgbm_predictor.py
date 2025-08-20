@@ -182,8 +182,7 @@ class LSTMLGBMPredictor:
             X_static_last, 
             y,
             eval_set=[(X_static_last, y)],
-            callbacks=[early_stopping(10)],
-            verbose=False
+            callbacks=[early_stopping(10)]
         )
         
         # 训练LSTM模型
@@ -256,7 +255,7 @@ class LSTMLGBMPredictor:
         
         # 获取两个模型的预测
         lgbm_pred = self.lgbm_model.predict(X_static)
-        lstm_pred = self.lstm_model.predict(X_sequence, verbose=0).flatten()
+        lstm_pred = self.lstm_model.predict(X_sequence).flatten()
         
         # 使用网格搜索找到最优Ridge参数
         predictions = np.column_stack([lgbm_pred, lstm_pred])
@@ -324,7 +323,7 @@ class LSTMLGBMPredictor:
         lgbm_pred = self.lgbm_model.predict(X_static_last)
         
         # LSTM预测
-        lstm_pred = self.lstm_model.predict(X_sequence, verbose=0).flatten()
+        lstm_pred = self.lstm_model.predict(X_sequence).flatten()
         
         # 集成预测
         if self.config['ensemble_method'] == 'weighted':
