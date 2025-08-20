@@ -57,14 +57,13 @@ class HybridPredictor:
             },
             
             # GRU配置 - 优化网络结构
-            'gru_units': [64, 32],
-            'dropout_rate': 0.4,
-            'recurrent_dropout': 0.3,
-            'batch_size': 128,
-            # 'epochs': 100,
-            'epochs': 50, # 测试时设置为1以加快速度
-            'learning_rate': 0.001,
-            'patience': 15,
+        'gru_units': [32],  # 简化为单层GRU
+        'dropout_rate': 0.3,  # 降低dropout率
+        'recurrent_dropout': 0.2,  # 降低循环dropout率
+        'batch_size': 64,  # 减小batch size
+        'epochs': 100,  # 恢复完整训练轮数
+        'learning_rate': 0.001,
+        'patience': 10,  # 减少早停耐心
             
             # 集成配置
             'ensemble_method': 'weighted',  # 'weighted' 或 'stacking'
@@ -72,8 +71,8 @@ class HybridPredictor:
             
             # 训练配置
             'validation_split': 0.15,
-            'early_stopping_patience': 20,
-            'reduce_lr_patience': 8,
+            'early_stopping_patience': 10,  # 减少早停耐心
+            'reduce_lr_patience': 5,  # 减少学习率调度耐心
             'min_lr': 1e-7
         }
     
@@ -85,10 +84,10 @@ class HybridPredictor:
         """构建改进的GRU模型"""
         inputs = Input(shape=input_shape, name='sequence_input')
         
-        # 第一层GRU
+        # 单层GRU
         x = GRU(
             self.config['gru_units'][0],
-            return_sequences=True,
+            return_sequences=False,  # 修改为False，因为只有一层
             dropout=self.config['dropout_rate'],
             recurrent_dropout=self.config['recurrent_dropout'],
             kernel_regularizer=tf.keras.regularizers.l2(1e-4)
@@ -96,29 +95,13 @@ class HybridPredictor:
         x = BatchNormalization()(x)
         x = Dropout(self.config['dropout_rate'])(x)
         
-        # 第二层GRU
-        if len(self.config['gru_units']) > 1:
-            x = GRU(
-                self.config['gru_units'][1],
-                return_sequences=False,
-                dropout=self.config['dropout_rate'],
-                recurrent_dropout=self.config['recurrent_dropout'],
-                kernel_regularizer=tf.keras.regularizers.l2(1e-4)
-            )(x)
-            x = BatchNormalization()(x)
-            x = Dropout(self.config['dropout_rate'])(x)
-        
-        # 全连接层
-        x = Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-4))(x)
+        # 简化的全连接层
+        x = Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-4))(x)
         x = BatchNormalization()(x)
         x = Dropout(self.config['dropout_rate'])(x)
         
-        x = Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-4))(x)
-        x = BatchNormalization()(x)
-        x = Dropout(self.config['dropout_rate'] / 2)(x)
-        
         x = Dense(32, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-4))(x)
-        x = Dropout(self.config['dropout_rate'] / 4)(x)
+        x = Dropout(self.config['dropout_rate'] / 2)(x)
         
         # 输出层
         outputs = Dense(1, activation='linear', name='output')(x)
@@ -255,24 +238,37 @@ class HybridPredictor:
     def _optimize_ensemble_weights(self, X_static: np.ndarray, 
                                   X_sequence: np.ndarray, 
                                   y: np.ndarray):
-        """优化集成权重"""
-        from sklearn.linear_model import LinearRegression
+        """优化集成权重 - 使用Ridge Regression允许负权重"""
+        from sklearn.linear_model import Ridge
+        from sklearn.model_selection import GridSearchCV
         
         # 获取两个模型的预测
         xgb_pred = self.xgb_model.predict(X_static)
         gru_pred = self.gru_model.predict(X_sequence, verbose=0).flatten()
         
-        # 使用线性回归找到最优权重
+        # 使用网格搜索找到最优Ridge参数
         predictions = np.column_stack([xgb_pred, gru_pred])
         
-        # 限制权重在合理范围内
-        lr = LinearRegression(fit_intercept=False)
-        lr.fit(predictions, y)
+        # 网格搜索优化Ridge回归参数
+        param_grid = {'alpha': [0.1, 1.0, 10.0, 100.0]}
+        ridge = Ridge(fit_intercept=False)
+        grid_search = GridSearchCV(ridge, param_grid, cv=5, scoring='neg_mean_squared_error')
+        grid_search.fit(predictions, y)
         
-        # 归一化权重
-        weights = lr.coef_
-        weights = np.clip(weights, 0.1, 0.9)  # 避免极端权重
-        weights = weights / np.sum(weights)
+        # 使用最优参数进行权重优化
+        best_ridge = grid_search.best_estimator_
+        best_ridge.fit(predictions, y)
+        
+        # 获取权重
+        weights = best_ridge.coef_
+        
+        # 允许负权重，但进行归一化
+        weights_sum = np.sum(np.abs(weights))
+        if weights_sum < 1e-6:
+            weights = np.array([0.5, 0.5])
+        else:
+            # 归一化权重
+            weights = weights / weights_sum
         
         self.ensemble_weights = {
             'xgb': weights[0],
@@ -331,13 +327,14 @@ class HybridPredictor:
         return final_pred
 
     @_validate_input_data  
-    def evaluate(self, X_sequence: np.ndarray, y: np.ndarray) -> Dict[str, float]:
+    def evaluate(self, X_sequence: np.ndarray, y: np.ndarray, dates: Optional[np.ndarray] = None) -> Dict[str, float]:
         """
-        评估模型性能
+        评估模型性能 - 包含金融指标
         
         Args:
             X_sequence: 时序特征，形状为 (samples, timesteps, features)
             y: 真实值，形状为 (samples,)
+            dates: 可选的日期数组，用于计算时间序列指标
             
         Returns:
             评估指标字典
@@ -347,12 +344,12 @@ class HybridPredictor:
         
         predictions = self.predict(X_sequence)
         
-        # 计算评估指标
+        # 基本统计指标
         mse = mean_squared_error(y, predictions)
         mae = mean_absolute_error(y, predictions)
         rmse = np.sqrt(mse)
         
-        # 方向准确率
+        # 方向准确性
         actual_direction = np.sign(y)
         predicted_direction = np.sign(predictions)
         direction_accuracy = np.mean(actual_direction == predicted_direction)
@@ -378,7 +375,39 @@ class HybridPredictor:
         # 计算相关系数
         correlation = np.corrcoef(y, predictions)[0, 1] if len(y) > 1 else 0.0
         
-        return {
+        # 计算金融指标
+        # 夏普比率 (假设无风险收益率为0)
+        returns = predictions
+        sharpe_ratio = np.mean(returns) / np.std(returns) if np.std(returns) > 0 else 0.0
+        
+        # 最大回撤
+        cumulative_returns = np.cumsum(returns)
+        running_max = np.maximum.accumulate(cumulative_returns)
+        drawdown = cumulative_returns - running_max
+        max_drawdown = np.min(drawdown) if len(drawdown) > 0 else 0.0
+        
+        # 信息比率 (相对于实际收益率)
+        tracking_error = np.std(predictions - y)
+        information_ratio = np.mean(predictions - y) / tracking_error if tracking_error > 0 else 0.0
+        
+        # 预测稳定性 (预测标准差与实际标准差的比率)
+        std_ratio = pred_std / actual_std if actual_std > 0 else 0.0
+        
+        # 年化收益率
+        annual_return = np.mean(returns) * 252  # 假设一年252个交易日
+        
+        # 年化波动率
+        annual_volatility = np.std(returns) * np.sqrt(252)
+        
+        # Calmar比率 (年化收益率/最大回撤)
+        calmar_ratio = annual_return / abs(max_drawdown) if max_drawdown < 0 else np.inf
+        
+        # Sortino比率 (年化收益率/下行标准差)
+        negative_returns = returns[returns < 0]
+        downside_deviation = np.std(negative_returns) if len(negative_returns) > 0 else 0.0
+        sortino_ratio = annual_return / downside_deviation if downside_deviation > 0 else np.inf
+        
+        metrics = {
             'mse': mse,
             'mae': mae,
             'rmse': rmse,
@@ -390,8 +419,34 @@ class HybridPredictor:
             'actual_mean': actual_mean,
             'actual_std': actual_std,
             'correlation': correlation,
+            'sharpe_ratio': sharpe_ratio,
+            'max_drawdown': max_drawdown,
+            'information_ratio': information_ratio,
+            'prediction_stability': std_ratio,
+            'annual_return': annual_return,
+            'annual_volatility': annual_volatility,
+            'calmar_ratio': calmar_ratio,
+            'sortino_ratio': sortino_ratio,
             'sample_count': len(y)
         }
+        
+        # 如果提供了日期，则计算时间序列相关指标
+        if dates is not None:
+            # 计算滚动相关性
+            df = pd.DataFrame({
+                'date': dates,
+                'actual': y,
+                'predicted': predictions
+            })
+            df['date'] = pd.to_datetime(df['date'])
+            df = df.sort_values('date')
+            
+            # 30天滚动相关性
+            df['rolling_corr'] = df['actual'].rolling(window=30).corr(df['predicted'])
+            metrics['rolling_correlation_mean'] = df['rolling_corr'].mean()
+            metrics['rolling_correlation_std'] = df['rolling_corr'].std()
+        
+        return metrics
     
     def get_model_summary(self) -> Dict[str, any]:
         """

@@ -254,7 +254,7 @@ class TechnicalIndicators:
         
         if 'ts_code' in self._df.columns:
             groups = [group for _, group in self._df.groupby('ts_code')]
-            with ThreadPoolExecutor(max_workers=4) as executor:  # 调整workers
+            with ThreadPoolExecutor(max_workers=10) as executor:  # 调整workers
                 results = list(executor.map(compute_group, groups))
             result_df = pd.concat(results)
         else:

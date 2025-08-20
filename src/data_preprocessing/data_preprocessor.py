@@ -179,7 +179,7 @@ class DataPreprocessor:
         
         # 步骤1: 移除包含太多NaN的特征（向量化优化）
         nan_ratios = df[feature_cols].isna().mean()
-        valid_features = nan_ratios[nan_ratios < 0.1].index.tolist()
+        valid_features = nan_ratios[nan_ratios < 0.2].index.tolist()  # 放宽缺失值阈值至0.2
         self.logger.info(f"缺失值过滤后特征数量: {len(valid_features)} (过滤了 {len(feature_cols) - len(valid_features)} 个)")
         
         # 步骤2: 移除多重共线性特征（跳过特征重要性选择，因为没有训练数据）
@@ -192,7 +192,7 @@ class DataPreprocessor:
         return final_features
     
     def _remove_multicollinearity(self, feature_df: pd.DataFrame) -> List[str]:
-        """使用VIF移除多重共线性特征"""
+        """使用VIF移除多重共线性特征 - 优化相关性阈值和VIF阈值"""
         import warnings
         from statsmodels.stats.outliers_influence import variance_inflation_factor
         
@@ -203,14 +203,14 @@ class DataPreprocessor:
         # 预过滤高相关特征（优化1）
         corr_matrix = features.corr().abs()
         upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
-        to_drop = [column for column in upper.columns if any(upper[column] > 0.85)]
+        to_drop = [column for column in upper.columns if any(upper[column] > 0.9)]  # 保持相关性阈值为0.9
         if to_drop:
-            self.logger.info(f"预过滤高相关特征: {len(to_drop)} 个 (相关系数>0.85)")
+            self.logger.info(f"预过滤高相关特征: {len(to_drop)} 个 (相关系数>0.9)")
         features = features.drop(columns=to_drop)
         
         # 计算VIF并迭代移除高VIF特征（并行计算优化）
         iteration = 0
-        while len(features.columns) > 0 and len(selected_features) < 20:
+        while len(features.columns) > 0 and len(selected_features) < 30:
             iteration += 1
             vif_data = pd.DataFrame()
             vif_data["feature"] = features.columns
@@ -235,11 +235,11 @@ class DataPreprocessor:
             # 记录VIF统计信息
             self.logger.debug(f"第{iteration}轮VIF计算: 最小VIF={vif_data['VIF'].iloc[0]:.2f}, 最大VIF={vif_data['VIF'].iloc[-1]:.2f}")
             
-            # 如果最小VIF大于10，没有可保留的特征
-            if vif_data["VIF"].iloc[0] > 10:
+            # 如果最小VIF大于15，没有可保留的特征
+            if vif_data["VIF"].iloc[0] > 15:  # 保持VIF阈值为15
                 if not selected_features:
                     selected_features.append(vif_data["feature"].iloc[0])
-                    self.logger.info(f"所有VIF>10，保留最小VIF特征: {vif_data['feature'].iloc[0]}")
+                    self.logger.info(f"所有VIF>15，保留最小VIF特征: {vif_data['feature'].iloc[0]}")
                 break
             
             # 添加最小VIF特征
@@ -251,8 +251,10 @@ class DataPreprocessor:
         
         self.logger.info(f"多重共线性检测完成: 最终选择 {len(selected_features)} 个特征")
         
-        # 按原始顺序返回
-        return [col for col in feature_df.columns if col in selected_features]
+        # 按原始顺序返回，最多保留30个特征
+        selected_features_limited = selected_features[:30]  # 增加特征数量限制至30
+        self.logger.info(f"特征数量限制: 从 {len(selected_features)} 个减少到 {len(selected_features_limited)} 个")
+        return [col for col in feature_df.columns if col in selected_features_limited]
     
     def prepare_single_stock(self, df: pd.DataFrame, ts_code: str, features: List[str]) -> Tuple[np.ndarray, np.ndarray]:
         """

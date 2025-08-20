@@ -11,7 +11,8 @@ from src.data_acquisition.tushare_data import TushareDataFetcher
 from src.utils.helpers import get_latest_trade_date
 from src.data_preprocessing.technical_indicators import TechnicalIndicators
 from src.data_preprocessing.data_preprocessor import DataPreprocessor
-from src.model.hybrid_predictor import HybridPredictor
+# 导入新的LSTM+LightGBM混合模型
+from src.model.lstm_lgbm_predictor import LSTMLGBMPredictor
 from src.utils.log_helper import LogHelper
 
 # 配置日志
@@ -28,13 +29,13 @@ def main():
         end_date = get_latest_trade_date()
         
         # 正常模式：使用3年数据
-        start_date = (datetime.datetime.strptime(end_date, '%Y%m%d').date() - datetime.timedelta(days=365*3)).strftime('%Y%m%d')
+        start_date = (datetime.datetime.strptime(end_date, '%Y%m%d').date() - datetime.timedelta(days=365*10)).strftime('%Y%m%d')
         logger.info("正常模式：使用3年数据")
         
         fetcher = AkshareDataFetcher()
-        stock_codes = fetcher.get_stock_codes_by_symbol()
-        logger.info(f"获取股票列表完成: 共{len(stock_codes)}支股票")
-        fetcher.batch_fetch_historical_data(stock_codes, start_date, end_date)
+        # stock_codes = fetcher.get_stock_codes_by_symbol()
+        # logger.info(f"获取股票列表完成: 共{len(stock_codes)}支股票")
+        # fetcher.batch_fetch_historical_data(stock_codes, start_date, end_date)
 
         df = fetcher.get_all_historical_data_from_db('stock_daily', start_date=start_date, end_date=end_date)
         
@@ -102,9 +103,10 @@ def main():
         logger.info(f"  训练集: {len(X_train)}个样本 ({len(X_train)/len(X_sequence_scaled)*100:.1f}%)")
         logger.info(f"  测试集: {len(X_test)}个样本 ({len(X_test)/len(X_sequence_scaled)*100:.1f}%)")
 
-        # ====================== 5. 训练混合模型 ======================
-        logger.info("====== 开始训练混合模型 ======")
-        model = HybridPredictor()
+        # ====================== 5. 训练LSTM+LightGBM混合模型 ======================
+        logger.info("====== 开始训练LSTM+LightGBM混合模型 ======")
+        # 使用新的LSTM+LightGBM混合模型
+        model = LSTMLGBMPredictor()
         
         training_results = model.fit(
             X_sequence=X_train, 
@@ -124,7 +126,7 @@ def main():
             else:
                 logger.info(f"  {metric}: {value}")
 
-        # ====================== 7. 生成T+1股票推荐
+        # ====================== 7. 生成T+1股票推荐 ======================
         logger.info("生成T+1股票推荐...")
         test_predictions = model.predict(X_test)
         
@@ -139,8 +141,8 @@ def main():
         latest_predictions = predictions_df.groupby('stock_code').tail(1)
         
         # 生成推荐
-        pred_dict = dict(zip(latest_predictions['stock_code'], latest_predictions['prediction']))
-        recommendations = model.get_recommendations(pred_dict, top_n=10)
+        # 使用新的get_recommendations方法
+        recommendations_df = model.get_recommendations(X_test, stock_codes=test_stock_codes, top_n=10)
         
         # 计算下一个交易日
         latest_date = max(dates)
@@ -149,8 +151,8 @@ def main():
         # 显示推荐结果
         logger.info(f"\n=== T+1 股票推荐 (交易日期: {next_trading_day}) ===")
         logger.info("前10增长股票:")
-        for rank, (code, score) in enumerate(recommendations, 1):
-            logger.info(f"{rank}. {code}: 预测收益率 {score:.4f}")
+        for rank, (_, row) in enumerate(recommendations_df.iterrows(), 1):
+            logger.info(f"{rank}. {row['ts_code']}: 预测收益率 {row['prediction']:.4f}")
 
         # ====================== 8. 保存预处理器和模型 ======================
         logger.info("====== 保存模型和预处理器 ======")
@@ -158,7 +160,8 @@ def main():
         
         try:
             preprocessor.save_preprocessor('models/data_preprocessor.joblib')
-            model.save_models('models/hybrid_model')
+            # 保存新的LSTM+LightGBM模型
+            model.save_models('models/lstm_lgbm_model')
             logger.info("模型和预处理器保存成功")
         except Exception as e:
             logger.error(f"保存模型时出错: {str(e)}")
