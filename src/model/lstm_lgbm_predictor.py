@@ -30,7 +30,7 @@ class LSTMLGBMPredictor:
         self.config = config or self._get_default_config()
         self.lgbm_model = None
         self.lstm_model = None
-        self.ensemble_weights = {'lgbm': 0.5, 'lstm': 0.5}
+        self.ensemble_weights = {'lgbm': 0.3, 'lstm': 0.7}
         self.feature_importance_cache = {}
         
     def _get_default_config(self) -> Dict:
@@ -40,8 +40,8 @@ class LSTMLGBMPredictor:
             'test_size': 0.2,
             # LightGBM配置（优化：降低复杂度）
             'lgbm_params': {
-                'n_estimators': 1000,  # 减少树数量
-                'learning_rate': 0.05,  # 提高学习率以加速收敛
+                'n_estimators': 2000,  # 减少树数量
+                'learning_rate': 0.02,  # 提高学习率以加速收敛
                 'max_depth': 8,  # 降低深度
                 'num_leaves': 64,  # 减少叶子节点
                 'min_child_samples': 20,
@@ -111,13 +111,7 @@ class LSTMLGBMPredictor:
         
         model = Model(inputs=inputs, outputs=outputs)
         
-        lr_schedule = ExponentialDecay(
-            initial_learning_rate=self.config['learning_rate'],
-            decay_steps=1000,
-            decay_rate=0.9,
-            staircase=True
-        )
-        optimizer = Adam(learning_rate=lr_schedule, clipnorm=1.0)
+        optimizer = Adam(learning_rate=self.config['learning_rate'], clipnorm=1.0)
         
         model.compile(
             optimizer=optimizer,
