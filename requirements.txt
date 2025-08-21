@@ -14,6 +14,7 @@ scikit-learn
 xgboost
 lightgbm
 statsmodels
+shap
 
 # 深度学习
 torch

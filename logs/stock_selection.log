@@ -1,869 +1,183 @@
-2025-08-20 15:55:31 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-20 15:55:31 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-20 15:55:31 - src.data_storage.data_saver - INFO - init saver, file path: ./data\stock_data.db
-2025-08-20 15:55:31 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20220820 and trade_date <= 20250819
-2025-08-20 15:55:33 - __main__ - INFO - 获取数据完成: 20220822至20250819, 共575476条记录, 800支股票
-2025-08-20 15:55:33 - __main__ - INFO - ====== 开始计算技术指标 ======
-2025-08-20 15:55:54 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
-2025-08-20 15:55:54 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
-2025-08-20 15:55:54 - __main__ - INFO - ====== 开始数据预处理 ======
-2025-08-20 15:55:54 - __main__ - INFO - 数据质量检查...
-2025-08-20 15:55:54 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
-2025-08-20 15:55:54 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
-2025-08-20 15:55:54 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
-2025-08-20 15:55:54 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (575476, 48)
-2025-08-20 15:55:55 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
-2025-08-20 15:55:55 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
-2025-08-20 15:55:55 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
-2025-08-20 15:55:55 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
-2025-08-20 15:55:55 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 574676, 均值: 0.0004, 标准差: 0.0255
-2025-08-20 15:55:55 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 575476 条记录
-2025-08-20 15:55:55 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
-2025-08-20 15:55:55 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
-2025-08-20 15:55:55 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
-2025-08-20 15:55:56 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
-2025-08-20 15:55:56 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
-2025-08-20 15:56:01 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 12 个 (相关系数>0.9)
-2025-08-20 16:02:26 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-20 16:02:26 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-20 16:02:26 - src.data_storage.data_saver - INFO - init saver, file path: ./data\stock_data.db
-2025-08-20 16:02:26 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20220820 and trade_date <= 20250819
-2025-08-20 16:02:30 - __main__ - INFO - 获取数据完成: 20220822至20250819, 共575476条记录, 800支股票
-2025-08-20 16:02:30 - __main__ - INFO - ====== 开始计算技术指标 ======
-2025-08-20 16:02:44 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
-2025-08-20 16:02:44 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
-2025-08-20 16:02:44 - __main__ - INFO - ====== 开始数据预处理 ======
-2025-08-20 16:02:44 - __main__ - INFO - 数据质量检查...
-2025-08-20 16:02:44 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
-2025-08-20 16:02:44 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
-2025-08-20 16:02:44 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
-2025-08-20 16:02:44 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (575476, 48)
-2025-08-20 16:02:44 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
-2025-08-20 16:02:44 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
-2025-08-20 16:02:44 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
-2025-08-20 16:02:44 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
-2025-08-20 16:02:45 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 574676, 均值: 0.0004, 标准差: 0.0255
-2025-08-20 16:02:45 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 575476 条记录
-2025-08-20 16:02:45 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
-2025-08-20 16:02:45 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
-2025-08-20 16:02:45 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
-2025-08-20 16:02:45 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
-2025-08-20 16:02:45 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
-2025-08-20 16:02:48 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 12 个 (相关系数>0.9)
-2025-08-20 16:03:30 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-20 16:03:30 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-20 16:03:30 - src.data_storage.data_saver - INFO - init saver, file path: ./data\stock_data.db
-2025-08-20 16:03:30 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20220820 and trade_date <= 20250819
-2025-08-20 16:03:33 - __main__ - INFO - 获取数据完成: 20220822至20250819, 共575476条记录, 800支股票
-2025-08-20 16:03:33 - __main__ - INFO - ====== 开始计算技术指标 ======
-2025-08-20 16:03:46 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
-2025-08-20 16:03:46 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
-2025-08-20 16:03:46 - __main__ - INFO - ====== 开始数据预处理 ======
-2025-08-20 16:03:46 - __main__ - INFO - 数据质量检查...
-2025-08-20 16:03:46 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
-2025-08-20 16:03:46 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
-2025-08-20 16:03:46 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
-2025-08-20 16:03:46 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (575476, 48)
-2025-08-20 16:03:47 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
-2025-08-20 16:03:47 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
-2025-08-20 16:03:47 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
-2025-08-20 16:03:47 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
-2025-08-20 16:03:47 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 574676, 均值: 0.0004, 标准差: 0.0255
-2025-08-20 16:03:47 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 575476 条记录
-2025-08-20 16:03:47 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
-2025-08-20 16:03:47 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
-2025-08-20 16:03:47 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
-2025-08-20 16:03:47 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
-2025-08-20 16:03:48 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
-2025-08-20 16:03:50 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 12 个 (相关系数>0.9)
-2025-08-20 16:09:38 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 24 个特征
-2025-08-20 16:09:38 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 24 个减少到 24 个
-2025-08-20 16:09:38 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 24
-2025-08-20 16:09:38 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性24
-2025-08-20 16:09:38 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MOM', 'CCI', 'ADX', 'MINUS_DI', 'MACD', 'MACD_Hist', 'ATR', 'VOL_MA5', 'OBV', 'CMF', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'StochRSI_K', 'volume_momentum', 'buy_signal_count']
-2025-08-20 16:09:38 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
-2025-08-20 16:09:57 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 50/800 只股票
-2025-08-20 16:10:15 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 100/800 只股票
-2025-08-20 16:10:40 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 150/800 只股票
-2025-08-20 16:10:56 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 200/800 只股票
-2025-08-20 16:11:12 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 250/800 只股票
-2025-08-20 16:11:27 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 300/800 只股票
-2025-08-20 16:11:41 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 350/800 只股票
-2025-08-20 16:11:55 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 400/800 只股票
-2025-08-20 16:12:11 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 450/800 只股票
-2025-08-20 16:12:25 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 500/800 只股票
-2025-08-20 16:12:39 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 550/800 只股票
-2025-08-20 16:12:53 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 600/800 只股票
-2025-08-20 16:13:07 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 650/800 只股票
-2025-08-20 16:13:20 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 700/800 只股票
-2025-08-20 16:13:33 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 750/800 只股票
-2025-08-20 16:13:46 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 800/800 只股票
-2025-08-20 16:13:47 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
-2025-08-20 16:13:47 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
-2025-08-20 16:13:47 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 558676
-2025-08-20 16:13:47 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 24
-2025-08-20 16:13:47 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
-2025-08-20 16:13:47 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
-2025-08-20 16:13:47 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(558676, 20, 24), y=(558676,)
-2025-08-20 16:13:47 - src.data_preprocessing.data_preprocessor - INFO - 重塑后数据形状: (11173520, 24)
-2025-08-20 16:13:47 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
-2025-08-20 16:13:52 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
-2025-08-20 16:13:52 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
-2025-08-20 16:14:04 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 13606124, 平均每特征 566921.8
-2025-08-20 16:14:04 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
-2025-08-20 16:14:10 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
-2025-08-20 16:14:10 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
-2025-08-20 16:14:10 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
-2025-08-20 16:14:10 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0788, 0.0775]
-2025-08-20 16:14:10 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 9901/558676 个异常值
-2025-08-20 16:14:10 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
-2025-08-20 16:14:13 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
-2025-08-20 16:14:13 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
-2025-08-20 16:14:21 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得558676个样本，558676支股票
-2025-08-20 16:14:21 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X=(558676, 20, 24), y=(558676,)
-2025-08-20 16:14:21 - __main__ - INFO - 数据预处理完成: 获得558676个样本，558676支股票
-2025-08-20 16:14:21 - __main__ - INFO - 时序数据维度: X_sequence=(558676, 20, 24), y=(558676,)
-2025-08-20 16:14:21 - __main__ - INFO - ====== 创建训练测试集 ======
-2025-08-20 16:14:21 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 446940 train, 111736 test samples
-2025-08-20 16:14:21 - __main__ - INFO - 数据分割完成:
-2025-08-20 16:14:21 - __main__ - INFO -   训练集: 446940个样本 (80.0%)
-2025-08-20 16:14:21 - __main__ - INFO -   测试集: 111736个样本 (20.0%)
-2025-08-20 16:14:21 - __main__ - INFO - ====== 开始训练混合模型 ======
-2025-08-20 16:14:21 - src.model.hybrid_predictor - INFO - 开始混合模型训练，样本数量: 446940
-2025-08-20 16:14:21 - src.model.hybrid_predictor - INFO - 输入序列形状: (446940, 20, 24)
-2025-08-20 16:14:21 - src.model.hybrid_predictor - INFO - 训练XGBoost模型...
-2025-08-20 16:14:21 - src.model.hybrid_predictor - INFO - XGBoost input shape: (446940, 24)
-2025-08-20 16:14:43 - src.model.hybrid_predictor - INFO - 训练GRU模型...
-2025-08-20 18:15:03 - src.model.hybrid_predictor - INFO - 优化后的集成权重: {'xgb': np.float32(0.9751721), 'gru': np.float32(-0.02482795)}
-2025-08-20 18:15:03 - src.model.hybrid_predictor - INFO - XGBoost特征重要性计算完成，前5个特征索引: [ 2  7 21 22  9]
-2025-08-20 18:15:03 - src.model.hybrid_predictor - INFO - GRU特征重要性占位符已设置
-2025-08-20 18:15:03 - src.model.hybrid_predictor - INFO - 特征重要性计算完成
-2025-08-20 18:15:03 - src.model.hybrid_predictor - INFO - 混合模型训练完成
-2025-08-20 18:15:03 - src.model.hybrid_predictor - INFO - 训练结果: {'gru_best_epoch': 70, 'gru_final_loss': 0.8182012438774109, 'gru_final_mae': 0.6059444546699524, 'ensemble_weights': {'xgb': np.float32(0.9751721), 'gru': np.float32(-0.02482795)}, 'training_samples': 446940, 'feature_count': 24, 'sequence_length': 20}
-2025-08-20 18:15:03 - __main__ - INFO - 模型训练完成
-2025-08-20 18:15:03 - __main__ - INFO - ====== 评估模型性能 ======
-2025-08-20 18:15:20 - __main__ - INFO - 模型评估结果:
-2025-08-20 18:15:20 - __main__ - INFO -   mse: 1.5935
-2025-08-20 18:15:20 - __main__ - INFO -   mae: 0.8385
-2025-08-20 18:15:20 - __main__ - INFO -   rmse: 1.2623
-2025-08-20 18:15:20 - __main__ - INFO -   r2_score: 0.0199
-2025-08-20 18:15:20 - __main__ - INFO -   direction_accuracy: 0.5240
-2025-08-20 18:15:20 - __main__ - INFO -   profitable_accuracy: 0.4617
-2025-08-20 18:15:20 - __main__ - INFO -   predicted_mean: 0.009785270318388939
-2025-08-20 18:15:20 - __main__ - INFO -   predicted_std: 0.23339326679706573
-2025-08-20 18:15:20 - __main__ - INFO -   actual_mean: 0.0069
-2025-08-20 18:15:20 - __main__ - INFO -   actual_std: 1.2751
-2025-08-20 18:15:20 - __main__ - INFO -   correlation: 0.1460
-2025-08-20 18:15:20 - __main__ - INFO -   sharpe_ratio: 0.041926104575395584
-2025-08-20 18:15:20 - __main__ - INFO -   max_drawdown: -117.42906188964844
-2025-08-20 18:15:20 - __main__ - INFO -   information_ratio: 0.0023
-2025-08-20 18:15:20 - __main__ - INFO -   prediction_stability: 0.1830
-2025-08-20 18:15:20 - __main__ - INFO -   annual_return: 2.465888023376465
-2025-08-20 18:15:20 - __main__ - INFO -   annual_volatility: 3.7050
-2025-08-20 18:15:20 - __main__ - INFO -   calmar_ratio: 0.020998958498239517
-2025-08-20 18:15:20 - __main__ - INFO -   sortino_ratio: 17.509675979614258
-2025-08-20 18:15:20 - __main__ - INFO -   sample_count: 111736.0000
-2025-08-20 18:15:20 - __main__ - INFO - 生成T+1股票推荐...
-2025-08-20 18:15:36 - __main__ - INFO - 
-=== T+1 股票推荐 (交易日期: 20250820) ===
-2025-08-20 18:15:36 - __main__ - INFO - 前10增长股票:
-2025-08-20 18:15:36 - __main__ - INFO - 1. 603486.SH: 预测收益率 0.6522
-2025-08-20 18:15:36 - __main__ - INFO - 2. 688041.SH: 预测收益率 0.4792
-2025-08-20 18:15:36 - __main__ - INFO - 3. 688525.SH: 预测收益率 0.4577
-2025-08-20 18:15:36 - __main__ - INFO - 4. 688520.SH: 预测收益率 0.4193
-2025-08-20 18:15:36 - __main__ - INFO - 5. 603737.SH: 预测收益率 0.4022
-2025-08-20 18:15:36 - __main__ - INFO - 6. 603688.SH: 预测收益率 0.3180
-2025-08-20 18:15:36 - __main__ - INFO - 7. 603290.SH: 预测收益率 0.3078
-2025-08-20 18:15:36 - __main__ - INFO - 8. 688047.SH: 预测收益率 0.2746
-2025-08-20 18:15:36 - __main__ - INFO - 9. 688608.SH: 预测收益率 0.2327
-2025-08-20 18:15:36 - __main__ - INFO - 10. 688303.SH: 预测收益率 0.2088
-2025-08-20 18:15:36 - __main__ - INFO - ====== 保存模型和预处理器 ======
-2025-08-20 18:15:36 - src.data_preprocessing.data_preprocessor - INFO - Preprocessor saved to models/data_preprocessor.joblib
-2025-08-20 18:15:36 - src.model.hybrid_predictor - INFO - 模型已保存至: models/hybrid_model
-2025-08-20 18:15:36 - __main__ - INFO - 模型和预处理器保存成功
-2025-08-20 18:15:36 - __main__ - INFO - ====== 训练流程完成 ======
-2025-08-20 18:15:47 - __main__ - INFO - 
-=== T+1卖出建议 ===
-2025-08-20 18:15:47 - __main__ - INFO - 1. 688521.SH: 当前价127.28, 收益率13.39%, 理由: 达到止盈(13.39%)
-2025-08-20 18:15:47 - __main__ - INFO - 2. 603087.SH: 当前价68.03, 收益率6.95%, 理由: 达到止盈(6.95%)
-2025-08-20 18:15:47 - __main__ - INFO - 3. 688220.SH: 当前价96.57, 收益率5.01%, 理由: 达到止盈(5.01%)
-2025-08-20 18:15:47 - __main__ - INFO - 4. 688582.SH: 当前价79.65, 收益率-8.45%, 理由: 达到止损(-8.45%)
-2025-08-20 18:15:47 - __main__ - INFO - 5. 603259.SH: 当前价90.26, 收益率-6.93%, 理由: 达到止损(-6.93%)
-2025-08-20 18:15:47 - __main__ - INFO - 6. 605589.SH: 当前价31.82, 收益率-4.62%, 理由: 达到止损(-4.62%)
-2025-08-20 18:15:47 - __main__ - INFO - 7. 688318.SH: 当前价150.00, 收益率-3.75%, 理由: 达到止损(-3.75%)
-2025-08-20 18:15:47 - __main__ - INFO - 8. 688180.SH: 当前价45.32, 收益率-3.70%, 理由: 达到止损(-3.70%)
-2025-08-20 18:15:47 - __main__ - INFO - 9. 688235.SH: 当前价234.70, 收益率-3.42%, 理由: 达到止损(-3.42%)
-2025-08-20 18:15:47 - __main__ - INFO - 10. 603606.SH: 当前价52.79, 收益率-3.40%, 理由: 达到止损(-3.40%)
-2025-08-20 18:15:47 - __main__ - INFO - 11. 688052.SH: 当前价175.90, 收益率-3.25%, 理由: 达到止损(-3.25%)
-2025-08-20 18:15:47 - __main__ - INFO - 12. 688981.SH: 当前价89.35, 收益率-3.21%, 理由: 达到止损(-3.21%)
-2025-08-20 18:15:47 - __main__ - INFO - 13. 688375.SH: 当前价61.00, 收益率-3.17%, 理由: 达到止损(-3.17%)
-2025-08-20 18:15:47 - __main__ - INFO - 14. 688234.SH: 当前价66.87, 收益率-3.13%, 理由: 达到止损(-3.13%)
-2025-08-20 18:15:47 - __main__ - INFO - === 测试模式总结 ===
-2025-08-20 18:15:47 - __main__ - INFO - 使用的股票: ['000001.SZ', '000001.SZ', '000001.SZ']...
-2025-08-20 18:15:47 - __main__ - INFO - 数据时间范围: 20220920 到 20250819
-2025-08-20 18:15:47 - __main__ - INFO - 最终样本数: 558676
-2025-08-20 18:15:47 - __main__ - INFO - 测试运行成功完成！
-2025-08-20 18:19:30 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-20 18:19:30 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-20 18:19:30 - src.data_storage.data_saver - INFO - init saver, file path: ./data\stock_data.db
-2025-08-20 18:19:30 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
-2025-08-20 18:19:32 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
-2025-08-20 18:19:32 - __main__ - INFO - ====== 开始计算技术指标 ======
-2025-08-20 18:19:42 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
-2025-08-20 18:19:42 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
-2025-08-20 18:19:42 - __main__ - INFO - ====== 开始数据预处理 ======
-2025-08-20 18:19:42 - __main__ - INFO - 数据质量检查...
-2025-08-20 18:19:42 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
-2025-08-20 18:19:42 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
-2025-08-20 18:19:42 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
-2025-08-20 18:19:42 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
-2025-08-20 18:19:43 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
-2025-08-20 18:19:43 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
-2025-08-20 18:19:43 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
-2025-08-20 18:19:43 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
-2025-08-20 18:19:43 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
-2025-08-20 18:19:43 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 691696 条记录
-2025-08-20 18:19:43 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
-2025-08-20 18:19:43 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
-2025-08-20 18:19:44 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
-2025-08-20 18:19:44 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
-2025-08-20 18:19:44 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
-2025-08-20 18:19:46 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 13 个 (相关系数>0.9)
-2025-08-20 18:28:49 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 23 个特征
-2025-08-20 18:28:49 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 23 个减少到 23 个
-2025-08-20 18:28:49 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 23
-2025-08-20 18:28:49 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性23
-2025-08-20 18:28:49 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MOM', 'ADX', 'MINUS_DI', 'MACD', 'MACD_Hist', 'ATR', 'VOL_MA5', 'OBV', 'CMF', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'StochRSI_K', 'volume_momentum', 'buy_signal_count']
-2025-08-20 18:28:49 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
-2025-08-20 18:29:10 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 50/800 只股票
-2025-08-20 18:29:30 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 100/800 只股票
-2025-08-20 18:29:49 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 150/800 只股票
-2025-08-20 18:30:08 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 200/800 只股票
-2025-08-20 18:30:27 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 250/800 只股票
-2025-08-20 18:30:45 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 300/800 只股票
-2025-08-20 18:31:02 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 350/800 只股票
-2025-08-20 18:31:19 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 400/800 只股票
-2025-08-20 18:31:37 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 450/800 只股票
-2025-08-20 18:31:54 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 500/800 只股票
-2025-08-20 18:32:10 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 550/800 只股票
-2025-08-20 18:32:28 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 600/800 只股票
-2025-08-20 18:32:47 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 650/800 只股票
-2025-08-20 18:33:05 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 700/800 只股票
-2025-08-20 18:33:25 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 750/800 只股票
-2025-08-20 18:33:45 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 800/800 只股票
-2025-08-20 18:33:47 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
-2025-08-20 18:33:47 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
-2025-08-20 18:33:47 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
-2025-08-20 18:33:47 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 23
-2025-08-20 18:33:47 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
-2025-08-20 18:33:47 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
-2025-08-20 18:33:47 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 23), y=(674896,)
-2025-08-20 18:33:47 - src.data_preprocessing.data_preprocessor - INFO - 重塑后数据形状: (13497920, 23)
-2025-08-20 18:33:47 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
-2025-08-20 18:33:55 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
-2025-08-20 18:33:55 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
-2025-08-20 18:34:13 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 16323884, 平均每特征 709734.1
-2025-08-20 18:34:13 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
-2025-08-20 18:34:21 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
-2025-08-20 18:34:21 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
-2025-08-20 18:34:21 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
-2025-08-20 18:34:21 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0815, 0.0800]
-2025-08-20 18:34:21 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 11507/674896 个异常值
-2025-08-20 18:34:21 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
-2025-08-20 18:34:27 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
-2025-08-20 18:34:27 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
-2025-08-20 18:34:39 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
-2025-08-20 18:34:39 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X=(674896, 20, 23), y=(674896,)
-2025-08-20 18:34:39 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
-2025-08-20 18:34:39 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 23), y=(674896,)
-2025-08-20 18:34:39 - __main__ - INFO - ====== 创建训练测试集 ======
-2025-08-20 18:34:39 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
-2025-08-20 18:34:39 - __main__ - INFO - 数据分割完成:
-2025-08-20 18:34:39 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
-2025-08-20 18:34:39 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
-2025-08-20 18:34:39 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
-2025-08-20 18:34:39 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
-2025-08-20 18:34:39 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 23)
-2025-08-20 18:34:39 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
-2025-08-20 18:34:39 - src.model.lstm_lgbm_predictor - INFO - LightGBM input shape: (539916, 23)
-2025-08-20 18:34:39 - __main__ - ERROR - 系统执行失败: fit() got an unexpected keyword argument 'verbose'
+2025-08-21 11:18:15 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 11:18:15 - __main__ - INFO - 正常模式：使用3年数据
+2025-08-21 11:18:15 - src.data_storage.data_saver - INFO - init saver, file path: ./data\stock_data.db
+2025-08-21 11:18:15 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
+2025-08-21 11:18:22 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 11:18:22 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 11:18:51 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
+2025-08-21 11:18:51 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
+2025-08-21 11:18:51 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-21 11:18:51 - __main__ - INFO - 数据质量检查...
+2025-08-21 11:18:51 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
+2025-08-21 11:18:51 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
+2025-08-21 11:18:51 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
+2025-08-21 11:18:51 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
+2025-08-21 11:18:51 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
+2025-08-21 11:18:52 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
+2025-08-21 11:18:52 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
+2025-08-21 11:18:52 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
+2025-08-21 11:18:52 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
+2025-08-21 11:18:52 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 691696 条记录
+2025-08-21 11:18:52 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
+2025-08-21 11:18:52 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
+2025-08-21 11:18:52 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
+2025-08-21 11:18:52 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
+2025-08-21 11:18:53 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
+2025-08-21 11:18:58 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 13 个 (相关系数>0.9)
+2025-08-21 11:28:17 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 23 个特征
+2025-08-21 11:28:17 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 23 个减少到 23 个
+2025-08-21 11:28:17 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 23
+2025-08-21 11:28:17 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性23
+2025-08-21 11:28:17 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MOM', 'ADX', 'MINUS_DI', 'MACD', 'MACD_Hist', 'ATR', 'VOL_MA5', 'OBV', 'CMF', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'StochRSI_K', 'volume_momentum', 'buy_signal_count']
+2025-08-21 11:28:17 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
+2025-08-21 11:28:42 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 50/800 只股票
+2025-08-21 11:29:01 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 100/800 只股票
+2025-08-21 11:29:20 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 150/800 只股票
+2025-08-21 11:29:39 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 200/800 只股票
+2025-08-21 11:30:01 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 250/800 只股票
+2025-08-21 11:30:25 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 300/800 只股票
+2025-08-21 11:30:47 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 350/800 只股票
+2025-08-21 11:31:13 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 400/800 只股票
+2025-08-21 11:31:42 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 450/800 只股票
+2025-08-21 11:32:24 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 500/800 只股票
+2025-08-21 11:33:11 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 550/800 只股票
+2025-08-21 11:33:51 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 600/800 只股票
+2025-08-21 11:34:45 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 650/800 只股票
+2025-08-21 11:35:42 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 700/800 只股票
+2025-08-21 11:36:14 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 750/800 只股票
+2025-08-21 11:36:35 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 800/800 只股票
+2025-08-21 11:36:36 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
+2025-08-21 11:36:36 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
+2025-08-21 11:36:36 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
+2025-08-21 11:36:36 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 23
+2025-08-21 11:36:36 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
+2025-08-21 11:36:36 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
+2025-08-21 11:36:36 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 23), y=(674896,)
+2025-08-21 11:36:36 - src.data_preprocessing.data_preprocessor - INFO - 重塑后数据形状: (13497920, 23)
+2025-08-21 11:36:36 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
+2025-08-21 11:36:43 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
+2025-08-21 11:36:43 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
+2025-08-21 11:36:59 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 16323884, 平均每特征 709734.1
+2025-08-21 11:36:59 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
+2025-08-21 11:37:13 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
+2025-08-21 11:37:13 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
+2025-08-21 11:37:13 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
+2025-08-21 11:37:13 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0815, 0.0800]
+2025-08-21 11:37:13 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 11507/674896 个异常值
+2025-08-21 11:37:13 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
+2025-08-21 11:37:23 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
+2025-08-21 11:37:23 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
+2025-08-21 11:37:57 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
+2025-08-21 11:37:57 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X=(674896, 20, 23), y=(674896,)
+2025-08-21 11:37:57 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
+2025-08-21 11:37:57 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 23), y=(674896,)
+2025-08-21 11:37:57 - __main__ - INFO - ====== 创建训练测试集 ======
+2025-08-21 11:37:57 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
+2025-08-21 11:37:57 - __main__ - INFO - 数据分割完成:
+2025-08-21 11:37:57 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
+2025-08-21 11:37:57 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
+2025-08-21 11:37:57 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
+2025-08-21 11:37:57 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
+2025-08-21 11:37:57 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 23)
+2025-08-21 11:38:03 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
+2025-08-21 11:38:12 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...
+2025-08-21 11:54:52 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 11:54:52 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 11:54:52 - src.data_storage.data_saver - INFO - init saver, file path: ./data\stock_data.db
+2025-08-21 11:54:52 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
+2025-08-21 11:54:56 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 11:54:56 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 11:54:57 - __main__ - ERROR - 系统执行失败: input array type is not double
 Traceback (most recent call last):
-  File "d:\Projects\stock_selection\main.py", line 111, in main
-    training_results = model.fit(
-  File "d:\Projects\stock_selection\src\model\lstm_lgbm_predictor.py", line 181, in fit
-    self.lgbm_model.fit(
-TypeError: fit() got an unexpected keyword argument 'verbose'
-2025-08-20 18:35:37 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-20 18:35:37 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-20 18:35:37 - src.data_storage.data_saver - INFO - init saver, file path: ./data\stock_data.db
-2025-08-20 18:35:37 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
-2025-08-20 22:21:52 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-20 22:21:52 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-20 22:21:52 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
-2025-08-20 22:21:52 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
-2025-08-20 22:21:53 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
-2025-08-20 22:21:53 - __main__ - INFO - ====== 开始计算技术指标 ======
-2025-08-20 22:21:59 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
-2025-08-20 22:21:59 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
-2025-08-20 22:21:59 - __main__ - INFO - ====== 开始数据预处理 ======
-2025-08-20 22:21:59 - __main__ - INFO - 数据质量检查...
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 691696 条记录
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
-2025-08-20 22:21:59 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
-2025-08-20 22:22:00 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
-2025-08-20 22:22:00 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
-2025-08-20 22:22:00 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
-2025-08-20 22:22:01 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 13 个 (相关系数>0.9)
-2025-08-20 22:23:39 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 23 个特征
-2025-08-20 22:23:39 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 23 个减少到 23 个
-2025-08-20 22:23:39 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 23
-2025-08-20 22:23:39 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性23
-2025-08-20 22:23:39 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MOM', 'ADX', 'MINUS_DI', 'MACD', 'MACD_Hist', 'ATR', 'VOL_MA5', 'OBV', 'CMF', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'StochRSI_K', 'volume_momentum', 'buy_signal_count']
-2025-08-20 22:23:39 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
-2025-08-20 22:23:49 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 50/800 只股票
-2025-08-20 22:23:59 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 100/800 只股票
-2025-08-20 22:24:09 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 150/800 只股票
-2025-08-20 22:24:19 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 200/800 只股票
-2025-08-20 22:24:29 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 250/800 只股票
-2025-08-20 22:24:39 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 300/800 只股票
-2025-08-20 22:24:48 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 350/800 只股票
-2025-08-20 22:24:58 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 400/800 只股票
-2025-08-20 22:25:08 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 450/800 只股票
-2025-08-20 22:25:18 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 500/800 只股票
-2025-08-20 22:25:27 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 550/800 只股票
-2025-08-20 22:25:37 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 600/800 只股票
-2025-08-20 22:25:47 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 650/800 只股票
-2025-08-20 22:25:57 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 700/800 只股票
-2025-08-20 22:26:06 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 750/800 只股票
-2025-08-20 22:26:15 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 800/800 只股票
-2025-08-20 22:26:16 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
-2025-08-20 22:26:16 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
-2025-08-20 22:26:16 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
-2025-08-20 22:26:16 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 23
-2025-08-20 22:26:16 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
-2025-08-20 22:26:16 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
-2025-08-20 22:26:16 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 23), y=(674896,)
-2025-08-20 22:26:16 - src.data_preprocessing.data_preprocessor - INFO - 重塑后数据形状: (13497920, 23)
-2025-08-20 22:26:16 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
-2025-08-20 22:26:19 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
-2025-08-20 22:26:19 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
-2025-08-20 22:26:30 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 16323884, 平均每特征 709734.1
-2025-08-20 22:26:30 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
-2025-08-20 22:26:35 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
-2025-08-20 22:26:35 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
-2025-08-20 22:26:35 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
-2025-08-20 22:26:35 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0815, 0.0800]
-2025-08-20 22:26:35 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 11507/674896 个异常值
-2025-08-20 22:26:35 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
-2025-08-20 22:26:37 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
-2025-08-20 22:26:37 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
-2025-08-20 22:26:43 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
-2025-08-20 22:26:43 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X=(674896, 20, 23), y=(674896,)
-2025-08-20 22:26:43 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
-2025-08-20 22:26:43 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 23), y=(674896,)
-2025-08-20 22:26:43 - __main__ - INFO - ====== 创建训练测试集 ======
-2025-08-20 22:26:43 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
-2025-08-20 22:26:43 - __main__ - INFO - 数据分割完成:
-2025-08-20 22:26:43 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
-2025-08-20 22:26:43 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
-2025-08-20 22:26:43 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
-2025-08-20 22:26:43 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
-2025-08-20 22:26:43 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 23)
-2025-08-20 22:26:43 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
-2025-08-20 22:26:43 - src.model.lstm_lgbm_predictor - INFO - LightGBM input shape: (539916, 23)
-2025-08-20 22:26:57 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...
-2025-08-20 23:03:52 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-20 23:03:52 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-20 23:03:52 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
-2025-08-20 23:03:52 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
-2025-08-20 23:03:54 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
-2025-08-20 23:03:54 - __main__ - INFO - ====== 开始计算技术指标 ======
-2025-08-20 23:03:59 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
-2025-08-20 23:03:59 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
-2025-08-20 23:03:59 - __main__ - INFO - ====== 开始数据预处理 ======
-2025-08-20 23:03:59 - __main__ - INFO - 数据质量检查...
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 691696 条记录
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
-2025-08-20 23:03:59 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
-2025-08-20 23:04:01 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 13 个 (相关系数>0.9)
-2025-08-20 23:05:37 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 23 个特征
-2025-08-20 23:05:37 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 23 个减少到 23 个
-2025-08-20 23:05:37 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 23
-2025-08-20 23:05:37 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性23
-2025-08-20 23:05:37 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MOM', 'ADX', 'MINUS_DI', 'MACD', 'MACD_Hist', 'ATR', 'VOL_MA5', 'OBV', 'CMF', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'StochRSI_K', 'volume_momentum', 'buy_signal_count']
-2025-08-20 23:05:37 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
-2025-08-20 23:05:46 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 50/800 只股票
-2025-08-20 23:05:56 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 100/800 只股票
-2025-08-20 23:06:05 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 150/800 只股票
-2025-08-20 23:06:15 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 200/800 只股票
-2025-08-20 23:06:24 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 250/800 只股票
-2025-08-20 23:06:34 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 300/800 只股票
-2025-08-20 23:06:43 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 350/800 只股票
-2025-08-20 23:06:52 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 400/800 只股票
-2025-08-20 23:07:02 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 450/800 只股票
-2025-08-20 23:07:11 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 500/800 只股票
-2025-08-20 23:07:21 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 550/800 只股票
-2025-08-20 23:07:30 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 600/800 只股票
-2025-08-20 23:07:40 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 650/800 只股票
-2025-08-20 23:07:49 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 700/800 只股票
-2025-08-20 23:07:58 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 750/800 只股票
-2025-08-20 23:08:07 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 800/800 只股票
-2025-08-20 23:08:07 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
-2025-08-20 23:08:07 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
-2025-08-20 23:08:07 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
-2025-08-20 23:08:07 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 23
-2025-08-20 23:08:07 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
-2025-08-20 23:08:08 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
-2025-08-20 23:08:08 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 23), y=(674896,)
-2025-08-20 23:08:08 - src.data_preprocessing.data_preprocessor - INFO - 重塑后数据形状: (13497920, 23)
-2025-08-20 23:08:08 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
-2025-08-20 23:08:11 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
-2025-08-20 23:08:11 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
-2025-08-20 23:08:21 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 16323884, 平均每特征 709734.1
-2025-08-20 23:08:21 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
-2025-08-20 23:08:26 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
-2025-08-20 23:08:26 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
-2025-08-20 23:08:26 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
-2025-08-20 23:08:26 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0815, 0.0800]
-2025-08-20 23:08:26 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 11507/674896 个异常值
-2025-08-20 23:08:26 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
-2025-08-20 23:08:28 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
-2025-08-20 23:08:28 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
-2025-08-20 23:08:34 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
-2025-08-20 23:08:34 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X=(674896, 20, 23), y=(674896,)
-2025-08-20 23:08:34 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
-2025-08-20 23:08:34 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 23), y=(674896,)
-2025-08-20 23:08:34 - __main__ - INFO - ====== 创建训练测试集 ======
-2025-08-20 23:08:34 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
-2025-08-20 23:08:34 - __main__ - INFO - 数据分割完成:
-2025-08-20 23:08:34 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
-2025-08-20 23:08:34 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
-2025-08-20 23:08:34 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
-2025-08-20 23:08:34 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
-2025-08-20 23:08:34 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 23)
-2025-08-20 23:08:34 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
-2025-08-20 23:08:34 - src.model.lstm_lgbm_predictor - INFO - LightGBM input shape: (539916, 23)
-2025-08-20 23:08:48 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...
-2025-08-20 23:40:10 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-20 23:40:10 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-20 23:40:10 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
-2025-08-20 23:40:10 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
-2025-08-20 23:40:12 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
-2025-08-20 23:40:12 - __main__ - INFO - ====== 开始计算技术指标 ======
-2025-08-20 23:40:17 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
-2025-08-20 23:40:17 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
-2025-08-20 23:40:17 - __main__ - INFO - ====== 开始数据预处理 ======
-2025-08-20 23:40:17 - __main__ - INFO - 数据质量检查...
-2025-08-20 23:40:17 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
-2025-08-20 23:40:17 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
-2025-08-20 23:40:17 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
-2025-08-20 23:40:17 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 691696 条记录
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
-2025-08-20 23:40:18 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
-2025-08-20 23:40:20 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 13 个 (相关系数>0.9)
-2025-08-20 23:41:57 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 23 个特征
-2025-08-20 23:41:57 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 23 个减少到 23 个
-2025-08-20 23:41:57 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 23
-2025-08-20 23:41:57 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性23
-2025-08-20 23:41:57 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MOM', 'ADX', 'MINUS_DI', 'MACD', 'MACD_Hist', 'ATR', 'VOL_MA5', 'OBV', 'CMF', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'StochRSI_K', 'volume_momentum', 'buy_signal_count']
-2025-08-20 23:41:57 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
-2025-08-20 23:42:06 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 50/800 只股票
-2025-08-20 23:42:16 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 100/800 只股票
-2025-08-20 23:42:25 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 150/800 只股票
-2025-08-20 23:42:35 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 200/800 只股票
-2025-08-20 23:42:45 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 250/800 只股票
-2025-08-20 23:42:54 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 300/800 只股票
-2025-08-20 23:43:04 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 350/800 只股票
-2025-08-20 23:43:13 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 400/800 只股票
-2025-08-20 23:43:23 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 450/800 只股票
-2025-08-20 23:43:32 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 500/800 只股票
-2025-08-20 23:43:42 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 550/800 只股票
-2025-08-20 23:43:51 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 600/800 只股票
-2025-08-20 23:44:01 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 650/800 只股票
-2025-08-20 23:44:10 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 700/800 只股票
-2025-08-20 23:44:20 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 750/800 只股票
-2025-08-20 23:44:29 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 800/800 只股票
-2025-08-20 23:44:29 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
-2025-08-20 23:44:29 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
-2025-08-20 23:44:29 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
-2025-08-20 23:44:29 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 23
-2025-08-20 23:44:29 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
-2025-08-20 23:44:29 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
-2025-08-20 23:44:29 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 23), y=(674896,)
-2025-08-20 23:44:29 - src.data_preprocessing.data_preprocessor - INFO - 重塑后数据形状: (13497920, 23)
-2025-08-20 23:44:29 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
-2025-08-20 23:44:33 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
-2025-08-20 23:44:33 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
-2025-08-20 23:44:43 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 16323884, 平均每特征 709734.1
-2025-08-20 23:44:43 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
-2025-08-20 23:44:48 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
-2025-08-20 23:44:48 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
-2025-08-20 23:44:48 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
-2025-08-20 23:44:48 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0815, 0.0800]
-2025-08-20 23:44:48 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 11507/674896 个异常值
-2025-08-20 23:44:48 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
-2025-08-20 23:44:50 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
-2025-08-20 23:44:50 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
-2025-08-20 23:44:56 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
-2025-08-20 23:44:56 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X=(674896, 20, 23), y=(674896,)
-2025-08-20 23:44:56 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
-2025-08-20 23:44:56 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 23), y=(674896,)
-2025-08-20 23:44:56 - __main__ - INFO - ====== 创建训练测试集 ======
-2025-08-20 23:44:56 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
-2025-08-20 23:44:56 - __main__ - INFO - 数据分割完成:
-2025-08-20 23:44:56 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
-2025-08-20 23:44:56 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
-2025-08-20 23:44:56 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
-2025-08-20 23:44:56 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
-2025-08-20 23:44:56 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 23)
-2025-08-20 23:44:56 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
-2025-08-20 23:44:56 - src.model.lstm_lgbm_predictor - INFO - LightGBM input shape: (539916, 23)
-2025-08-20 23:45:35 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...
-2025-08-20 23:45:35 - __main__ - ERROR - 系统执行失败: A KerasTensor cannot be used as input to a TensorFlow function. A KerasTensor is a symbolic placeholder for a shape and dtype, used when constructing Keras Functional models or Keras Functions. You can only use it as input to a Keras layer or a Keras operation (from the namespaces `keras.layers` and `keras.ops`). You are likely doing something like:
-
-```
-x = Input(...)
-...
-tf_fn(x)  # Invalid.
-```
-
-What you should do instead is wrap `tf_fn` in a layer:
-
-```
-class MyLayer(Layer):
-    def call(self, x):
-        return tf_fn(x)
-
-x = MyLayer()(x)
-```
-Traceback (most recent call last):
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 111, in main
-    training_results = model.fit(
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/model/lstm_lgbm_predictor.py", line 227, in fit
-    self.lstm_model = self._build_lstm_model(X_sequence.shape[1:])
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/model/lstm_lgbm_predictor.py", line 135, in _build_lstm_model
-    attention = tf.reduce_mean(x, axis=1)  # (batch_size, features)
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/tensorflow/python/ops/weak_tensor_ops.py", line 88, in wrapper
-    return op(*args, **kwargs)
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/tensorflow/python/util/traceback_utils.py", line 153, in error_handler
-    raise e.with_traceback(filtered_tb) from None
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/keras/src/backend/common/keras_tensor.py", line 156, in __tf_tensor__
-    raise ValueError(
-ValueError: A KerasTensor cannot be used as input to a TensorFlow function. A KerasTensor is a symbolic placeholder for a shape and dtype, used when constructing Keras Functional models or Keras Functions. You can only use it as input to a Keras layer or a Keras operation (from the namespaces `keras.layers` and `keras.ops`). You are likely doing something like:
-
-```
-x = Input(...)
-...
-tf_fn(x)  # Invalid.
-```
-
-What you should do instead is wrap `tf_fn` in a layer:
-
-```
-class MyLayer(Layer):
-    def call(self, x):
-        return tf_fn(x)
-
-x = MyLayer()(x)
-```
-
-2025-08-20 23:56:49 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-20 23:56:49 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-20 23:56:49 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
-2025-08-20 23:56:49 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
-2025-08-20 23:56:50 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
-2025-08-20 23:56:50 - __main__ - INFO - ====== 开始计算技术指标 ======
-2025-08-20 23:56:56 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
-2025-08-20 23:56:56 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
-2025-08-20 23:56:56 - __main__ - INFO - ====== 开始数据预处理 ======
-2025-08-20 23:56:56 - __main__ - INFO - 数据质量检查...
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 691696 条记录
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
-2025-08-20 23:56:56 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
-2025-08-20 23:56:58 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 13 个 (相关系数>0.9)
-2025-08-20 23:58:33 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 23 个特征
-2025-08-20 23:58:33 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 23 个减少到 23 个
-2025-08-20 23:58:33 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 23
-2025-08-20 23:58:33 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性23
-2025-08-20 23:58:33 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MOM', 'ADX', 'MINUS_DI', 'MACD', 'MACD_Hist', 'ATR', 'VOL_MA5', 'OBV', 'CMF', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'StochRSI_K', 'volume_momentum', 'buy_signal_count']
-2025-08-20 23:58:33 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
-2025-08-20 23:58:43 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 50/800 只股票
-2025-08-20 23:58:53 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 100/800 只股票
-2025-08-20 23:59:02 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 150/800 只股票
-2025-08-20 23:59:12 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 200/800 只股票
-2025-08-20 23:59:21 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 250/800 只股票
-2025-08-20 23:59:31 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 300/800 只股票
-2025-08-20 23:59:40 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 350/800 只股票
-2025-08-20 23:59:50 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 400/800 只股票
-2025-08-21 00:00:00 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 450/800 只股票
-2025-08-21 00:00:09 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 500/800 只股票
-2025-08-21 00:00:19 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 550/800 只股票
-2025-08-21 00:00:28 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 600/800 只股票
-2025-08-21 00:00:38 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 650/800 只股票
-2025-08-21 00:00:47 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 700/800 只股票
-2025-08-21 00:00:57 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 750/800 只股票
-2025-08-21 00:01:06 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 800/800 只股票
-2025-08-21 00:01:06 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
-2025-08-21 00:01:06 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
-2025-08-21 00:01:06 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
-2025-08-21 00:01:06 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 23
-2025-08-21 00:01:06 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
-2025-08-21 00:01:06 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
-2025-08-21 00:01:06 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 23), y=(674896,)
-2025-08-21 00:01:06 - src.data_preprocessing.data_preprocessor - INFO - 重塑后数据形状: (13497920, 23)
-2025-08-21 00:01:06 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
-2025-08-21 00:01:10 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
-2025-08-21 00:01:10 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
-2025-08-21 00:01:20 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 16323884, 平均每特征 709734.1
-2025-08-21 00:01:20 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
-2025-08-21 00:01:25 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
-2025-08-21 00:01:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
-2025-08-21 00:01:25 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
-2025-08-21 00:01:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0815, 0.0800]
-2025-08-21 00:01:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 11507/674896 个异常值
-2025-08-21 00:01:25 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
-2025-08-21 00:01:27 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
-2025-08-21 00:01:27 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
-2025-08-21 00:01:33 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
-2025-08-21 00:01:33 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X=(674896, 20, 23), y=(674896,)
-2025-08-21 00:01:33 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
-2025-08-21 00:01:33 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 23), y=(674896,)
-2025-08-21 00:01:33 - __main__ - INFO - ====== 创建训练测试集 ======
-2025-08-21 00:01:33 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
-2025-08-21 00:01:33 - __main__ - INFO - 数据分割完成:
-2025-08-21 00:01:33 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
-2025-08-21 00:01:33 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
-2025-08-21 00:01:33 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
-2025-08-21 00:01:33 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
-2025-08-21 00:01:33 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 23)
-2025-08-21 00:01:33 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
-2025-08-21 00:01:33 - src.model.lstm_lgbm_predictor - INFO - LightGBM input shape: (539916, 23)
-2025-08-21 00:01:42 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...
-2025-08-21 00:01:42 - __main__ - ERROR - 系统执行失败: module 'keras.backend' has no attribute 'mean'
-Traceback (most recent call last):
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 111, in main
-    training_results = model.fit(
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/model/lstm_lgbm_predictor.py", line 237, in fit
-    self.lstm_model = self._build_lstm_model(X_sequence.shape[1:])
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/model/lstm_lgbm_predictor.py", line 138, in _build_lstm_model
-    attention = K.mean(x, axis=1)  # 使用Keras后端函数替代tf.reduce_mean
-AttributeError: module 'keras.backend' has no attribute 'mean'
-2025-08-21 08:10:51 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-21 08:10:51 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-21 08:10:51 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
-2025-08-21 08:10:51 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
-2025-08-21 08:10:52 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
-2025-08-21 08:10:52 - __main__ - INFO - ====== 开始计算技术指标 ======
-2025-08-21 08:10:57 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
-2025-08-21 08:10:57 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
-2025-08-21 08:10:57 - __main__ - INFO - ====== 开始数据预处理 ======
-2025-08-21 08:10:57 - __main__ - INFO - 数据质量检查...
-2025-08-21 08:10:57 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
-2025-08-21 08:10:57 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
-2025-08-21 08:10:57 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
-2025-08-21 08:10:57 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 691696 条记录
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
-2025-08-21 08:10:58 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
-2025-08-21 08:11:00 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 13 个 (相关系数>0.9)
-2025-08-21 08:12:36 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 23 个特征
-2025-08-21 08:12:36 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 23 个减少到 23 个
-2025-08-21 08:12:36 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 23
-2025-08-21 08:12:36 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性23
-2025-08-21 08:12:36 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MOM', 'ADX', 'MINUS_DI', 'MACD', 'MACD_Hist', 'ATR', 'VOL_MA5', 'OBV', 'CMF', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'StochRSI_K', 'volume_momentum', 'buy_signal_count']
-2025-08-21 08:12:36 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
-2025-08-21 08:12:45 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 50/800 只股票
-2025-08-21 08:12:55 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 100/800 只股票
-2025-08-21 08:13:04 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 150/800 只股票
-2025-08-21 08:13:14 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 200/800 只股票
-2025-08-21 08:13:23 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 250/800 只股票
-2025-08-21 08:13:33 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 300/800 只股票
-2025-08-21 08:13:42 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 350/800 只股票
-2025-08-21 08:13:51 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 400/800 只股票
-2025-08-21 08:14:01 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 450/800 只股票
-2025-08-21 08:14:10 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 500/800 只股票
-2025-08-21 08:14:19 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 550/800 只股票
-2025-08-21 08:14:29 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 600/800 只股票
-2025-08-21 08:14:38 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 650/800 只股票
-2025-08-21 08:14:48 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 700/800 只股票
-2025-08-21 08:14:57 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 750/800 只股票
-2025-08-21 08:15:06 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 800/800 只股票
-2025-08-21 08:15:06 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
-2025-08-21 08:15:06 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
-2025-08-21 08:15:06 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
-2025-08-21 08:15:06 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 23
-2025-08-21 08:15:06 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
-2025-08-21 08:15:06 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
-2025-08-21 08:15:06 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 23), y=(674896,)
-2025-08-21 08:15:06 - src.data_preprocessing.data_preprocessor - INFO - 重塑后数据形状: (13497920, 23)
-2025-08-21 08:15:06 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
-2025-08-21 08:15:10 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
-2025-08-21 08:15:10 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
-2025-08-21 08:15:20 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 16323884, 平均每特征 709734.1
-2025-08-21 08:15:20 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
-2025-08-21 08:15:25 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
-2025-08-21 08:15:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
-2025-08-21 08:15:25 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
-2025-08-21 08:15:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0815, 0.0800]
-2025-08-21 08:15:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 11507/674896 个异常值
-2025-08-21 08:15:25 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
-2025-08-21 08:15:27 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
-2025-08-21 08:15:27 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
-2025-08-21 08:15:33 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
-2025-08-21 08:15:33 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X=(674896, 20, 23), y=(674896,)
-2025-08-21 08:15:33 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
-2025-08-21 08:15:33 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 23), y=(674896,)
-2025-08-21 08:15:33 - __main__ - INFO - ====== 创建训练测试集 ======
-2025-08-21 08:15:33 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
-2025-08-21 08:15:33 - __main__ - INFO - 数据分割完成:
-2025-08-21 08:15:33 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
-2025-08-21 08:15:33 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
-2025-08-21 08:15:33 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
-2025-08-21 08:15:33 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
-2025-08-21 08:15:33 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 23)
-2025-08-21 08:15:33 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
-2025-08-21 08:15:33 - src.model.lstm_lgbm_predictor - INFO - LightGBM input shape: (539916, 23)
-2025-08-21 08:15:42 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...
-2025-08-21 08:15:42 - __main__ - ERROR - 系统执行失败: name 'Lambda' is not defined
-Traceback (most recent call last):
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 111, in main
-    training_results = model.fit(
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/model/lstm_lgbm_predictor.py", line 239, in fit
-    self.lstm_model = self._build_lstm_model(X_sequence.shape[1:])
-  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/model/lstm_lgbm_predictor.py", line 137, in _build_lstm_model
-    attention = Lambda(lambda x: tf.reduce_mean(x, axis=1))(x)  # (batch_size, features)
-NameError: name 'Lambda' is not defined
-2025-08-21 08:16:43 - __main__ - INFO - ====== 开始数据获取 ======
-2025-08-21 08:16:43 - __main__ - INFO - 正常模式：使用3年数据
-2025-08-21 08:16:43 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
-2025-08-21 08:16:43 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
-2025-08-21 08:16:44 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
-2025-08-21 08:16:44 - __main__ - INFO - ====== 开始计算技术指标 ======
-2025-08-21 08:16:49 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
-2025-08-21 08:16:49 - __main__ - INFO - 技术指标列表示例: ['CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
-2025-08-21 08:16:49 - __main__ - INFO - ====== 开始数据预处理 ======
-2025-08-21 08:16:49 - __main__ - INFO - 数据质量检查...
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 开始为所有股票准备训练数据...
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 数据概览: 800 只股票, 691696 条记录
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
-2025-08-21 08:16:49 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
-2025-08-21 08:16:50 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
-2025-08-21 08:16:50 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
-2025-08-21 08:16:50 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
-2025-08-21 08:16:51 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 13 个 (相关系数>0.9)
-2025-08-21 08:18:26 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 23 个特征
-2025-08-21 08:18:26 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 23 个减少到 23 个
-2025-08-21 08:18:26 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 23
-2025-08-21 08:18:26 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性23
-2025-08-21 08:18:26 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MOM', 'ADX', 'MINUS_DI', 'MACD', 'MACD_Hist', 'ATR', 'VOL_MA5', 'OBV', 'CMF', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'StochRSI_K', 'volume_momentum', 'buy_signal_count']
-2025-08-21 08:18:26 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
-2025-08-21 08:18:36 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 50/800 只股票
-2025-08-21 08:18:45 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 100/800 只股票
-2025-08-21 08:18:55 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 150/800 只股票
-2025-08-21 08:19:04 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 200/800 只股票
-2025-08-21 08:19:14 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 250/800 只股票
-2025-08-21 08:19:24 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 300/800 只股票
-2025-08-21 08:19:33 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 350/800 只股票
-2025-08-21 08:19:43 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 400/800 只股票
-2025-08-21 08:19:52 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 450/800 只股票
-2025-08-21 08:20:02 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 500/800 只股票
-2025-08-21 08:20:11 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 550/800 只股票
-2025-08-21 08:20:21 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 600/800 只股票
-2025-08-21 08:20:31 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 650/800 只股票
-2025-08-21 08:20:40 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 700/800 只股票
-2025-08-21 08:20:49 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 750/800 只股票
-2025-08-21 08:20:58 - src.data_preprocessing.data_preprocessor - INFO - 处理进度: 800/800 只股票
-2025-08-21 08:20:59 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
-2025-08-21 08:20:59 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
-2025-08-21 08:20:59 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
-2025-08-21 08:20:59 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 23
-2025-08-21 08:20:59 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
-2025-08-21 08:20:59 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
-2025-08-21 08:20:59 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 23), y=(674896,)
-2025-08-21 08:20:59 - src.data_preprocessing.data_preprocessor - INFO - 重塑后数据形状: (13497920, 23)
-2025-08-21 08:20:59 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
-2025-08-21 08:21:02 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
-2025-08-21 08:21:02 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
-2025-08-21 08:21:13 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 16323884, 平均每特征 709734.1
-2025-08-21 08:21:13 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
-2025-08-21 08:21:18 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
-2025-08-21 08:21:18 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
-2025-08-21 08:21:18 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
-2025-08-21 08:21:18 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0815, 0.0800]
-2025-08-21 08:21:18 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 11507/674896 个异常值
-2025-08-21 08:21:18 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
-2025-08-21 08:21:19 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
-2025-08-21 08:21:19 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
-2025-08-21 08:21:25 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
-2025-08-21 08:21:25 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X=(674896, 20, 23), y=(674896,)
-2025-08-21 08:21:25 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
-2025-08-21 08:21:25 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 23), y=(674896,)
-2025-08-21 08:21:25 - __main__ - INFO - ====== 创建训练测试集 ======
-2025-08-21 08:21:25 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
-2025-08-21 08:21:25 - __main__ - INFO - 数据分割完成:
-2025-08-21 08:21:25 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
-2025-08-21 08:21:25 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
-2025-08-21 08:21:25 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
-2025-08-21 08:21:25 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
-2025-08-21 08:21:25 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 23)
-2025-08-21 08:21:25 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
-2025-08-21 08:21:25 - src.model.lstm_lgbm_predictor - INFO - LightGBM input shape: (539916, 23)
-2025-08-21 08:21:34 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...
+  File "d:\Projects\stock_selection\main.py", line 52, in main
+    df_with_indicators = ti.calculate_all_indicators()
+  File "d:\Projects\stock_selection\src\data_preprocessing\technical_indicators.py", line 256, in calculate_all_indicators
+    results = list(executor.map(compute_group, groups))
+  File "C:\Users\phigent01\AppData\Local\Programs\Python\Python39\lib\concurrent\futures\_base.py", line 609, in result_iterator
+    yield fs.pop().result()
+  File "C:\Users\phigent01\AppData\Local\Programs\Python\Python39\lib\concurrent\futures\_base.py", line 439, in result
+    return self.__get_result()
+  File "C:\Users\phigent01\AppData\Local\Programs\Python\Python39\lib\concurrent\futures\_base.py", line 391, in __get_result
+    raise self._exception
+  File "C:\Users\phigent01\AppData\Local\Programs\Python\Python39\lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "d:\Projects\stock_selection\src\data_preprocessing\technical_indicators.py", line 228, in compute_group
+    indicators.update(ti.calculate_moving_averages(close, ma_periods, use_ema))
+  File "d:\Projects\stock_selection\src\data_preprocessing\technical_indicators.py", line 38, in calculate_moving_averages
+    return {f'MA{p}': talib.SMA(close, timeperiod=p) for p in periods}
+  File "d:\Projects\stock_selection\src\data_preprocessing\technical_indicators.py", line 38, in <dictcomp>
+    return {f'MA{p}': talib.SMA(close, timeperiod=p) for p in periods}
+  File "D:\Projects\stock_selection\.venv\lib\site-packages\talib\__init__.py", line 80, in wrapper
+    result = func(*_args, **_kwds)
+  File "talib/_func.pxi", line 4638, in talib._ta_lib.SMA
+  File "talib/_func.pxi", line 22, in talib._ta_lib.check_array
+Exception: input array type is not double
+2025-08-21 12:00:58 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 12:00:58 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 12:00:58 - src.data_storage.data_saver - INFO - init saver, file path: ./data\stock_data.db
+2025-08-21 12:00:58 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150823 and trade_date <= 20250820
+2025-08-21 12:01:00 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 12:01:00 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 12:01:10 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
+2025-08-21 12:01:10 - __main__ - INFO - 技术指标列表示例: ['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MA10', 'MA20', 'RSI6', 'RSI12', 'MOM', 'KDJ_K', 'KDJ_D', 'KDJ_J', 'CCI', 'ADX', 'PLUS_DI', 'MINUS_DI', 'MACD', 'MACD_Signal', 'MACD_Hist', 'BB_upper', 'BB_middle', 'BB_lower', 'ATR', 'VOL_MA5', 'VOL_MA10', 'OBV', 'CMF', 'MFI', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
+2025-08-21 12:01:10 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-21 12:01:10 - __main__ - INFO - 数据质量检查...
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 数据质量检查...
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - WARNING - 发现800个空值，将在预处理中处理
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
+2025-08-21 12:01:10 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
+2025-08-21 12:01:11 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
+2025-08-21 12:01:11 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
+2025-08-21 12:01:11 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
+2025-08-21 12:01:11 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 19 个 (相关系数>0.8)
+2025-08-21 12:01:13 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 20 个特征
+2025-08-21 12:01:13 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 20 个减少到 20 个
+2025-08-21 12:01:13 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 20
+2025-08-21 12:01:13 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性20
+2025-08-21 12:01:13 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
+2025-08-21 12:08:04 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
+2025-08-21 12:08:04 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
+2025-08-21 12:08:04 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
+2025-08-21 12:08:04 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 20
+2025-08-21 12:08:04 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
+2025-08-21 12:08:06 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
+2025-08-21 12:08:06 - src.data_preprocessing.data_preprocessor - INFO - 开始拟合预处理器...
+2025-08-21 12:08:06 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 20), y=(674896,)
+2025-08-21 12:08:08 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
+2025-08-21 12:08:15 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
+2025-08-21 12:08:15 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
+2025-08-21 12:08:20 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 4133110, 平均每特征 206655.5
+2025-08-21 12:08:20 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
+2025-08-21 12:08:25 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
+2025-08-21 12:08:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
+2025-08-21 12:08:25 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
+2025-08-21 12:08:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0779, 0.0785]
+2025-08-21 12:08:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 12332/674896 个异常值
+2025-08-21 12:08:25 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
+2025-08-21 12:08:28 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
+2025-08-21 12:08:29 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
+2025-08-21 12:08:29 - src.data_preprocessing.data_preprocessor - INFO - 转换数据...
+2025-08-21 12:08:38 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
+2025-08-21 12:08:38 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X= (674896, 20, 20), y=(674896,)
+2025-08-21 12:08:40 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
+2025-08-21 12:08:40 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 20), y=(674896,)
+2025-08-21 12:08:40 - __main__ - INFO - ====== 创建训练测试集 ======
+2025-08-21 12:08:40 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
+2025-08-21 12:08:40 - __main__ - INFO - 数据分割完成:
+2025-08-21 12:08:40 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
+2025-08-21 12:08:40 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
+2025-08-21 12:08:40 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
+2025-08-21 12:08:40 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
+2025-08-21 12:08:40 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 20)
+2025-08-21 12:08:45 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
+2025-08-21 12:08:52 - src.model.lstm_lgbm_predictor - INFO - 可用内存: 4.29 GB
+2025-08-21 12:08:52 - src.model.lstm_lgbm_predictor - INFO - 无GPU，使用CPU
+2025-08-21 12:08:52 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...

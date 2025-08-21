@@ -14,6 +14,7 @@ from src.data_preprocessing.data_preprocessor import DataPreprocessor
 # 导入新的LSTM+LightGBM混合模型
 from src.model.lstm_lgbm_predictor import LSTMLGBMPredictor
 from src.utils.log_helper import LogHelper
+import gc
 
 # 配置日志
 logger = LogHelper().get_logger(__name__)
@@ -30,7 +31,7 @@ def main():
         
         # 正常模式：使用3年数据
         start_date = (datetime.datetime.strptime(end_date, '%Y%m%d').date() - datetime.timedelta(days=365*10)).strftime('%Y%m%d')
-        logger.info("正常模式：使用3年数据")
+        logger.info("正常模式：使用10年数据")
         
         fetcher = AkshareDataFetcher()
         # stock_codes = fetcher.get_stock_codes_by_symbol()
@@ -57,7 +58,9 @@ def main():
         original_cols = len(df.columns)
         new_cols = len(df_with_indicators.columns) - original_cols
         logger.info(f"计算技术指标完成: 新增{new_cols}个特征，总特征数={len(df_with_indicators.columns)}")
-        logger.info(f"技术指标列表示例: {df_with_indicators.columns.tolist()[-10:]}")  # 显示最后10个列名
+        logger.info(f"技术指标列表示例: {df_with_indicators.columns.tolist()}")  # 显示最后10个列名
+        
+        gc.collect()  # 内存清理
         
         # ====================== 3. 数据预处理 ======================   
         logger.info("====== 开始数据预处理 ======")
