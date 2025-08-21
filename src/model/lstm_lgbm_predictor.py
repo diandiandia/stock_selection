@@ -1,16 +1,22 @@
+# 1. 修改导入部分（添加注意力机制）
 from typing import List, Tuple, Optional, Dict
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from keras.models import Model
-from keras.layers import LSTM, Dense, Dropout, Input, BatchNormalization
+from keras.layers import LSTM, Dense, Dropout, Input, BatchNormalization, Attention, MultiHeadAttention
 from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from lightgbm import LGBMRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import joblib
 import os
+
 from src.utils.log_helper import LogHelper
+from keras.optimizers.schedules import ExponentialDecay
+from keras import backend as K
+from keras.layers import Lambda
 
 class LSTMLGBMPredictor:
     """LSTM + LightGBM混合预测模型，专为T+1股票推荐设计"""
@@ -33,94 +39,140 @@ class LSTMLGBMPredictor:
         # 特征重要性缓存
         self.feature_importance_cache = {}
         
+    # 2. 更新默认配置（三层架构）
     def _get_default_config(self) -> Dict:
-        """获取默认模型配置"""
+        """获取默认模型配置 - 优化版"""
         return {
             # 数据配置
             'lookback_window': 20,
             'test_size': 0.2,
             
-            # LightGBM配置
+            # LightGBM配置（增强版）
             'lgbm_params': {
-                'n_estimators': 1000,
-                'learning_rate': 0.05,
-                'max_depth': 10,
-                'num_leaves': 64,
-                'min_child_samples': 20,
-                'subsample': 0.8,
-                'colsample_bytree': 0.8,
-                'reg_alpha': 0.1,
-                'reg_lambda': 0.1,
+                'n_estimators': 1500,  # 增加树的数量
+                'learning_rate': 0.03,  # 降低学习率
+                'max_depth': 12,  # 增加深度
+                'num_leaves': 128,  # 增加叶子节点
+                'min_child_samples': 15,  # 减少最小样本
+                'subsample': 0.85,
+                'colsample_bytree': 0.85,
+                'reg_alpha': 0.2,  # 增强L1正则化
+                'reg_lambda': 0.2,  # 增强L2正则化
                 'random_state': 42,
                 'objective': 'regression',
                 'metric': 'rmse',
                 'verbose': -1
             },
             
-            # LSTM配置
-            'lstm_units': [64, 32],  # 双层LSTM
-            'dropout_rate': 0.3,
-            'recurrent_dropout': 0.2,
-            'batch_size': 128,
-            'epochs': 100,
-            'learning_rate': 0.001,
-            'patience': 15,
+            # LSTM配置（三层架构）
+            'lstm_units': [256, 128, 64],  # 三层渐进式架构
+            'dropout_rate': 0.2,  # 适度增加dropout
+            'recurrent_dropout': 0.15,
+            'batch_size': 512,  # 增大batch size
+            'epochs': 150,  # 增加epoch
+            'learning_rate': 0.0005,  # 降低学习率
+            'patience': 25,  # 增加耐心值
+            
+            # 注意力机制配置
+            'attention_heads': 4,
+            'attention_dropout': 0.1,
             
             # 集成配置
-            'ensemble_method': 'weighted',  # 'weighted' 或 'stacking'
+            'ensemble_method': 'weighted',
             'weight_optimization': True,
             
             # 训练配置
             'validation_split': 0.15,
-            'early_stopping_patience': 15,
-            'reduce_lr_patience': 8,
-            'min_lr': 1e-7
+            'early_stopping_patience': 25,
+            'reduce_lr_patience': 12,
+            'min_lr': 1e-8
         }
-    
+
     def _build_lgbm_model(self) -> LGBMRegressor:
         """构建LightGBM模型"""
         return LGBMRegressor(**self.config['lgbm_params'])
     
+    # 3. 构建三层LSTM + 注意力机制模型
     def _build_lstm_model(self, input_shape: Tuple[int, int]) -> Model:
-        """构建改进的LSTM模型"""
+        """构建三层LSTM + 注意力机制模型"""
+        from keras.layers import LayerNormalization
+        
         inputs = Input(shape=input_shape, name='sequence_input')
         
-        # 双层LSTM
+        # 第一层：增强LSTM
         x = LSTM(
             self.config['lstm_units'][0],
             return_sequences=True,
             dropout=self.config['dropout_rate'],
             recurrent_dropout=self.config['recurrent_dropout'],
-            kernel_regularizer=tf.keras.regularizers.l2(1e-4)
+            kernel_regularizer=tf.keras.regularizers.l2(5e-4),
+            recurrent_regularizer=tf.keras.regularizers.l2(5e-4)
         )(inputs)
-        
-        x = BatchNormalization()(x)
-        
-        x = LSTM(
-            self.config['lstm_units'][1],
-            return_sequences=False,
-            dropout=self.config['dropout_rate'],
-            recurrent_dropout=self.config['recurrent_dropout'],
-            kernel_regularizer=tf.keras.regularizers.l2(1e-4)
-        )(x)
-        
         x = BatchNormalization()(x)
         x = Dropout(self.config['dropout_rate'])(x)
         
-        # 全连接层
-        x = Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-4))(x)
+        # 第二层：中级LSTM
+        x = LSTM(
+            self.config['lstm_units'][1],
+            return_sequences=True,
+            dropout=self.config['dropout_rate'],
+            recurrent_dropout=self.config['recurrent_dropout'],
+            kernel_regularizer=tf.keras.regularizers.l2(5e-4),
+            recurrent_regularizer=tf.keras.regularizers.l2(5e-4)
+        )(x)
+        x = BatchNormalization()(x)
+        x = Dropout(self.config['dropout_rate'])(x)
+        
+        # 第三层：精细LSTM
+        x = LSTM(
+            self.config['lstm_units'][2],
+            return_sequences=True,
+            dropout=self.config['dropout_rate'] * 0.8,
+            recurrent_dropout=self.config['recurrent_dropout'] * 0.8,
+            kernel_regularizer=tf.keras.regularizers.l2(1e-4),
+            recurrent_regularizer=tf.keras.regularizers.l2(1e-4)
+        )(x)
+        x = BatchNormalization()(x)
+        
+        # 注意力机制层 - 使用Lambda层包装TensorFlow操作
+        attention = Lambda(lambda x: tf.reduce_mean(x, axis=1))(x)  # (batch_size, features)
+        attention_weights = Dense(self.config['lstm_units'][2], activation='tanh')(attention)
+        attention_weights = Dense(self.config['lstm_units'][2], activation='softmax')(attention_weights)
+        
+        # 应用注意力权重 - 使用Lambda层处理张量运算
+        x = Lambda(lambda inputs: tf.reduce_sum(
+            inputs[0] * tf.expand_dims(inputs[1], axis=1), 
+            axis=1
+        ))([x, attention_weights])
+        
+        # 增强全连接层
+        x = Dense(256, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-3))(x)
+        x = BatchNormalization()(x)
+        x = Dropout(self.config['dropout_rate'] * 1.5)(x)
+        
+        x = Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-3))(x)
         x = BatchNormalization()(x)
         x = Dropout(self.config['dropout_rate'])(x)
         
         x = Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-4))(x)
-        x = Dropout(self.config['dropout_rate'] / 2)(x)
+        x = Dropout(self.config['dropout_rate'] * 0.5)(x)
         
         # 输出层
         outputs = Dense(1, activation='linear', name='output')(x)
         
         model = Model(inputs=inputs, outputs=outputs)
         
-        optimizer = Adam(learning_rate=self.config['learning_rate'])
+        # 优化学习率调度
+        lr_schedule = ExponentialDecay(
+            initial_learning_rate=self.config['learning_rate'],
+            decay_steps=2000,
+            decay_rate=0.95,
+            staircase=True
+        )
+        optimizer = Adam(
+            learning_rate=lr_schedule,
+            clipnorm=1.0  # 梯度裁剪
+        )
         
         model.compile(
             optimizer=optimizer,
@@ -129,25 +181,16 @@ class LSTMLGBMPredictor:
         )
         
         return model
-    
+
     def prepare_lstm_data(self, X_sequence: np.ndarray) -> np.ndarray:
-        """
-        准备LSTM的输入数据
+        # 标准化每个特征维度
+        X_normalized = np.zeros_like(X_sequence)
+        for i in range(X_sequence.shape[0]):
+            for j in range(X_sequence.shape[2]):
+                feature = X_sequence[i, :, j]
+                X_normalized[i, :, j] = (feature - np.mean(feature)) / (np.std(feature) + 1e-8)
         
-        Args:
-            X_sequence: 时序特征
-            
-        Returns:
-            处理后的时序数据
-        """
-        if len(X_sequence) == 0:
-            return X_sequence
-            
-        # 确保数据形状正确
-        if len(X_sequence.shape) == 3:
-            return X_sequence
-        else:
-            raise ValueError(f"Expected 3D input for LSTM, got {len(X_sequence.shape)}D")
+        return X_normalized
     
     def fit(self, X_sequence: np.ndarray, y: np.ndarray) -> Dict[str, float]:
         """
@@ -177,11 +220,18 @@ class LSTMLGBMPredictor:
         X_static_last = X_sequence[:, -1, :]  # 使用LSTM输入的最后一帧
         self.logger.info(f"LightGBM input shape: {X_static_last.shape}")
         
+        # 分割训练集和验证集
+        X_train, X_val, y_train, y_val = train_test_split(
+            X_static_last, y, 
+            test_size=self.config['validation_split'],
+            random_state=42
+        )
+        
         # 训练LightGBM
         self.lgbm_model.fit(
-            X_static_last, 
-            y,
-            eval_set=[(X_static_last, y)],
+            X_train, 
+            y_train,
+            eval_set=[(X_val, y_val)],  # 使用验证集
             callbacks=[early_stopping(10)]
         )
         
