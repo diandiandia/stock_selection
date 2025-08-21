@@ -1,7 +1,7 @@
 from typing import List, Tuple, Optional, Dict
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, TimeSeriesSplit
 import tensorflow as tf
 from keras.models import Model
 from keras.layers import LSTM, Dense, Dropout, Input, BatchNormalization, Attention, GlobalAveragePooling1D
@@ -30,7 +30,7 @@ class LSTMLGBMPredictor:
         self.config = config or self._get_default_config()
         self.lgbm_model = None
         self.lstm_model = None
-        self.ensemble_weights = {'lgbm': 0.3, 'lstm': 0.7}
+        self.ensemble_weights = {'lgbm': 0.5, 'lstm': 0.5}  # 初始化为均等权重
         self.feature_importance_cache = {}
         
     def _get_default_config(self) -> Dict:
@@ -38,36 +38,36 @@ class LSTMLGBMPredictor:
         return {
             'lookback_window': 20,
             'test_size': 0.2,
-            # LightGBM配置（优化：降低复杂度）
+            # LightGBM配置（优化：降低复杂度，增强正则化）
             'lgbm_params': {
-                'n_estimators': 2000,  # 减少树数量
-                'learning_rate': 0.02,  # 提高学习率以加速收敛
-                'max_depth': 8,  # 降低深度
-                'num_leaves': 64,  # 减少叶子节点
-                'min_child_samples': 20,
-                'subsample': 0.8,
-                'colsample_bytree': 0.8,
-                'reg_alpha': 0.3,  # 增强正则化
-                'reg_lambda': 0.3,
+                'n_estimators': 1000,  # 减少树数量
+                'learning_rate': 0.05,  # 适度提高学习率
+                'max_depth': 6,  # 降低深度
+                'num_leaves': 32,  # 减少叶子节点
+                'min_child_samples': 30,
+                'subsample': 0.7,
+                'colsample_bytree': 0.7,
+                'reg_alpha': 0.5,  # 增强正则化
+                'reg_lambda': 0.5,
                 'random_state': 42,
                 'objective': 'regression',
                 'metric': 'rmse',
                 'verbose': -1
             },
-            # LSTM配置（优化：减少单位数，降低内存需求）
-            'lstm_units': [64, 32],  # 减少层数
-            'dropout_rate': 0.2,
-            'recurrent_dropout': 0.1,
-            'batch_size': 512,  # 增加batch size以加速
-            'epochs': 50,  # 减少epochs
+            # LSTM配置（优化：简化架构，增强正则化）
+            'lstm_units': [32],  # 单层LSTM，减少单位数
+            'dropout_rate': 0.3,  # 提高dropout率
+            'recurrent_dropout': 0.2,
+            'batch_size': 512,
+            'epochs': 30,  # 减少epochs
             'learning_rate': 0.001,
-            'patience': 20,
-            'attention_dropout': 0.1,
+            'patience': 15,
+            'attention_dropout': 0.2,
             'ensemble_method': 'weighted',
             'weight_optimization': True,
-            'validation_split': 0.2,  # 增加验证集比例
-            'early_stopping_patience': 20,
-            'reduce_lr_patience': 10,
+            'validation_split': 0.2,
+            'early_stopping_patience': 15,
+            'reduce_lr_patience': 7,
             'min_lr': 1e-7
         }
 
@@ -76,34 +76,25 @@ class LSTMLGBMPredictor:
         return LGBMRegressor(**self.config['lgbm_params'])
     
     def _build_lstm_model(self, input_shape: Tuple[int, int]) -> Model:
-        """构建优化后的LSTM模型（减少层数）"""
+        """构建优化后的LSTM模型（单层，增强正则化）"""
         inputs = Input(shape=input_shape, name='sequence_input', dtype='float16')
         
-        # 第一层LSTM
+        # 单层LSTM
         x = LSTM(
             self.config['lstm_units'][0],
             return_sequences=True,
             recurrent_dropout=self.config['recurrent_dropout'],
-            kernel_regularizer=tf.keras.regularizers.l2(5e-4)
+            kernel_regularizer=tf.keras.regularizers.l2(1e-3)
         )(inputs)
         x = BatchNormalization()(x)
         x = Dropout(self.config['dropout_rate'])(x)
-        
-        # 第二层LSTM（减少到2层）
-        x = LSTM(
-            self.config['lstm_units'][1],
-            return_sequences=True,
-            recurrent_dropout=self.config['recurrent_dropout'],
-            kernel_regularizer=tf.keras.regularizers.l2(1e-4)
-        )(x)
-        x = BatchNormalization()(x)
         
         # 注意力机制
         x = Attention(use_scale=True, dropout=self.config['attention_dropout'])([x, x])
         x = GlobalAveragePooling1D()(x)
         
         # 全连接层
-        x = Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-3))(x)
+        x = Dense(32, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-3))(x)
         x = BatchNormalization()(x)
         x = Dropout(self.config['dropout_rate'])(x)
         
@@ -111,11 +102,17 @@ class LSTMLGBMPredictor:
         
         model = Model(inputs=inputs, outputs=outputs)
         
+        # 自定义损失函数，平衡回归和方向预测
+        def custom_loss(y_true, y_pred):
+            mse_loss = tf.keras.losses.mean_squared_error(y_true, y_pred)
+            direction_loss = tf.reduce_mean(tf.square(tf.sign(y_true) - tf.sign(y_pred)))
+            return mse_loss + 0.5 * direction_loss
+        
         optimizer = Adam(learning_rate=self.config['learning_rate'], clipnorm=1.0)
         
         model.compile(
             optimizer=optimizer,
-            loss='mse',
+            loss=custom_loss,
             metrics=['mae', 'mse']
         )
         
@@ -186,10 +183,10 @@ class LSTMLGBMPredictor:
             epochs=self.config['epochs'],
             validation_split=self.config['validation_split'],
             callbacks=callbacks,
-            verbose=1  # 更详细日志
+            verbose=1
         )
         
-        # 优化集成权重
+        # 优化集成权重（使用时间序列交叉验证）
         if self.config['weight_optimization']:
             self._optimize_ensemble_weights(X_static_last, X_sequence, y)
         
@@ -215,30 +212,41 @@ class LSTMLGBMPredictor:
         return train_results
     
     def _optimize_ensemble_weights(self, X_static: np.ndarray, X_sequence: np.ndarray, y: np.ndarray):
-        """优化集成权重"""
+        """优化集成权重，使用时间序列交叉验证"""
         from sklearn.linear_model import Ridge
-        from sklearn.model_selection import GridSearchCV
+        from sklearn.metrics import mean_squared_error
         
-        lgbm_pred = self.lgbm_model.predict(X_static)
-        lstm_pred = self.lstm_model.predict(X_sequence, verbose=0).flatten()
+        tscv = TimeSeriesSplit(n_splits=5)
+        weights = []
         
-        predictions = np.column_stack([lgbm_pred, lstm_pred])
-        param_grid = {'alpha': [0.1, 1.0, 10.0, 100.0]}
-        ridge = Ridge(fit_intercept=False)
-        grid_search = GridSearchCV(ridge, param_grid, cv=5, scoring='neg_mean_squared_error')
-        grid_search.fit(predictions, y)
+        for train_idx, val_idx in tscv.split(X_static):
+            X_train_static, X_val_static = X_static[train_idx], X_static[val_idx]
+            X_train_seq, X_val_seq = X_sequence[train_idx], X_sequence[val_idx]
+            y_train, y_val = y[train_idx], y[val_idx]
+            
+            lgbm_pred = self.lgbm_model.predict(X_train_static)
+            lstm_pred = self.lstm_model.predict(X_train_seq, verbose=0).flatten()
+            predictions = np.column_stack([lgbm_pred, lstm_pred])
+            
+            ridge = Ridge(alpha=1.0, fit_intercept=False)
+            ridge.fit(predictions, y_train)
+            
+            val_lgbm_pred = self.lgbm_model.predict(X_val_static)
+            val_lstm_pred = self.lstm_model.predict(X_val_seq, verbose=0).flatten()
+            val_predictions = np.column_stack([val_lgbm_pred, val_lstm_pred])
+            val_weighted_pred = val_predictions @ ridge.coef_
+            mse = mean_squared_error(y_val, val_weighted_pred)
+            
+            weights_sum = np.sum(np.abs(ridge.coef_))
+            if weights_sum > 1e-6:
+                weights.append(ridge.coef_ / weights_sum)
         
-        best_ridge = grid_search.best_estimator_
-        best_ridge.fit(predictions, y)
-        
-        weights = best_ridge.coef_
-        weights_sum = np.sum(np.abs(weights))
-        if weights_sum < 1e-6:
-            weights = np.array([0.5, 0.5])
+        if weights:
+            avg_weights = np.mean(weights, axis=0)
+            self.ensemble_weights = {'lgbm': avg_weights[0], 'lstm': avg_weights[1]}
         else:
-            weights = weights / weights_sum
+            self.ensemble_weights = {'lgbm': 0.5, 'lstm': 0.5}
         
-        self.ensemble_weights = {'lgbm': weights[0], 'lstm': weights[1]}
         self.logger.info(f"优化后的集成权重: {self.ensemble_weights}")
     
     def _validate_input_data(func):
@@ -444,7 +452,7 @@ class LSTMLGBMPredictor:
         
         lstm_path = os.path.join(model_dir, "lstm_model.keras")
         if os.path.exists(lstm_path):
-            self.lstm_model = tf.keras.models.load_model(lstm_path)
+            self.lstm_model = tf.keras.models.load_model(lstm_path, custom_objects={'custom_loss': self._build_lstm_model(None).loss})
         
         config_path = os.path.join(model_dir, "model_config.pkl")
         if os.path.exists(config_path):

@@ -2,8 +2,9 @@ from typing import Tuple, Dict, List, Optional, Union
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from sklearn.model_selection import TimeSeriesSplit
+from sklearn.model_selection import TimeSeriesSplit, train_test_split
 import joblib
+from src.model.lstm_lgbm_predictor import LSTMLGBMPredictor
 from src.utils.log_helper import LogHelper
 from joblib import Parallel, delayed
 from tqdm import tqdm
@@ -26,9 +27,10 @@ class DataPreprocessor:
                  target_scaler_type: str = 'standard',
                  test_size: float = 0.2,
                  validation_split: float = 0.1,
-                 imputation_strategy: str = 'median',
-                 outlier_detection: str = 'zscore',  # 优化：切换到zscore，更适合金融数据
-                 outlier_threshold: float = 3.0):
+                 imputation_strategy: str = 'hybrid',
+                 outlier_detection: str = 'zscore',
+                 outlier_threshold: float = 5.0,
+                 shap_subset_size: int = 10000):
         """
         初始化数据预处理器
         
@@ -39,6 +41,10 @@ class DataPreprocessor:
             target_scaler_type: 目标变量缩放器类型 ('standard' 或 'minmax')
             test_size: 测试集比例
             validation_split: 验证集比例
+            imputation_strategy: 缺失值填充策略 ('mean', 'median', 'mode', 'hybrid')
+            outlier_detection: 异常值检测方法 ('iqr', 'zscore', 'none')
+            outlier_threshold: 异常值检测阈值
+            shap_subset_size: 用于SHAP特征选择的子集大小
         """
         self.logger = LogHelper.get_logger(__name__)
         
@@ -50,12 +56,13 @@ class DataPreprocessor:
         self.imputation_strategy = imputation_strategy
         self.outlier_detection = outlier_detection
         self.outlier_threshold = outlier_threshold
+        self.shap_subset_size = shap_subset_size
         
         # 参数验证
-        if self.imputation_strategy not in ['mean', 'median', 'mode']:
-            raise ValueError(f"无效的缺失值填充策略: {self.imputation_strategy}, 必须是'mean', 'median'或'mode'")
+        if self.imputation_strategy not in ['mean', 'median', 'mode', 'hybrid']:
+            raise ValueError(f"无效的缺失值填充策略: {self.imputation_strategy}")
         if self.outlier_detection not in ['iqr', 'zscore', 'none']:
-            raise ValueError(f"无效的异常值检测方法: {self.outlier_detection}, 必须是'iqr', 'zscore'或'none'")
+            raise ValueError(f"无效的异常值检测方法: {self.outlier_detection}")
         if self.outlier_threshold <= 0:
             raise ValueError(f"异常值阈值必须为正数, 实际值: {self.outlier_threshold}")
         if not (0 < self.test_size < 1):
@@ -64,6 +71,8 @@ class DataPreprocessor:
             raise ValueError(f"验证集比例必须在(0, 1)之间, 实际值: {self.validation_split}")
         if self.lookback_window <= 0:
             raise ValueError(f"回溯窗口大小必须为正数, 实际值: {self.lookback_window}")
+        if self.shap_subset_size <= 0:
+            raise ValueError(f"SHAP子集大小必须为正数, 实际值: {self.shap_subset_size}")
         
         # 缩放器
         self.feature_scaler = self._get_scaler(feature_scaler_type)
@@ -144,12 +153,6 @@ class DataPreprocessor:
     def create_target(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         创建T+1收益率目标变量
-        
-        Args:
-            df: 包含价格数据的DataFrame
-            
-        Returns:
-            添加目标变量的DataFrame
         """
         self.logger.info(f"开始创建目标变量，预测周期: {self.prediction_horizon}")
         result_df = df.copy()
@@ -163,15 +166,9 @@ class DataPreprocessor:
         
         return result_df
     
-    def select_features(self, df: pd.DataFrame) -> List[str]:
+    def select_features(self, df: pd.DataFrame, model: Optional['LSTMLGBMPredictor'] = None) -> List[str]:
         """
-        选择用于训练的特征，结合缺失值分析和多重共线性检测
-        
-        Args:
-            df: 包含所有特征的DataFrame
-            
-        Returns:
-            选定的特征列名列表
+        选择用于训练的特征，结合缺失值分析、多重共线性检测和SHAP特征重要性
         """
         self.logger.info("开始特征选择...")
         
@@ -185,27 +182,41 @@ class DataPreprocessor:
         
         # 步骤1: 移除包含太多NaN的特征（向量化优化）
         nan_ratios = df[feature_cols].isna().mean()
-        valid_features = nan_ratios[nan_ratios < 0.2].index.tolist()  # 放宽缺失值阈值至0.2
-        self.logger.info(f"缺失值过滤后特征数量: {len(valid_features)} (过滤了 {len(feature_cols) - len(valid_features)} 个)")
+        valid_features = nan_ratios[nan_ratios < 0.2].index.tolist()
+        self.logger.info(f"缺失值过滤后特征数量: {len(valid_features)}")
         
         # 步骤2: 移除多重共线性特征
-        final_features = self._remove_multicollinearity(df[valid_features])
-        self.logger.info(f"多重共线性检测后最终特征数量: {len(final_features)}")
+        final_features = self._remove_multicollinearity(df[valid_features], vif_threshold=7.0)
+        self.logger.info(f"多重共线性检测后特征数量: {len(final_features)}")
+        
+        # 步骤3: 如果提供了模型，则使用SHAP特征重要性进一步筛选
+        if model and model.feature_importance_cache:
+            try:
+                top_features = model.get_top_features(top_n=30)
+                lgbm_features = [valid_features[idx] for idx, _ in top_features.get('lgbm', []) if idx < len(valid_features)]
+                lstm_features = [valid_features[idx] for idx, _ in top_features.get('lstm', []) if idx < len(valid_features)]
+                shap_features = list(set(lgbm_features + lstm_features) & set(final_features))
+                if shap_features:
+                    final_features = shap_features[:30]
+                    self.logger.info(f"SHAP特征选择后特征数量: {len(final_features)}")
+                else:
+                    self.logger.warning("SHAP特征选择返回空特征集，使用VIF筛选结果")
+            except Exception as e:
+                self.logger.warning(f"SHAP特征选择失败: {str(e)}, 使用VIF筛选结果")
         
         self.feature_columns = final_features
         self.logger.info(f"特征选择完成: 原始{len(feature_cols)} → 缺失值过滤{len(valid_features)} → 去多重共线性{len(final_features)}")
         
         return final_features
     
-    def _remove_multicollinearity(self, feature_df: pd.DataFrame) -> List[str]:
+    def _remove_multicollinearity(self, feature_df: pd.DataFrame, vif_threshold: float = 7.0) -> List[str]:
         """使用VIF移除多重共线性特征 - 优化版: 子采样加速"""
-        self.logger.info(f"开始多重共线性检测，输入特征数量: {len(feature_df.columns)}")
-        # 子采样：随机取min(10000, n)行加速
+        self.logger.info(f"开始多重共线性检测，输入特征数量: {len(feature_df.columns)}, VIF阈值: {vif_threshold}")
         sample_size = min(10000, len(feature_df))
         features = feature_df.sample(n=sample_size, random_state=42).copy()
         selected_features = []
         
-        # 预过滤高相关特征（优化阈值到0.8）
+        # 预过滤高相关特征
         corr_matrix = features.corr().abs()
         upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
         to_drop = [column for column in upper.columns if any(upper[column] > 0.8)]
@@ -213,7 +224,7 @@ class DataPreprocessor:
             self.logger.info(f"预过滤高相关特征: {len(to_drop)} 个 (相关系数>0.8)")
         features = features.drop(columns=to_drop)
         
-        # 计算VIF并迭代移除高VIF特征（阈值10）
+        # 计算VIF并迭代移除高VIF特征
         iteration = 0
         while len(features.columns) > 0 and len(selected_features) < 30:
             iteration += 1
@@ -235,211 +246,247 @@ class DataPreprocessor:
             vif_data["VIF"] = vifs
             vif_data = vif_data.sort_values("VIF")
             
-            # 记录VIF统计信息
             self.logger.debug(f"第{iteration}轮VIF计算: 最小VIF={vif_data['VIF'].iloc[0]:.2f}, 最大VIF={vif_data['VIF'].iloc[-1]:.2f}")
             
-            # 如果最小VIF大于10，没有可保留的特征
-            if vif_data["VIF"].iloc[0] > 10:
+            if vif_data["VIF"].iloc[0] > vif_threshold:
                 if not selected_features:
                     selected_features.append(vif_data["feature"].iloc[0])
-                    self.logger.info(f"所有VIF>10，保留最小VIF特征: {vif_data['feature'].iloc[0]}")
+                    self.logger.info(f"所有VIF>{vif_threshold}, 保留最小VIF特征: {vif_data['feature'].iloc[0]}")
                 break
             
-            # 添加最小VIF特征
             selected_feature = vif_data["feature"].iloc[0]
             selected_features.append(selected_feature)
-            
-            # 移除已选择特征并继续
             features = features.drop(columns=[selected_feature])
         
         self.logger.info(f"多重共线性检测完成: 最终选择 {len(selected_features)} 个特征")
-        
-        # 按原始顺序返回，最多保留30个特征
-        selected_features_limited = selected_features[:30]
-        self.logger.info(f"特征数量限制: 从 {len(selected_features)} 个减少到 {len(selected_features_limited)} 个")
-        return [col for col in feature_df.columns if col in selected_features_limited]
+        return [col for col in feature_df.columns if col in selected_features[:30]]
     
     def prepare_single_stock(self, df: pd.DataFrame, ts_code: str, features: List[str]) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        为单只股票准备时序数据
-        
-        Args:
-            df: 包含技术指标的DataFrame
-            ts_code: 股票代码
-            
-        Returns:
-            X_sequence: 时序特征 (samples, timesteps, features)
-            y: 目标变量 (samples,)
-        """
+        """为单支股票准备时序数据"""
         stock_df = df[df['ts_code'] == ts_code].copy()
-        
-        if len(stock_df) < self.lookback_window + 1:
-            self.logger.debug(f"股票 {ts_code} 数据不足: {len(stock_df)} < {self.lookback_window + 1}")
+        if len(stock_df) < self.lookback_window + self.prediction_horizon:
+            self.logger.warning(f"股票 {ts_code} 数据不足: {len(stock_df)} < {self.lookback_window + self.prediction_horizon}")
             return np.array([]), np.array([])
         
-        # 使用全局选择的特征
-        # 过滤掉股票数据中不存在的特征
-        available_features = [f for f in features if f in stock_df.columns]
-        if len(available_features) < len(features):
-            missing = set(features) - set(available_features)
-            self.logger.warning(f"股票 {ts_code} 缺少 {len(missing)} 个特征: {missing}")
-            features = available_features
+        X_stock = []
+        y_stock = []
+        for i in range(self.lookback_window, len(stock_df) - self.prediction_horizon + 1):
+            X_stock.append(stock_df[features].iloc[i-self.lookback_window:i].values)
+            y_stock.append(stock_df[self.target_column].iloc[i+self.prediction_horizon-1])
+        
+        X_stock = np.array(X_stock)
+        y_stock = np.array(y_stock)
+        
+        return X_stock, y_stock
+    
+    def create_train_test_split(self, X_sequence: np.ndarray, y: np.ndarray, stock_codes: np.ndarray, 
+                              split_method: str = 'time_series') -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """创建训练和测试数据集"""
+        self.logger.info(f"开始创建训练测试集，样本数量: {len(X_sequence)}")
+        
+        if split_method == 'random':
+            X_train, X_test, y_train, y_test = train_test_split(
+                X_sequence, y, test_size=self.test_size, random_state=42
+            )
+        elif split_method == 'time_series':
+            tscv = TimeSeriesSplit(n_splits=int(1/self.test_size))
+            train_idx, test_idx = list(tscv.split(X_sequence))[-1]
+            X_train, X_test = X_sequence[train_idx], X_sequence[test_idx]
+            y_train, y_test = y[train_idx], y[test_idx]
+        else:
+            raise ValueError(f"不支持的分割方法: {split_method}")
+        
+        self.logger.info(f"训练测试分割完成: {len(X_train)} train, {len(X_test)} test samples")
+        return X_train, X_test, y_train, y_test
+    
+    def transform_features(self, X: np.ndarray) -> np.ndarray:
+        """转换特征数据"""
+        if not self.is_fitted:
+            raise ValueError("Preprocessor not fitted. Call fit() first.")
+        
+        X_reshaped = X.reshape(-1, X.shape[-1])
+        X_cleaned = self._clean_data(X_reshaped)
+        X_scaled = self.feature_scaler.transform(X_cleaned)
+        return X_scaled.reshape(X.shape)
+    
+    def transform_target(self, y: np.ndarray) -> np.ndarray:
+        """转换目标变量"""
+        if not self.is_fitted:
+            raise ValueError("Preprocessor not fitted. Call fit() first.")
+        
+        y_cleaned = y.copy()
+        y_finite = np.isfinite(y_cleaned)
+        if not np.all(y_finite):
+            y_cleaned[~y_finite] = self.target_imputation_value
+        y_cleaned = np.clip(y_cleaned, self.target_outlier_lower, self.target_outlier_upper)
+        return self.target_scaler.transform(y_cleaned.reshape(-1, 1)).flatten()
+    
+    def _clean_data(self, X: np.ndarray) -> np.ndarray:
+        """清洗数据，处理缺失值和异常值"""
+        X_cleaned = X.copy()
+        for col in range(X.shape[1]):
+            mask = ~np.isfinite(X_cleaned[:, col])
+            if np.any(mask):
+                X_cleaned[mask, col] = self.imputation_values.get(col, 0.0)
+            X_cleaned[:, col] = np.clip(
+                X_cleaned[:, col],
+                self.outlier_lower_bounds.get(col, -np.inf),
+                self.outlier_upper_bounds.get(col, np.inf)
+            )
+        return X_cleaned
+    
+    def fit(self, df: pd.DataFrame, model: Optional['LSTMLGBMPredictor'] = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """
+        一站式数据预处理和特征选择
+        """
+        self.logger.info("开始数据预处理和拟合...")
+        result_df = self.create_features(df)
+        result_df = self.create_target(result_df)
+        
+        # 选择特征
+        self.feature_columns = self.select_features(result_df, model)
+        self.logger.info(f"最终选择的特征: {self.feature_columns}")
         
         # 创建时序数据
-        X_sequence = []
-        y = []
+        self.logger.info("创建时序数据...")
+        X_sequence, y, stock_codes, dates = self.create_sequences(result_df, self.feature_columns)
         
-        valid_samples = 0
-        for i in range(self.lookback_window, len(stock_df)):
-            # 检查是否有足够的历史数据
-            sequence = stock_df[features].iloc[i-self.lookback_window:i].values
-            target = stock_df[self.target_column].iloc[i]
-            if np.isfinite(target):  # 跳过无效目标
-                X_sequence.append(sequence)
-                y.append(target)
-                valid_samples += 1
+        if len(X_sequence) == 0:
+            self.logger.error("没有有效的时序数据")
+            return np.array([]), np.array([]), np.array([]), np.array([])
         
-        if valid_samples == 0:
-            return np.array([]), np.array([])
+        # 重塑数据以拟合缩放器
+        X_reshaped = X_sequence.reshape(-1, X_sequence.shape[-1])
         
-        return np.array(X_sequence), np.array(y)
-    
-    def prepare_and_fit(self, df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray, List[str], List[str]]:
-        """
-        一站式数据准备和模型拟合
+        # 数据清洗：处理缺失值和异常值
+        self.logger.info("开始数据清洗...")
+        X_cleaned = self._clean_data(X_reshaped)
         
-        Args:
-            df: 从TechnicalIndicators获得的DataFrame
+        # 拟合特征缩放器
+        self.logger.info("拟合特征缩放器...")
+        self.feature_scaler.fit(X_cleaned)
+        
+        # 处理目标变量
+        self.logger.info("处理目标变量...")
+        y_cleaned = y.copy()
+        y_finite = np.isfinite(y_cleaned)
+        
+        if not np.all(y_finite):
+            finite_y = y_cleaned[y_finite]
+            missing_count = np.sum(~y_finite)
+            self.logger.info(f"目标变量缺失值: {missing_count}/{len(y)} ({missing_count/len(y)*100:.1f}%)")
             
-        Returns:
-            X_sequence_scaled: 标准化后的时序特征
-            y_scaled: 标准化后的目标变量
-            stock_codes: 样本对应的股票代码
-            dates: 样本对应的日期
-        """
-        self.logger.info("开始一站式数据准备和模型拟合...")
+            if self.imputation_strategy == 'mean':
+                self.target_imputation_value = np.mean(finite_y)
+            elif self.imputation_strategy == 'mode':
+                self.target_imputation_value = pd.Series(finite_y).mode()[0]
+            elif self.imputation_strategy == 'hybrid':
+                y_temp = pd.Series(y_cleaned).ffill().values
+                mask = ~np.isfinite(y_temp)
+                if np.any(mask):
+                    y_temp[mask] = np.median(finite_y)
+                y_cleaned = y_temp
+                self.target_imputation_value = np.median(finite_y)
+            else:  # median
+                self.target_imputation_value = np.median(finite_y)
+            y_cleaned[~y_finite] = self.target_imputation_value
+            self.logger.info(f"目标变量填充值: {self.target_imputation_value:.4f}")
+        else:
+            if self.imputation_strategy == 'mean':
+                self.target_imputation_value = np.mean(y_cleaned)
+            elif self.imputation_strategy == 'mode':
+                self.target_imputation_value = pd.Series(y_cleaned).mode()[0]
+            else:  # median or hybrid
+                self.target_imputation_value = np.median(y_cleaned)
+            self.logger.info(f"目标变量无需填充，均值: {self.target_imputation_value:.4f}")
         
-        # 步骤1: 创建特征
-        self.logger.info("步骤1: 创建特征...")
-        df = self.create_features(df)
+        # 拟合目标变量缩放器
+        self.logger.info("拟合目标变量缩放器...")
+        y_reshaped = y_cleaned.reshape(-1, 1)
+        self.target_scaler.fit(y_reshaped)
         
-        # 步骤2: 创建目标变量
-        self.logger.info("步骤2: 创建目标变量...")
-        df = self.create_target(df)
+        # 设置is_fitted标志
+        self.is_fitted = True
         
-        # 数据质量检查
-        self.logger.info("数据质量检查...")
-        null_counts = df.isnull().sum().sum()
-        if null_counts > 0:
-            self.logger.warning(f"发现{null_counts}个空值，将在预处理中处理")
+        # 现在可以安全地进行 Collateral
+        # 执行SHAP特征选择（如果需要）
+        if model is not None and len(X_sequence) > self.shap_subset_size:
+            self.logger.info(f"对{self.shap_subset_size}个样本执行SHAP特征选择...")
+            subset_indices = np.random.choice(len(X_sequence), size=self.shap_subset_size, replace=False)
+            X_subset = X_sequence[subset_indices]
+            y_subset = y[subset_indices]
+            
+            # 现在可以安全调用transform_features
+            X_subset_scaled = self.transform_features(X_subset)
+            shap_values = model.compute_shap_values(X_subset_scaled, y_subset)
+            feature_importance = np.abs(shap_values).mean(axis=0)
+            importance_df = pd.DataFrame({
+                'feature': self.feature_columns,
+                'importance': feature_importance
+            })
+            importance_df = importance_df.sort_values('importance', ascending=False)
+            selected_features = importance_df['feature'].iloc[:int(len(self.feature_columns) * 0.5)].tolist()
+            self.feature_columns = [f for f in self.feature_columns if f in selected_features]
+            self.logger.info(f"SHAP特征选择完成: 保留{len(self.feature_columns)}个特征")
         
-        # 步骤3: 全局特征选择
-        self.logger.info("步骤3: 全局特征选择...")
-        self.feature_columns = self.select_features(df)
-        
-        # 步骤4: 收集时序数据 (并行化优化)
-        self.logger.info("步骤4: 收集时序数据...")
-        
-        def process_stock(ts_code):
-            stock_df = df[df['ts_code'] == ts_code]
-            return self.prepare_single_stock(stock_df, ts_code, self.feature_columns)
-        
-        unique_codes = df['ts_code'].unique()
-        results = Parallel(n_jobs=-1)(
-            delayed(process_stock)(code) for code in tqdm(unique_codes, desc="处理股票")
-        )
-        
-        X_sequence_list = []
-        y_list = []
-        stock_codes_list = []
-        dates_list = []
-        
-        for idx, (X_stock, y_stock) in enumerate(results):
-            if len(X_stock) > 0:
-                X_sequence_list.append(X_stock)
-                y_list.append(y_stock)
-                # 添加股票代码和日期 (假设从df中提取，简化)
-                stock_df = df[df['ts_code'] == unique_codes[idx]]
-                dates = stock_df['trade_date'].iloc[self.lookback_window:].values
-                stock_codes_list.extend([unique_codes[idx]] * len(y_stock))
-                dates_list.extend(dates)
-        
-        X_sequence = np.concatenate(X_sequence_list)
-        y = np.concatenate(y_list)
-        stock_codes = stock_codes_list
-        dates = dates_list
-        
-        self.logger.info("数据准备完成:")
-        self.logger.info(f"- 处理股票数: {len(unique_codes)}/{len(unique_codes)}")
-        self.logger.info(f"- 总样本数: {len(X_sequence)}")
-        self.logger.info(f"- 特征维度: {X_sequence.shape[-1]}")
-        self.logger.info(f"- 时间步长: {X_sequence.shape[1]}")
-        
-        gc.collect()  # 内存清理
-        
-        # 步骤5: 拟合预处理器
-        self.logger.info("开始模型拟合，计算预处理参数...")
-        self.fit(X_sequence, y)
-        
-        # 步骤6: 转换数据
-        self.logger.info("转换数据...")
+        # 转换数据
         X_sequence_scaled = self.transform_features(X_sequence)
         y_scaled = self.transform_target(y)
         
-        self.logger.info(f"一站式处理完成: 获得{len(X_sequence_scaled)}个样本，{len(stock_codes)}支股票")
-        self.logger.info(f"最终数据维度: X= {X_sequence_scaled.shape}, y={y_scaled.shape}")
-        
-        gc.collect()
-        
+        self.logger.info("数据预处理和模型拟合完成")
         return X_sequence_scaled, y_scaled, stock_codes, dates
-    
-    def fit(self, X: np.ndarray, y: np.ndarray) -> None:
-        """
-        拟合预处理器，包括缺失值填充、异常值处理和缩放器拟合
         
-        Args:
-            X: 时序特征 (samples, timesteps, features)
-            y: 目标变量 (samples,)
-        """
-        self.logger.info("开始拟合预处理器...")
-        self.logger.info(f"训练数据形状: X={X.shape}, y={y.shape}")
+        def process_stock(ts_code):
+            X_stock, y_stock = self.prepare_single_stock(df, ts_code, self.feature_columns)
+            if len(X_stock) > 0:
+                return X_stock, y_stock, [ts_code] * len(X_stock), df[df['ts_code'] == ts_code]['trade_date'].iloc[self.lookback_window:].values
+            return np.array([]), np.array([]), [], []
         
-        # 重塑X以进行统计计算
-        X_reshaped = X.reshape(-1, X.shape[-1]).astype(np.float32)  # 优化: float32减内存
+        results = Parallel(n_jobs=-1, backend='loky')(
+            delayed(process_stock)(ts_code) for ts_code in tqdm(df['ts_code'].unique(), desc="Processing stocks")
+        )
+        
+        for X_stock, y_stock, codes, stock_dates in results:
+            if len(X_stock) > 0:
+                X_sequence.append(X_stock)
+                y.append(y_stock)
+                stock_codes.extend(codes)
+                dates.extend(stock_dates)
+        
+        if not X_sequence:
+            raise ValueError("没有有效的时序数据，请检查输入数据或参数设置")
+        
+        X_sequence = np.concatenate(X_sequence, axis=0)
+        y = np.concatenate(y, axis=0)
+        stock_codes = np.array(stock_codes)
+        dates = np.array(dates)
+        
+        self.logger.info(f"时序数据准备完成: {len(X_sequence)} 个样本，{len(np.unique(stock_codes))} 支股票")
+        
+        # 计算特征缺失值填充值和异常值阈值
+        self.logger.info("计算特征填充值和异常值阈值...")
+        X_reshaped = X_sequence.reshape(-1, X_sequence.shape[-1])
         n_samples, n_features = X_reshaped.shape
-        
-        # 1. 计算缺失值填充值
-        self.logger.info("计算缺失值填充值...")
-        self.imputation_values = np.zeros(n_features)
-        missing_counts = []
-        for col in range(n_features):
-            col_data = X_reshaped[:, col]
-            finite_mask = np.isfinite(col_data)
-            finite_data = col_data[finite_mask]
-            missing_count = np.sum(~finite_mask)
-            missing_counts.append(missing_count)
-            
-            if len(finite_data) == 0:
-                self.imputation_values[col] = 0.0
-            elif self.imputation_strategy == 'mean':
-                self.imputation_values[col] = np.mean(finite_data)
-            elif self.imputation_strategy == 'mode':
-                self.imputation_values[col] = pd.Series(finite_data).mode()[0] if len(finite_data) > 0 else 0.0
-            else:  # median
-                self.imputation_values[col] = np.median(finite_data)
-        
-        total_missing = np.sum(missing_counts)
-        self.logger.info(f"缺失值统计: 总缺失值 {total_missing}, 平均每特征 {total_missing/n_features:.1f}")
-        
-        # 2. 计算异常值阈值
-        self.logger.info("计算异常值阈值...")
+        self.imputation_values = {}
         self.outlier_lower_bounds = {}
         self.outlier_upper_bounds = {}
         outlier_counts = []
+        
         for col in range(n_features):
-            col_data = X_reshaped[:, col]
-            finite_mask = np.isfinite(col_data)
-            finite_data = col_data[finite_mask]
+            finite_data = X_reshaped[np.isfinite(X_reshaped[:, col]), col]
+            if len(finite_data) == 0:
+                self.imputation_values[col] = 0.0
+                self.outlier_lower_bounds[col] = -np.inf
+                self.outlier_upper_bounds[col] = np.inf
+                outlier_counts.append(0)
+                continue
+            
+            if self.imputation_strategy == 'mean':
+                self.imputation_values[col] = np.mean(finite_data)
+            elif self.imputation_strategy == 'mode':
+                self.imputation_values[col] = pd.Series(finite_data).mode()[0]
+            else:  # median or hybrid
+                self.imputation_values[col] = np.median(finite_data)
             
             if self.outlier_detection == 'iqr':
                 q25, q75 = np.percentile(finite_data, [25, 75])
@@ -463,7 +510,7 @@ class DataPreprocessor:
         total_outliers = np.sum(outlier_counts)
         self.logger.info(f"异常值统计: 总异常值 {total_outliers}, 平均每特征 {total_outliers/n_features:.1f}")
         
-        # 3. 处理训练数据并拟合缩放器
+        # 处理训练数据并拟合缩放器
         self.logger.info("开始数据清洗...")
         X_cleaned = self._clean_data(X_reshaped)
         
@@ -481,17 +528,23 @@ class DataPreprocessor:
                 self.target_imputation_value = np.mean(finite_y)
             elif self.imputation_strategy == 'mode':
                 self.target_imputation_value = pd.Series(finite_y).mode()[0]
+            elif self.imputation_strategy == 'hybrid':
+                y_temp = pd.Series(y_cleaned).ffill().values
+                mask = ~np.isfinite(y_temp)
+                if np.any(mask):
+                    y_temp[mask] = np.median(finite_y)
+                y_cleaned = y_temp
+                self.target_imputation_value = np.median(finite_y)
             else:  # median
                 self.target_imputation_value = np.median(finite_y)
             y_cleaned[~y_finite] = self.target_imputation_value
             self.logger.info(f"目标变量填充值: {self.target_imputation_value:.4f}")
         else:
-            # 所有值都是有限的，直接计算填充值
             if self.imputation_strategy == 'mean':
                 self.target_imputation_value = np.mean(y_cleaned)
             elif self.imputation_strategy == 'mode':
                 self.target_imputation_value = pd.Series(y_cleaned).mode()[0]
-            else:  # median
+            else:  # median or hybrid
                 self.target_imputation_value = np.median(y_cleaned)
             self.logger.info(f"目标变量无需填充，均值: {self.target_imputation_value:.4f}")
         
@@ -528,161 +581,38 @@ class DataPreprocessor:
         y_reshaped = y_cleaned.reshape(-1, 1)
         self.target_scaler.fit(y_reshaped)
         
+        # 转换数据
+        X_sequence_scaled = self.transform_features(X_sequence)
+        y_scaled = self.transform_target(y)
+        
         self.is_fitted = True
-        self.logger.info("模型拟合完成，所有预处理参数已计算")
+        self.logger.info("数据预处理和模型拟合完成")
+        
+        return X_sequence_scaled, y_scaled, stock_codes, dates
     
-    def _clean_data(self, X_reshaped: np.ndarray) -> np.ndarray:
+    def fit_scalers(self, X: np.ndarray, y: np.ndarray) -> None:
         """
-        使用拟合阶段计算的参数清洗数据
-        
-        参数:
-            X_reshaped: 展平后的特征数据，形状为 (samples*timesteps, features)
-        
-        返回:
-            清洗后的特征数据
+        [已弃用] 仅拟合特征和目标变量的缩放器
         """
-        X_cleaned = X_reshaped.copy()
-        n_samples, n_features = X_cleaned.shape
+        warnings.warn(
+            "fit_scalers() is deprecated. Use fit() instead for complete preprocessing.",
+            DeprecationWarning,
+            stacklevel=2
+        )
         
-        # 1. 使用存储的填充值处理缺失值
-        for col in range(n_features):
-            mask = ~np.isfinite(X_cleaned[:, col])
-            if np.any(mask):
-                X_cleaned[mask, col] = self.imputation_values[col]
-        
-        # 2. 使用存储的阈值处理异常值
-        for col in range(n_features):
-            lower = self.outlier_lower_bounds[col]
-            upper = self.outlier_upper_bounds[col]
-            if not np.isinf(lower) and not np.isinf(upper):
-                mask = (X_cleaned[:, col] < lower) | (X_cleaned[:, col] > upper)
-                if np.any(mask):
-                    X_cleaned[mask, col] = np.clip(X_cleaned[mask, col], lower, upper)
-        
-        return X_cleaned
-    
-    def transform_features(self, X: np.ndarray) -> np.ndarray:
-        """
-        转换特征
-        
-        Args:
-            X: 原始特征 (samples, timesteps, features)
-            
-        Returns:
-            标准化后的特征
-        """
-        if not self.is_fitted:
-            raise RuntimeError("Preprocessor has not been fitted. Call fit() first.")
-        
+        self.logger.info("开始拟合缩放器...")
         X_reshaped = X.reshape(-1, X.shape[-1])
-        X_cleaned = self._clean_data(X_reshaped)
-        X_scaled = self.feature_scaler.transform(X_cleaned)
-        return X_scaled.reshape(X.shape)
-    
-    def transform_target(self, y: np.ndarray) -> np.ndarray:
-        """
-        转换目标变量
+        X_finite = np.isfinite(X_reshaped)
+        y_finite = np.isfinite(y)
         
-        Args:
-            y: 原始目标变量
-            
-        Returns:
-            标准化后的目标变量
-        """
-        if not self.is_fitted:
-            raise RuntimeError("Preprocessor has not been fitted. Call fit() first.")
+        if not np.all(X_finite) or not np.all(y_finite):
+            raise ValueError("数据中存在NaN或无穷大值，请先清洗数据")
         
-        y_reshaped = y.reshape(-1, 1)
-        # 对目标变量应用相同的数据清洗逻辑
-        y_cleaned = self._clean_target(y_reshaped)
-        y_scaled = self.target_scaler.transform(y_cleaned)
-        return y_scaled.flatten()
-    
-    def _clean_target(self, y_reshaped: np.ndarray) -> np.ndarray:
-        """
-        清洗目标变量数据
+        self.feature_scaler.fit(X_reshaped)
+        self.target_scaler.fit(y.reshape(-1, 1))
         
-        参数:
-            y_reshaped: 展平后的目标变量，形状为 (samples, 1)
-        
-        返回:
-            清洗后的目标变量
-        """
-        y_cleaned = y_reshaped.copy()
-        
-        # 处理缺失值
-        mask = ~np.isfinite(y_cleaned)
-        if np.any(mask):
-            y_cleaned[mask] = self.target_imputation_value
-        
-        # 处理异常值
-        lower = self.target_outlier_lower
-        upper = self.target_outlier_upper
-        if not np.isinf(lower) and not np.isinf(upper):
-            mask = (y_cleaned < lower) | (y_cleaned > upper)
-            if np.any(mask):
-                y_cleaned[mask] = np.clip(y_cleaned[mask], lower, upper)
-        
-        return y_cleaned
-    
-    def inverse_transform_target(self, y_scaled: np.ndarray) -> np.ndarray:
-        """
-        目标变量逆转换
-        
-        Args:
-            y_scaled: 标准化后的目标变量
-            
-        Returns:
-            原始尺度的目标变量
-        """
-        y_reshaped = y_scaled.reshape(-1, 1)
-        y_inv = self.target_scaler.inverse_transform(y_reshaped)
-        return y_inv.flatten()
-    
-    def create_train_test_split(self, X: np.ndarray, y: np.ndarray, stock_codes: Optional[List[str]] = None, 
-                               split_method: str = 'time_series') -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """
-        创建训练测试集分割
-        
-        Args:
-            X: 特征数据
-            y: 目标变量
-            split_method: 分割方法 ('time_series', 'random', 'by_stock')
-            
-        Returns:
-            X_train, X_test, y_train, y_test
-        """
-        if split_method == 'time_series':
-            # 时间序列分割
-            split_index = int(len(X) * (1 - self.test_size))
-            X_train, X_test = X[:split_index], X[split_index:]
-            y_train, y_test = y[:split_index], y[split_index:]
-            
-        elif split_method == 'random':
-            from sklearn.model_selection import train_test_split
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y, test_size=self.test_size, random_state=42, shuffle=True
-            )
-            
-        elif split_method == 'by_stock':
-            # 按股票分割（避免数据泄露）
-            # 获取唯一股票代码
-            unique_stocks = np.unique(stock_codes)
-            np.random.seed(42)
-            np.random.shuffle(unique_stocks)
-            split_idx = int(len(unique_stocks) * (1 - self.test_size))
-            train_stocks = set(unique_stocks[:split_idx])
-            
-            # 创建掩码
-            train_mask = np.array([code in train_stocks for code in stock_codes])
-            test_mask = ~train_mask
-            
-            X_train, X_test = X[train_mask], X[test_mask]
-            y_train, y_test = y[train_mask], y[test_mask]
-        
-        self.logger.info(f"Train/test split completed: {len(X_train)} train, {len(X_test)} test samples")
-        
-        return X_train, X_test, y_train, y_test
+        self.is_fitted = True
+        self.logger.info("缩放器拟合完成")
     
     def get_feature_names(self) -> List[str]:
         """获取特征名称"""
@@ -708,7 +638,13 @@ class DataPreprocessor:
             'feature_columns': self.feature_columns,
             'lookback_window': self.lookback_window,
             'prediction_horizon': self.prediction_horizon,
-            'data_info': self.data_info
+            'data_info': self.data_info,
+            'imputation_values': self.imputation_values,
+            'outlier_lower_bounds': self.outlier_lower_bounds,
+            'outlier_upper_bounds': self.outlier_upper_bounds,
+            'target_imputation_value': self.target_imputation_value,
+            'target_outlier_lower': self.target_outlier_lower,
+            'target_outlier_upper': self.target_outlier_upper
         }
         joblib.dump(save_data, path)
         self.logger.info(f"Preprocessor saved to {path}")
@@ -722,40 +658,11 @@ class DataPreprocessor:
         self.lookback_window = save_data['lookback_window']
         self.prediction_horizon = save_data['prediction_horizon']
         self.data_info = save_data['data_info']
-        self.logger.info(f"Preprocessor loaded from {path}")
-
-    def fit_scalers(self, X: np.ndarray, y: np.ndarray) -> None:
-        """
-        [已弃用] 仅拟合特征和目标变量的缩放器
-        
-        注意: 此方法已弃用，建议使用fit()方法，它提供更完整的数据预处理功能
-        
-        Args:
-            X: 时序特征 (samples, timesteps, features)
-            y: 目标变量 (samples,)
-        """
-        import warnings
-        warnings.warn(
-            "fit_scalers() is deprecated. Use fit() instead for complete preprocessing including outlier detection and imputation.",
-            DeprecationWarning,
-            stacklevel=2
-        )
-        
-        self.logger.info("开始拟合缩放器...")
-        
-        # 重塑X以拟合缩放器
-        X_reshaped = X.reshape(-1, X.shape[-1])
-        
-        # 确保数据有效性
-        X_finite = np.isfinite(X_reshaped)
-        y_finite = np.isfinite(y)
-        
-        if not np.all(X_finite) or not np.all(y_finite):
-            raise ValueError("数据中存在NaN或无穷大值，请先清洗数据")
-        
-        # 直接拟合缩放器（假设数据已清洗）
-        self.feature_scaler.fit(X_reshaped)
-        self.target_scaler.fit(y.reshape(-1, 1))
-        
+        self.imputation_values = save_data.get('imputation_values', None)
+        self.outlier_lower_bounds = save_data.get('outlier_lower_bounds', None)
+        self.outlier_upper_bounds = save_data.get('outlier_upper_bounds', None)
+        self.target_imputation_value = save_data.get('target_imputation_value', None)
+        self.target_outlier_lower = save_data.get('target_outlier_lower', None)
+        self.target_outlier_upper = save_data.get('target_outlier_upper', None)
         self.is_fitted = True
-        self.logger.info("缩放器拟合完成")
+        self.logger.info(f"Preprocessor loaded from {path}")

@@ -401,3 +401,1175 @@ TypeError: This optimizer was created with a `LearningRateSchedule` object as it
 2025-08-21 17:01:32 - src.model.lstm_lgbm_predictor - INFO - 可用内存: 4.29 GB
 2025-08-21 17:01:32 - src.model.lstm_lgbm_predictor - INFO - 无GPU，使用CPU
 2025-08-21 17:01:32 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...
+2025-08-21 22:27:01 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 22:27:01 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 22:27:01 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 22:27:01 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 22:27:02 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 22:27:02 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 22:27:08 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
+2025-08-21 22:27:08 - __main__ - INFO - 技术指标列表示例: ['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MA10', 'MA20', 'RSI6', 'RSI12', 'MOM', 'KDJ_K', 'KDJ_D', 'KDJ_J', 'CCI', 'ADX', 'PLUS_DI', 'MINUS_DI', 'MACD', 'MACD_Signal', 'MACD_Hist', 'BB_upper', 'BB_middle', 'BB_lower', 'ATR', 'VOL_MA5', 'VOL_MA10', 'OBV', 'CMF', 'MFI', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
+2025-08-21 22:27:08 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-21 22:27:08 - __main__ - INFO - 数据质量检查...
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 数据质量检查...
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - WARNING - 发现800个空值，将在预处理中处理
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
+2025-08-21 22:27:08 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 19 个 (相关系数>0.8)
+2025-08-21 22:27:09 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 20 个特征
+2025-08-21 22:27:09 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 20 个减少到 20 个
+2025-08-21 22:27:09 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 20
+2025-08-21 22:27:09 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性20
+2025-08-21 22:27:09 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
+2025-08-21 22:30:17 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
+2025-08-21 22:30:17 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
+2025-08-21 22:30:17 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
+2025-08-21 22:30:17 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 20
+2025-08-21 22:30:17 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
+2025-08-21 22:30:17 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
+2025-08-21 22:30:17 - src.data_preprocessing.data_preprocessor - INFO - 开始拟合预处理器...
+2025-08-21 22:30:17 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 20), y=(674896,)
+2025-08-21 22:30:18 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
+2025-08-21 22:30:20 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
+2025-08-21 22:30:20 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
+2025-08-21 22:30:22 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 4133110, 平均每特征 206655.5
+2025-08-21 22:30:22 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
+2025-08-21 22:30:25 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
+2025-08-21 22:30:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
+2025-08-21 22:30:25 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
+2025-08-21 22:30:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0779, 0.0785]
+2025-08-21 22:30:25 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 12332/674896 个异常值
+2025-08-21 22:30:25 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
+2025-08-21 22:30:27 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
+2025-08-21 22:30:27 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
+2025-08-21 22:30:27 - src.data_preprocessing.data_preprocessor - INFO - 转换数据...
+2025-08-21 22:30:32 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
+2025-08-21 22:30:32 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X= (674896, 20, 20), y=(674896,)
+2025-08-21 22:30:32 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
+2025-08-21 22:30:32 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 20), y=(674896,)
+2025-08-21 22:30:32 - __main__ - INFO - ====== 创建训练测试集 ======
+2025-08-21 22:30:32 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
+2025-08-21 22:30:32 - __main__ - INFO - 数据分割完成:
+2025-08-21 22:30:32 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
+2025-08-21 22:30:32 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
+2025-08-21 22:30:32 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
+2025-08-21 22:30:32 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
+2025-08-21 22:30:32 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 20)
+2025-08-21 22:30:34 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
+2025-08-21 22:30:55 - src.model.lstm_lgbm_predictor - INFO - 可用内存: 15.42 GB
+2025-08-21 22:30:55 - src.model.lstm_lgbm_predictor - INFO - 无GPU，使用CPU
+2025-08-21 22:30:55 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...
+2025-08-21 22:38:40 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 22:38:40 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 22:38:40 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 22:38:40 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 22:38:41 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 22:38:41 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 22:38:47 - __main__ - INFO - 计算技术指标完成: 新增36个特征，总特征数=48
+2025-08-21 22:38:47 - __main__ - INFO - 技术指标列表示例: ['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MA10', 'MA20', 'RSI6', 'RSI12', 'MOM', 'KDJ_K', 'KDJ_D', 'KDJ_J', 'CCI', 'ADX', 'PLUS_DI', 'MINUS_DI', 'MACD', 'MACD_Signal', 'MACD_Hist', 'BB_upper', 'BB_middle', 'BB_lower', 'ATR', 'VOL_MA5', 'VOL_MA10', 'OBV', 'CMF', 'MFI', 'CDL_BULLISH_ENGULFING', 'CDL_HAMMER', 'CDL_DOJI', 'CDL_MORNINGSTAR', 'CDL_THREEWHITESOLDIERS', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D', 'price_momentum', 'volume_momentum']
+2025-08-21 22:38:47 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-21 22:38:47 - __main__ - INFO - 数据质量检查...
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和模型拟合...
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 步骤1: 创建特征...
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 48)
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 步骤2: 创建目标变量...
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 数据质量检查...
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - WARNING - 发现800个空值，将在预处理中处理
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 步骤3: 全局特征选择...
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 42
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 42 (过滤了 0 个)
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 42
+2025-08-21 22:38:47 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 19 个 (相关系数>0.8)
+2025-08-21 22:38:48 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 20 个特征
+2025-08-21 22:38:48 - src.data_preprocessing.data_preprocessor - INFO - 特征数量限制: 从 20 个减少到 20 个
+2025-08-21 22:38:48 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后最终特征数量: 20
+2025-08-21 22:38:48 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始42 → 缺失值过滤42 → 去多重共线性20
+2025-08-21 22:38:48 - src.data_preprocessing.data_preprocessor - INFO - 步骤4: 收集时序数据...
+2025-08-21 22:41:46 - src.data_preprocessing.data_preprocessor - INFO - 数据准备完成:
+2025-08-21 22:41:46 - src.data_preprocessing.data_preprocessor - INFO - - 处理股票数: 800/800
+2025-08-21 22:41:46 - src.data_preprocessing.data_preprocessor - INFO - - 总样本数: 674896
+2025-08-21 22:41:46 - src.data_preprocessing.data_preprocessor - INFO - - 特征维度: 20
+2025-08-21 22:41:46 - src.data_preprocessing.data_preprocessor - INFO - - 时间步长: 20
+2025-08-21 22:41:46 - src.data_preprocessing.data_preprocessor - INFO - 开始模型拟合，计算预处理参数...
+2025-08-21 22:41:46 - src.data_preprocessing.data_preprocessor - INFO - 开始拟合预处理器...
+2025-08-21 22:41:46 - src.data_preprocessing.data_preprocessor - INFO - 训练数据形状: X=(674896, 20, 20), y=(674896,)
+2025-08-21 22:41:46 - src.data_preprocessing.data_preprocessor - INFO - 计算缺失值填充值...
+2025-08-21 22:41:49 - src.data_preprocessing.data_preprocessor - INFO - 缺失值统计: 总缺失值 0, 平均每特征 0.0
+2025-08-21 22:41:49 - src.data_preprocessing.data_preprocessor - INFO - 计算异常值阈值...
+2025-08-21 22:41:50 - src.data_preprocessing.data_preprocessor - INFO - 异常值统计: 总异常值 4133110, 平均每特征 206655.5
+2025-08-21 22:41:50 - src.data_preprocessing.data_preprocessor - INFO - 开始数据清洗...
+2025-08-21 22:41:53 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
+2025-08-21 22:41:53 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: -0.0007
+2025-08-21 22:41:53 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
+2025-08-21 22:41:53 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-0.0779, 0.0785]
+2025-08-21 22:41:53 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 12332/674896 个异常值
+2025-08-21 22:41:53 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
+2025-08-21 22:41:55 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
+2025-08-21 22:41:55 - src.data_preprocessing.data_preprocessor - INFO - 模型拟合完成，所有预处理参数已计算
+2025-08-21 22:41:55 - src.data_preprocessing.data_preprocessor - INFO - 转换数据...
+2025-08-21 22:42:01 - src.data_preprocessing.data_preprocessor - INFO - 一站式处理完成: 获得674896个样本，674896支股票
+2025-08-21 22:42:01 - src.data_preprocessing.data_preprocessor - INFO - 最终数据维度: X= (674896, 20, 20), y=(674896,)
+2025-08-21 22:42:01 - __main__ - INFO - 数据预处理完成: 获得674896个样本，674896支股票
+2025-08-21 22:42:01 - __main__ - INFO - 时序数据维度: X_sequence=(674896, 20, 20), y=(674896,)
+2025-08-21 22:42:01 - __main__ - INFO - ====== 创建训练测试集 ======
+2025-08-21 22:42:01 - src.data_preprocessing.data_preprocessor - INFO - Train/test split completed: 539916 train, 134980 test samples
+2025-08-21 22:42:01 - __main__ - INFO - 数据分割完成:
+2025-08-21 22:42:01 - __main__ - INFO -   训练集: 539916个样本 (80.0%)
+2025-08-21 22:42:01 - __main__ - INFO -   测试集: 134980个样本 (20.0%)
+2025-08-21 22:42:01 - __main__ - INFO - ====== 开始训练LSTM+LightGBM混合模型 ======
+2025-08-21 22:42:01 - src.model.lstm_lgbm_predictor - INFO - 开始混合模型训练，样本数量: 539916
+2025-08-21 22:42:01 - src.model.lstm_lgbm_predictor - INFO - 输入序列形状: (539916, 20, 20)
+2025-08-21 22:42:03 - src.model.lstm_lgbm_predictor - INFO - 训练LightGBM模型...
+2025-08-21 22:42:24 - src.model.lstm_lgbm_predictor - INFO - 可用内存: 14.43 GB
+2025-08-21 22:42:24 - src.model.lstm_lgbm_predictor - INFO - 无GPU，使用CPU
+2025-08-21 22:42:24 - src.model.lstm_lgbm_predictor - INFO - 训练LSTM模型...
+2025-08-21 22:45:02 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 22:45:02 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 22:45:02 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 22:45:02 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 22:45:03 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 22:45:03 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:45:04 - __main__ - ERROR - 系统执行失败: input array type is not double
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 52, in main
+    df_with_indicators = ti.calculate_all_indicators()
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 307, in calculate_all_indicators
+    results = list(executor.map(compute_group, groups))
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 608, in result_iterator
+    yield fs.pop().result()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 438, in result
+    return self.__get_result()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 390, in __get_result
+    raise self._exception
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/thread.py", line 52, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 291, in compute_group
+    stoch_rsi_k, stoch_rsi_d = ti.calculate_stoch_rsi(close)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 187, in calculate_stoch_rsi
+    stoch_rsi_d = talib.SMA(stoch_rsi_k, timeperiod=smoothd).astype(np.float32)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/talib/__init__.py", line 80, in wrapper
+    result = func(*_args, **_kwds)
+  File "talib/_func.pxi", line 4638, in talib._ta_lib.SMA
+  File "talib/_func.pxi", line 22, in talib._ta_lib.check_array
+Exception: input array type is not double
+2025-08-21 22:49:21 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 22:49:21 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 22:49:21 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 22:49:21 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 22:49:23 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 22:49:23 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 22:49:23 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:23 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:23 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:23 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:23 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:23 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:24 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:25 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:26 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:27 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - src.data_preprocessing.technical_indicators - INFO - Computing top indicators only (RSI, MACD, BB, Volume, Momentum)
+2025-08-21 22:49:28 - __main__ - INFO - 计算技术指标完成: 新增28个特征，总特征数=40
+2025-08-21 22:49:28 - __main__ - INFO - 技术指标列表示例: ['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'amplitude', 'change', 'change_amount', 'turnover', 'RSI6', 'RSI14', 'MOM', 'KDJ_K', 'KDJ_D', 'KDJ_J', 'CCI', 'ADX', 'PLUS_DI', 'MINUS_DI', 'MACD', 'MACD_Signal', 'MACD_Hist', 'WILLR', 'ROC', 'BB_upper', 'BB_middle', 'BB_lower', 'ATR', 'VOL_MA5', 'VOL_MA10', 'OBV', 'CMF', 'MFI', 'VROC', 'VWAP', 'StochRSI_K', 'StochRSI_D']
+2025-08-21 22:49:28 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-21 22:49:28 - __main__ - INFO - 数据质量检查...
+2025-08-21 22:49:28 - __main__ - ERROR - 系统执行失败: 'DataPreprocessor' object has no attribute 'prepare_and_fit'
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 82, in main
+    # 初步训练模型以支持SHAP特征选择
+AttributeError: 'DataPreprocessor' object has no attribute 'prepare_and_fit'
+2025-08-21 22:52:40 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 22:52:40 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 22:52:40 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 22:52:40 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 22:52:41 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 22:52:41 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 22:52:45 - __main__ - ERROR - 系统执行失败: module 'talib' has no attribute 'CHAIKIN'
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 47, in main
+    df_with_indicators = ti.calculate_all_indicators()
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 317, in calculate_all_indicators
+    results = list(executor.map(compute_group, groups))
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 608, in result_iterator
+    yield fs.pop().result()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 445, in result
+    return self.__get_result()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 390, in __get_result
+    raise self._exception
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/thread.py", line 52, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 269, in compute_group
+    indicators.update(ti.calculate_volume_indicators(volume, close, high, low, vol_ma_periods, cmf_period))
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 130, in calculate_volume_indicators
+    cmf = talib.CHAIKIN(high, low, close, volume, timeperiod=cmf_period).astype(np.float32)
+AttributeError: module 'talib' has no attribute 'CHAIKIN'
+2025-08-21 22:55:07 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 22:55:07 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 22:55:07 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 22:55:07 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 22:55:08 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 22:55:08 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 22:55:12 - __main__ - ERROR - 系统执行失败: module 'talib' has no attribute 'CMF'
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 47, in main
+    df_with_indicators = ti.calculate_all_indicators()
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 317, in calculate_all_indicators
+    results = list(executor.map(compute_group, groups))
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 608, in result_iterator
+    yield fs.pop().result()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 445, in result
+    return self.__get_result()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 390, in __get_result
+    raise self._exception
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/thread.py", line 52, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 269, in compute_group
+    indicators.update(ti.calculate_volume_indicators(volume, close, high, low, vol_ma_periods, cmf_period))
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 130, in calculate_volume_indicators
+    cmf = talib.CMF(high, low, close, volume, timeperiod=cmf_period).astype(np.float32)
+AttributeError: module 'talib' has no attribute 'CMF'
+2025-08-21 22:56:25 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 22:56:25 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 22:56:25 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 22:56:25 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 22:56:26 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 22:56:26 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 22:56:30 - __main__ - ERROR - 系统执行失败: module 'talib' has no attribute 'CMF'
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 47, in main
+    df_with_indicators = ti.calculate_all_indicators()
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 317, in calculate_all_indicators
+    results = list(executor.map(compute_group, groups))
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 608, in result_iterator
+    yield fs.pop().result()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 445, in result
+    return self.__get_result()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 390, in __get_result
+    raise self._exception
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/thread.py", line 52, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 269, in compute_group
+    indicators.update(ti.calculate_volume_indicators(volume, close, high, low, vol_ma_periods, cmf_period))
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 130, in calculate_volume_indicators
+    cmf = talib.CMF(high, low, close, volume, timeperiod=cmf_period).astype(np.float32)
+AttributeError: module 'talib' has no attribute 'CMF'
+2025-08-21 22:57:26 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 22:57:26 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 22:57:26 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 22:57:26 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 22:57:27 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 22:57:27 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 22:57:28 - __main__ - ERROR - 系统执行失败: name 'kj_fastk' is not defined
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 47, in main
+    df_with_indicators = ti.calculate_all_indicators()
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 326, in calculate_all_indicators
+    results = list(executor.map(compute_group, groups))
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 608, in result_iterator
+    yield fs.pop().result()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 445, in result
+    return self.__get_result()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/_base.py", line 390, in __get_result
+    raise self._exception
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/concurrent/futures/thread.py", line 52, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 270, in compute_group
+    indicators.update(ti.calculate_momentum_indicators(high, low, close, rsi_periods, mom_period,
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/technical_indicators.py", line 69, in calculate_momentum_indicators
+    kdj_k, kdj_d = talib.STOCH(high, low, close, fastk_period=kj_fastk, slowk_period=kj_slowk, slowd_period=kj_slowd)
+NameError: name 'kj_fastk' is not defined
+2025-08-21 22:59:39 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 22:59:39 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 22:59:39 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 22:59:39 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 22:59:40 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 22:59:40 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 23:07:38 - __main__ - INFO - 计算技术指标完成: 新增32个特征，总特征数=44
+2025-08-21 23:07:38 - __main__ - INFO - 技术指标列表示例: ['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MA10', 'MA20', 'RSI6', 'RSI12', 'MOM', 'KDJ_K', 'KDJ_D', 'KDJ_J', 'CCI', 'ADX', 'PLUS_DI', 'MINUS_DI', 'MACD', 'MACD_Signal', 'macd_signal_diff', 'BB_upper', 'BB_middle', 'BB_lower', 'ATR', 'VOL_MA5', 'VOL_MA10', 'OBV', 'CMF', 'MFI', 'CDL_DOJI', 'CDL_HAMMER', 'CDL_MORNINGSTAR', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D']
+2025-08-21 23:07:38 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-21 23:07:38 - __main__ - INFO - 数据质量检查...
+2025-08-21 23:07:38 - __main__ - INFO - 初始化LSTM+LightGBM模型...
+2025-08-21 23:07:38 - __main__ - INFO - ====== 初步训练模型以支持SHAP特征选择 ======
+2025-08-21 23:07:38 - __main__ - ERROR - 系统执行失败: 'DataPreprocessor' object has no attribute 'prepare_and_fit'
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 86, in main
+    X_subset, y_subset, _, _ = preprocessor.prepare_and_fit(subset_df)  # Initial fit without model
+AttributeError: 'DataPreprocessor' object has no attribute 'prepare_and_fit'
+2025-08-21 23:14:15 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 23:14:15 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 23:14:15 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 23:14:15 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 23:14:16 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 23:14:16 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 23:22:12 - __main__ - INFO - 计算技术指标完成: 新增32个特征，总特征数=44
+2025-08-21 23:22:12 - __main__ - INFO - 技术指标列表示例: ['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'amplitude', 'change', 'change_amount', 'turnover', 'MA5', 'MA10', 'MA20', 'RSI6', 'RSI12', 'MOM', 'KDJ_K', 'KDJ_D', 'KDJ_J', 'CCI', 'ADX', 'PLUS_DI', 'MINUS_DI', 'MACD', 'MACD_Signal', 'macd_signal_diff', 'BB_upper', 'BB_middle', 'BB_lower', 'ATR', 'VOL_MA5', 'VOL_MA10', 'OBV', 'CMF', 'MFI', 'CDL_DOJI', 'CDL_HAMMER', 'CDL_MORNINGSTAR', 'SAR', 'VWAP', 'StochRSI_K', 'StochRSI_D']
+2025-08-21 23:22:12 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-21 23:22:12 - __main__ - INFO - 数据质量检查...
+2025-08-21 23:22:12 - __main__ - INFO - 初始化LSTM+LightGBM模型...
+2025-08-21 23:22:12 - __main__ - INFO - ====== 初步训练模型以支持SHAP特征选择 ======
+2025-08-21 23:22:12 - __main__ - ERROR - 系统执行失败: 'DataPreprocessor' object has no attribute 'prepare_and_fit'
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 86, in main
+    X_subset, y_subset, _, _ = preprocessor.prepare_and_fit(subset_df)  # Initial fit without model
+AttributeError: 'DataPreprocessor' object has no attribute 'prepare_and_fit'
+2025-08-21 23:30:16 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 23:30:16 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 23:30:16 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 23:30:16 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 23:30:17 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 23:30:17 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-21 23:37:54 - __main__ - INFO - 计算技术指标完成: 新增32个特征，总特征数=44
+2025-08-21 23:37:54 - __main__ - INFO - 技术指标列表示例: ['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'amplitude', 'change']...
+2025-08-21 23:37:54 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-21 23:37:54 - __main__ - INFO - 数据质量检查...
+2025-08-21 23:37:54 - __main__ - INFO - 初始化LSTM+LightGBM模型...
+2025-08-21 23:37:54 - __main__ - INFO - ====== 数据预处理和SHAP特征选择 ======
+2025-08-21 23:37:54 - src.data_preprocessing.data_preprocessor - INFO - 开始一站式数据准备和拟合...
+2025-08-21 23:37:54 - src.data_preprocessing.data_preprocessor - INFO - 开始创建特征，输入数据形状: (691696, 44)
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 690896, 均值: 0.0002, 标准差: 0.0261
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 使用子集（大小=10000）进行SHAP特征选择...
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 38
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 38
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 38, VIF阈值: 7.0
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 18 个 (相关系数>0.8)
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 18 个特征
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测后特征数量: 18
+2025-08-21 23:37:55 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 原始38 → 缺失值过滤38 → 去多重共线性18
+2025-08-21 23:38:02 - __main__ - ERROR - 系统执行失败: Preprocessor not fitted. Call fit() first.
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 81, in main
+    X_sequence_scaled, y_scaled, stock_codes, dates = preprocessor.fit(df_with_indicators, model=model)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/data_preprocessor.py", line 431, in fit
+    X_subset_scaled = self.transform_features(X_subset)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/data_preprocessor.py", line 305, in transform_features
+    raise ValueError("Preprocessor not fitted. Call fit() first.")
+ValueError: Preprocessor not fitted. Call fit() first.
+2025-08-21 23:44:19 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-21 23:44:19 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-21 23:44:19 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-21 23:44:19 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150824 and trade_date <= 20250821
+2025-08-21 23:44:20 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-21 23:44:20 - __main__ - INFO - ====== 开始计算技术指标 ======
