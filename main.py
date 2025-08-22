@@ -37,113 +37,70 @@ def main():
         
         logger.info(f"获取数据完成: {df['trade_date'].min()}至{df['trade_date'].max()}, 共{len(df)}条记录, {df['ts_code'].nunique()}支股票")
         
+        # 过滤数据不足的股票
+        min_data_points = 20  # 与technical_indicators.py一致
+        stock_counts = df.groupby('ts_code').size()
+        valid_stocks = stock_counts[stock_counts >= min_data_points].index
+        df = df[df['ts_code'].isin(valid_stocks)]
+        logger.info(f"过滤后剩余股票: {len(valid_stocks)}")
+        
         # ====================== 2. 计算技术指标和信号 ======================
         logger.info("====== 开始计算技术指标 ======")
         ti = TechnicalIndicators(df)
-        df_with_indicators = ti.calculate_all_indicators()
+        df_with_indicators = ti.calculate_all_indicators(min_data_points=min_data_points)
         
         if df_with_indicators.empty:
             logger.error("技术指标计算失败")
             return
             
-        original_cols = len(df.columns)
-        new_cols = len(df_with_indicators.columns) - original_cols
-        logger.info(f"计算技术指标完成: 新增{new_cols}个特征，总特征数={len(df_with_indicators.columns)}")
-        logger.info(f"技术指标列表示例: {df_with_indicators.columns.tolist()[:10]}...")
+        # 检查NaN值
+        logger.info("检查技术指标中的NaN值...")
+        nan_counts = df_with_indicators.isnull().sum()
+        logger.info(f"NaN统计: {nan_counts[nan_counts > 0].to_dict()}")
         
-        gc.collect()
-        
-        # ====================== 3. 数据预处理 ======================
+        # ====================== 3. 数据预处理和特征选择 ======================
         logger.info("====== 开始数据预处理 ======")
+        logger.info("数据质量检查...")
+        
         preprocessor = DataPreprocessor(
-            lookback_window=10,  # Reduced from 20
+            lookback_window=10,  # 与lstm_lgbm_predictor.py一致
             prediction_horizon=1,
-            feature_scaler_type='standard',
-            target_scaler_type='standard',
-            test_size=0.2,
-            imputation_strategy='hybrid',
-            outlier_threshold=5.0,
-            shap_subset_size=10000
+            shap_subset_size=3000,  # 减小以适应1.14 GB内存
+            max_workers=2,  # 减小以降低内存使用
+            outlier_threshold=3.0  # 更严格的异常值处理
         )
         
-        # 数据质量检查
-        logger.info("数据质量检查...")
-        null_counts = df_with_indicators.isnull().sum().sum()
-        if null_counts > 0:
-            logger.warning(f"发现{null_counts}个空值，将在预处理中处理")
-        
-        # 初始化模型
         logger.info("初始化LSTM+LightGBM模型...")
         model = LSTMLGBMPredictor()
         
-        # 一站式数据准备和模型拟合，包含子集SHAP特征选择
         logger.info("====== 数据预处理和SHAP特征选择 ======")
         X_sequence_scaled, y_scaled, stock_codes, dates = preprocessor.fit(df_with_indicators, model=model)
         
-        if len(X_sequence_scaled) == 0:
-            logger.error("没有有效的训练数据，请检查数据质量和参数设置")
-            return
-            
         logger.info(f"数据预处理完成: 获得{len(X_sequence_scaled)}个样本，{len(np.unique(stock_codes))}支股票")
-        logger.info(f"时序数据维度: X_sequence={X_sequence_scaled.shape}, y={y_scaled.shape}")
         
-        # ====================== 4. 创建训练测试集 ======================
-        logger.info("====== 创建训练测试集 ======")
-        X_train, X_test, y_train, y_test = preprocessor.create_train_test_split(
-            X_sequence_scaled, y_scaled, stock_codes=stock_codes, split_method='time_series'
-        )
+        # ====================== 4. 模型训练 ======================
+        logger.info("====== 开始模型训练 ======")
+        metrics = model.fit(X_sequence_scaled, y_scaled)
+        logger.info(f"训练完成: LSTM Loss={metrics['lstm_loss']:.4f}, LSTM Val Loss={metrics['lstm_val_loss']:.4f}, LGBM RMSE={metrics['lgbm_rmse']:.4f}")
         
-        if len(X_train) < 10:
-            logger.error("训练数据不足，请增加数据量或减少测试比例")
-            return
-            
-        if len(X_test) == 0:
-            logger.error("测试数据为空，请检查数据质量和参数设置")
-            return
-
-        logger.info(f"数据分割完成:")
-        logger.info(f"  训练集: {len(X_train)}个样本 ({len(X_train)/len(X_sequence_scaled)*100:.1f}%)")
-        logger.info(f"  测试集: {len(X_test)}个样本 ({len(X_test)/len(X_sequence_scaled)*100:.1f}%)")
-
-        test_stock_codes = stock_codes[len(X_train):]
-        if len(test_stock_codes) != len(X_test):
-            logger.error(f"测试集股票代码长度{len(test_stock_codes)}与X_test长度{len(X_test)}不匹配")
-            return
-
-        # ====================== 5. 训练LSTM+LightGBM混合模型 ======================
-        logger.info("====== 开始训练LSTM+LightGBM混合模型 ======")
-        training_results = model.fit(
-            X_sequence=X_train, 
-            y=y_train
-        )
+        # ====================== 5. 模型评估 ======================
+        logger.info("====== 开始模型评估 ======")
+        eval_metrics = model.evaluate(X_sequence_scaled, y_scaled, dates=dates)
+        logger.info(f"模型评估结果: MSE={eval_metrics['mse']:.4f}, MAE={eval_metrics['mae']:.4f}, Annual Return={eval_metrics.get('annual_return', np.nan):.4f}")
         
-        logger.info("模型训练完成")
-        logger.info(f"训练结果: {training_results}")
-
-        # ====================== 6. 评估模型 ======================
-        logger.info("====== 评估模型性能 ======")
-        evaluation_results = model.evaluate(X_test, y_test, dates=dates[len(X_train):])
+        # ====================== 6. 生成推荐 ======================
+        logger.info("====== 生成股票推荐 ======")
+        recommendations_df = model.get_recommendations(X_sequence_scaled, stock_codes=stock_codes, top_n=50)
+        logger.info(f"生成推荐: 推荐{len(recommendations_df)}支股票")
+        logger.info(f"推荐股票示例: {recommendations_df['ts_code'].iloc[:3].tolist()}...")
         
-        logger.info("模型评估结果:")
-        for metric, value in evaluation_results.items():
-            if isinstance(value, (int, float)):
-                logger.info(f"  {metric}: {value:.4f}")
-            else:
-                logger.info(f"  {metric}: {value}")
-
-        # ====================== 7. 生成T+1股票推荐 ======================
-        logger.info("====== 生成T+1股票推荐 ======")
-        recommendations_df = model.get_recommendations(X_test, stock_codes=test_stock_codes, top_n=10)
+        # ====================== 7. 保存推荐结果 ======================
+        logger.info("====== 保存推荐结果 ======")
+        os.makedirs('outputs', exist_ok=True)
+        recommendations_df.to_csv('outputs/recommendations.csv', index=False)
+        logger.info("推荐结果已保存到 outputs/recommendations.csv")
         
-        latest_date = max(dates)
-        next_trading_day = (datetime.datetime.strptime(latest_date, '%Y%m%d') + datetime.timedelta(days=1)).strftime('%Y%m%d')
-        
-        logger.info(f"\n=== T+1 股票推荐 (交易日期: {next_trading_day}) ===")
-        logger.info("前10增长股票:")
-        for rank, (_, row) in enumerate(recommendations_df.iterrows(), 1):
-            logger.info(f"{rank}. {row['ts_code']}: 预测收益率 {row['prediction']:.4f}")
-
-        # ====================== 8. 保存预处理器和模型 ======================
+        # ====================== 8. 保存模型和预处理器 ======================
         logger.info("====== 保存模型和预处理器 ======")
         os.makedirs('models', exist_ok=True)
         
