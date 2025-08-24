@@ -4,7 +4,7 @@ from src.utils.log_helper import LogHelper
 
 class DataSaver:
 
-    def __init__(self, file_path:str, file_name:str):
+    def __init__(self, file_path: str, file_name: str):
         self.file_path = file_path
         self.file_name = file_name
         self.logger = LogHelper().get_logger(__name__)
@@ -27,10 +27,8 @@ class DataSaver:
         pass
 
     @abstractmethod
-    def read_all_data(self, table_name:str, ts_code:str = None, start_date:str = None, end_date:str = None):
+    def read_all_data(self, table_name: str, ts_code: str = None, start_date: str = None, end_date: str = None):
         pass
-
-
 
     def __del__(self):
         self.close()

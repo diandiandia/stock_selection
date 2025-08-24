@@ -9,18 +9,18 @@ from src.utils.helpers import get_new_trade_date, get_ts_code
 class TushareDataFetcher(DataFetcher):
     def __init__(self):
         super().__init__()
-        
 
     def login(self, token='c477c6691a86fa6f410f520f8f2e59f195ba9cb93b76384047de3d8d'):
         # Tushare通过token认证，此处无需额外登录
         ts.set_token(token)
         self.pro = ts.pro_api()
 
-    def get_all_stock_codes(self, save:bool=True) -> pd.DataFrame:
+    def get_all_stock_codes(self, save: bool = True) -> pd.DataFrame:
         """获取所有股票代码列表"""
         # 获取A股列表
-        df = self.pro.stock_basic(exchange='', list_status='L', fields='ts_code,name,industry')
-        
+        df = self.pro.stock_basic(
+            exchange='', list_status='L', fields='ts_code,name,industry')
+
         if df is not None:
             # 过滤ST股票
             df = df[~df['name'].str.contains(r'ST|\*ST', na=False)]
@@ -32,8 +32,8 @@ class TushareDataFetcher(DataFetcher):
         else:
             self.logger.error('获取股票代码失败')
             return pd.DataFrame()
-        
-    def get_stock_codes_by_symbol(self, symbol:str='', save:bool=True) -> pd.DataFrame:
+
+    def get_stock_codes_by_symbol(self, symbol: str = '', save: bool = True) -> pd.DataFrame:
         """根据股票代码获取股票信息"""
         # 获取沪深300成分股
         df_csi300 = self.pro.index_weight(index_code='000300.SH')
@@ -46,7 +46,6 @@ class TushareDataFetcher(DataFetcher):
         df_csi500 = df_csi500.sort_values('trade_date', ascending=False)
         latest_date = df_csi500['trade_date'].iloc[0]
         df_csi500 = df_csi500[df_csi500['trade_date'] == latest_date]
-
 
         df = pd.concat([df_csi300, df_csi500]).drop_duplicates()
         columns = {
@@ -66,19 +65,19 @@ class TushareDataFetcher(DataFetcher):
             self.logger.error('获取股票代码失败')
             return pd.DataFrame()
 
-
-    def get_history_stock_data(self, stock_code: str, start_date: str, end_date: str, save:bool=True) -> pd.DataFrame:
-
+    def get_history_stock_data(self, stock_code: str, start_date: str, end_date: str, save: bool = True) -> pd.DataFrame:
         """获取股票历史行情数据"""
         ts_code = stock_code
         # 获取最新交易日之后的数据
-        start_date = get_new_trade_date(self.data_saver, 'stock_daily', ts_code, start_date)
+        start_date = get_new_trade_date(
+            self.data_saver, 'stock_daily', ts_code, start_date)
         if pd.to_datetime(start_date) > pd.to_datetime(end_date):
             self.logger.warning('开始日期不能大于结束日期')
             return pd.DataFrame()
-        
+
         # 调用Tushare接口获取日线数据
-        df = self.pro.daily(ts_code=ts_code, start_date=start_date, end_date=end_date)
+        df = self.pro.daily(
+            ts_code=ts_code, start_date=start_date, end_date=end_date)
         '''
         ts_code	str	股票代码
         trade_date	str	交易日期
@@ -93,10 +92,11 @@ class TushareDataFetcher(DataFetcher):
         amount	float	成交额 （千元）
         
         '''
-        
+
         if df is not None and not df.empty:
             # 获取目标列
-            df = df[['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'vol', 'amount', 'pct_chg']]
+            df = df[['trade_date', 'ts_code', 'open', 'close',
+                     'high', 'low', 'vol', 'amount', 'pct_chg']]
             columns = {
                 'trade_date': 'trade_date',
                 'ts_code': 'ts_code',
@@ -108,11 +108,12 @@ class TushareDataFetcher(DataFetcher):
                 'amount': 'amount',
                 'pct_chg': 'change',  # 涨跌幅字段
             }
-            
+
             # 重命名列并选择需要的列
             df = df.rename(columns=columns)
-            df = df[['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'change']]
-            
+            df = df[['trade_date', 'ts_code', 'open', 'close',
+                     'high', 'low', 'volume', 'amount', 'change']]
+
             # 修改数据标识方法
             df['open'] = df['open'].astype(float).round(2)
             df['close'] = df['close'].astype(float).round(2)
@@ -121,59 +122,56 @@ class TushareDataFetcher(DataFetcher):
             df['volume'] = df['volume'].astype(float).round(2)
             df['amount'] = (df['amount'].astype(float) * 1000).round(2)
             df['change'] = df['change'].astype(float).round(2)
-            
+
             # 计算振幅
             df['amplitude'] = (df['high'] - df['low']) / df['open'] * 100
 
             # 计算涨跌额
             df['change_amount'] = df['close'] - df['close'].shift(-1)
 
-
             # 计算换手率
             df_turnover = self._get_turnover(df, start_date, end_date)
-            df = pd.merge(df, df_turnover, on=['trade_date', 'ts_code'], how='left')
-            df = df.rename(columns={'turnover_rate':'turnover'})
+            df = pd.merge(df, df_turnover, on=[
+                          'trade_date', 'ts_code'], how='left')
+            df = df.rename(columns={'turnover_rate': 'turnover'})
 
             df['amplitude'] = df['amplitude'].astype(float).round(2)
             df['change_amount'] = df['change_amount'].astype(float).round(2)
             df['turnover'] = df['turnover'].astype(float).round(2)
 
             # 转换日期格式为字符串格式
-            df['trade_date'] = pd.to_datetime(df['trade_date'], format='%Y%m%d').dt.strftime('%Y%m%d')
+            df['trade_date'] = pd.to_datetime(
+                df['trade_date'], format='%Y%m%d').dt.strftime('%Y%m%d')
 
             # 调整顺序
-            df = df[['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'amplitude', 'change', 'change_amount', 'turnover']]
+            df = df[['trade_date', 'ts_code', 'open', 'close', 'high', 'low',
+                     'volume', 'amount', 'amplitude', 'change', 'change_amount', 'turnover']]
 
-
-            
             if save:
                 self.data_saver.save(df, 'stock_daily')
             return df.sort_values('trade_date', ascending=False)
         else:
             return pd.DataFrame()
-        
 
-    def _get_turnover(self, df:pd.DataFrame, start_date, end_date) -> pd.DataFrame:
+    def _get_turnover(self, df: pd.DataFrame, start_date, end_date) -> pd.DataFrame:
         """计算换手率"""
-        df = self.pro.daily_basic(ts_code=df['ts_code'].iloc[0], start_date=start_date, end_date=end_date)
+        df = self.pro.daily_basic(
+            ts_code=df['ts_code'].iloc[0], start_date=start_date, end_date=end_date)
         df = df[['trade_date', 'ts_code', 'turnover_rate']]
         return df
 
-
-
-    def get_lhb_data(self, start_date, end_date, save:bool=True):
-
+    def get_lhb_data(self, start_date, end_date, save: bool = True):
         """获取龙虎榜数据"""
         # 获取最新交易日之后的数据
-        start_date = get_new_trade_date(self.data_saver, 'lhb_data', '', start_date)
+        start_date = get_new_trade_date(
+            self.data_saver, 'lhb_data', '', start_date)
         if pd.to_datetime(start_date) > pd.to_datetime(end_date):
             self.logger.error('开始日期不能大于结束日期')
             return pd.DataFrame()
-        
+
         # 调用Tushare龙虎榜接口
         start_date = pd.to_datetime(start_date, format='%Y%m%d')
         end_date = pd.to_datetime(end_date, format='%Y%m%d')
-
 
         df_list = []
 
@@ -200,7 +198,7 @@ class TushareDataFetcher(DataFetcher):
             reason	str	Y	上榜理由
             '''
 
-            if df is not None and not df.empty: 
+            if df is not None and not df.empty:
                 columns = {
                     'trade_date': 'trade_date',
                     'ts_code': 'ts_code',
@@ -218,16 +216,17 @@ class TushareDataFetcher(DataFetcher):
                     'float_values': 'market_value',
                     'reason': 'reason',
                 }
-            
+
                 df = df.rename(columns=columns)
 
                 # 转换日期格式
-                df['trade_date'] = pd.to_datetime(df['trade_date'], format='%Y%m%d').dt.strftime('%Y%m%d')
+                df['trade_date'] = pd.to_datetime(
+                    df['trade_date'], format='%Y%m%d').dt.strftime('%Y%m%d')
 
-                df = df[['ts_code', 'name', 'trade_date', 'close', 'change', 'net_buy_amount', 'buy_amount', 
-                         'sell_amount', 'amount', 'net_buy_amount_ratio', 'turnover', 
+                df = df[['ts_code', 'name', 'trade_date', 'close', 'change', 'net_buy_amount', 'buy_amount',
+                         'sell_amount', 'amount', 'net_buy_amount_ratio', 'turnover',
                          'reason']]
-            
+
                 if save:
                     self.data_saver.save(df, 'lhb_data')
                 df_list.append(df)
@@ -244,16 +243,16 @@ class TushareDataFetcher(DataFetcher):
                              f"净买入额占比：{row['net_buy_amount_ratio']}，换手率：{row['turnover']}，"
                              f"上榜理由：{row['reason']}")
 
-
         return df_all
 
-    def batch_fetch_historical_data(self, df_stock_codes: pd.DataFrame, start_date: str, end_date: str, save:bool=True) -> list[pd.DataFrame]:
+    def batch_fetch_historical_data(self, df_stock_codes: pd.DataFrame, start_date: str, end_date: str, save: bool = True) -> list[pd.DataFrame]:
         """批量获取股票历史数据"""
         df_all_list = []
         for stock_code in df_stock_codes['ts_code']:
             # 没钱，人家不让太快
             time.sleep(random.random())
-            df = self.get_history_stock_data(stock_code, start_date, end_date, save)
+            df = self.get_history_stock_data(
+                stock_code, start_date, end_date, save)
             if not df.empty:
                 df_all_list.append(df)
             else:
@@ -262,6 +261,6 @@ class TushareDataFetcher(DataFetcher):
 
     def get_latest_trade_date(self, table_name: str, ts_code: str):
         return self.data_saver.read_latest_trade_date(table_name, ts_code)
-    
-    def get_all_historical_data_from_db(self, table_name: str, ts_code: str= None, start_date: str= None, end_date: str= None):
+
+    def get_all_historical_data_from_db(self, table_name: str, ts_code: str = None, start_date: str = None, end_date: str = None):
         return self.data_saver.read_all_data(table_name, ts_code, start_date, end_date)

@@ -8,7 +8,6 @@ from src.utils.helpers import add_exchange_suffix
 class SqliteSaver(DataSaver):
     def __init__(self, file_path='./data', file_name='stock_data.db'):
         super().__init__(file_path, file_name)
-        
 
     def init_saver(self):
         self.save_path = self.file_path + os.sep + self.file_name
@@ -16,7 +15,6 @@ class SqliteSaver(DataSaver):
         self.conn = sqlite3.connect(self.save_path)
         self.cursor = self.conn.cursor()
         self.create_tables()
-
 
     def create_tables(self):
         '''
@@ -120,39 +118,39 @@ class SqliteSaver(DataSaver):
         '''
         self.cursor.execute(sql_command)
         self.conn.commit()
-        
 
-
-    def save(self, df:pd.DataFrame, table_name:str):
+    def save(self, df: pd.DataFrame, table_name: str):
         df.to_sql(table_name, self.conn, if_exists='append', index=False)
         self.conn.commit()
-        self.logger.info(f'save {table_name} data to sqlite, data shape: {df.shape}')
+        self.logger.info(
+            f'save {table_name} data to sqlite, data shape: {df.shape}')
 
-
-    def save_batch(self, df_list:list):
+    def save_batch(self, df_list: list):
         for df in df_list:
             self.save(df)
         self.conn.commit()
-        self.logger.info(f'save batch data to sqlite, data shape: {len(df_list)}')
-    
-    def read(self, table_name:str, ts_code:str, start_date:str, end_date:str):
+        self.logger.info(
+            f'save batch data to sqlite, data shape: {len(df_list)}')
+
+    def read(self, table_name: str, ts_code: str, start_date: str, end_date: str):
         sql_command = f'select * from {table_name}'
         if ts_code is not None:
             sql_command += f' where ts_code = "{ts_code}"'
         if start_date is not None and end_date is not None:
             sql_command += f' and trade_date >= {start_date} and trade_date <= {end_date}'
-        self.logger.info(f'read {table_name} data from sqlite, sql command: {sql_command}')
+        self.logger.info(
+            f'read {table_name} data from sqlite, sql command: {sql_command}')
 
         df = pd.read_sql(sql_command, self.conn)
         return df
-    
-    def query(self, df:pd.DataFrame, table_name:str)->pd.DataFrame:
+
+    def query(self, df: pd.DataFrame, table_name: str) -> pd.DataFrame:
         '''
         df['ts_code']数据是股票代码['600000','600001']，
         从table_name查询出来的数据ts_code数据格式为['600000.SH','600001.SZ, '600002.BJ']
         将df['ts_code']替换为['600000.SH','600001.SH']格式
         '''
-        def get_ts_code(ts_code:str):
+        def get_ts_code(ts_code: str):
             sql_commend = f'select * from {table_name} where ts_code like "%{ts_code}%" limit 1'
             df = pd.read_sql(sql_commend, self.conn)
             if df is None or df.empty:
@@ -163,12 +161,12 @@ class SqliteSaver(DataSaver):
         df['ts_code'] = df['ts_code'].apply(get_ts_code)
         return df
 
-    
-    def read_latest_trade_date(self, table_name:str, ts_code:str)->str:
+    def read_latest_trade_date(self, table_name: str, ts_code: str) -> str:
         sql_command = f'select max(trade_date) as latest_trade_date from {table_name}'
         if len(ts_code) > 0:
             sql_command += f' where ts_code = "{ts_code}"'
-        self.logger.info(f'read {table_name} data from sqlite, sql command: {sql_command}')
+        self.logger.info(
+            f'read {table_name} data from sqlite, sql command: {sql_command}')
         df = pd.read_sql(sql_command, self.conn)
         if df is None or df.empty:
             return ''
@@ -178,7 +176,7 @@ class SqliteSaver(DataSaver):
                 return ''
             else:
                 return latest_trade_date
-            
+
     def read_all_data(self, table_name: str, ts_code: str = None, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         sql_command = f'select * from {table_name}'
         if ts_code is not None:
@@ -188,10 +186,10 @@ class SqliteSaver(DataSaver):
                 sql_command += f' where trade_date >= {start_date} and trade_date <= {end_date}'
             else:
                 sql_command += f' and trade_date >= {start_date} and trade_date <= {end_date}'
-        self.logger.info(f'read {table_name} data from sqlite, sql command: {sql_command}')
+        self.logger.info(
+            f'read {table_name} data from sqlite, sql command: {sql_command}')
         df = pd.read_sql(sql_command, self.conn)
         return df
-
 
     def close(self):
         self.conn.close()

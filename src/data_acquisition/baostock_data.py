@@ -19,7 +19,7 @@ class BaostockDataFetcher(DataFetcher):
         # Baostock无需额外token登录，已在__init__中处理
         pass
 
-    def get_all_stock_codes(self, save:bool=True) -> pd.DataFrame:
+    def get_all_stock_codes(self, save: bool = True) -> pd.DataFrame:
         """获取所有A股股票代码列表"""
         # 查询所有A股股票
         rs = bs.query_stock_basic(code_name="A股")
@@ -32,8 +32,9 @@ class BaostockDataFetcher(DataFetcher):
             return pd.DataFrame()
 
         # 转换为标准ts_code格式 (证券代码.市场标识)
-        df['ts_code'] = df.apply(lambda x: f'{x.code}.SH' if x.exchange == 'sh' else f'{x.code}.SZ', axis=1)
-        
+        df['ts_code'] = df.apply(
+            lambda x: f'{x.code}.SH' if x.exchange == 'sh' else f'{x.code}.SZ', axis=1)
+
         # 重命名列并过滤
         columns = {
             'code_name': 'name',
@@ -52,11 +53,14 @@ class BaostockDataFetcher(DataFetcher):
         """获取股票历史行情数据"""
         ts_code = stock_code
         stock_code = get_ts_code(stock_code)
-        start_date = get_new_trade_date(self.data_saver, 'stock_daily', ts_code, start_date)
+        start_date = get_new_trade_date(
+            self.data_saver, 'stock_daily', ts_code, start_date)
 
         # 转换日期格式为YYYY-MM-DD (Baostock要求的格式)
-        bs_start_date = datetime.datetime.strptime(start_date, '%Y%m%d').strftime('%Y-%m-%d')
-        bs_end_date = datetime.datetime.strptime(end_date, '%Y%m%d').strftime('%Y-%m-%d')
+        bs_start_date = datetime.datetime.strptime(
+            start_date, '%Y%m%d').strftime('%Y-%m-%d')
+        bs_end_date = datetime.datetime.strptime(
+            end_date, '%Y%m%d').strftime('%Y-%m-%d')
 
         # 查询日线数据
         rs = bs.query_history_k_data_plus(
@@ -91,8 +95,10 @@ class BaostockDataFetcher(DataFetcher):
         df = df.rename(columns=columns)
 
         # 转换数据类型
-        numeric_cols = ['open', 'high', 'low', 'close', 'volume', 'amount', 'turnover', 'change']
-        df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='coerce')
+        numeric_cols = ['open', 'high', 'low', 'close',
+                        'volume', 'amount', 'turnover', 'change']
+        df[numeric_cols] = df[numeric_cols].apply(
+            pd.to_numeric, errors='coerce')
 
         # 计算振幅和涨跌额
         df['amplitude'] = (df['high'] - df['low']) / df['open'] * 100
@@ -103,17 +109,18 @@ class BaostockDataFetcher(DataFetcher):
         df['trade_date'] = df['trade_date'].str.replace('-', '')
 
         # 选择需要的列
-        df = df[['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 
+        df = df[['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount',
                  'amplitude', 'change', 'change_amount', 'turnover']]
 
         self.data_saver.save(df, 'stock_daily')
         return df
 
-    def batch_fetch_historical_data(self, df_stock_codes: pd.DataFrame, start_date: str, end_date: str, save:bool=True) -> list[pd.DataFrame]:
+    def batch_fetch_historical_data(self, df_stock_codes: pd.DataFrame, start_date: str, end_date: str, save: bool = True) -> list[pd.DataFrame]:
         """批量获取股票历史数据"""
         df_all_list = []
         for stock_code in df_stock_codes['ts_code']:
-            df = self.get_history_stock_data(stock_code, start_date, end_date, save)
+            df = self.get_history_stock_data(
+                stock_code, start_date, end_date, save)
             if not df.empty:
                 df_all_list.append(df)
             else:

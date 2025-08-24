@@ -3,8 +3,8 @@ disable_existing_loggers: false
 
 formatters:
   standard:
-    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    datefmt: '%Y-%m-%d %H:%M:%S'
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
 
 handlers:
   console:
@@ -12,7 +12,7 @@ handlers:
     level: DEBUG
     formatter: standard
     stream: ext://sys.stdout
-  
+
   file:
     class: logging.FileHandler
     level: INFO
@@ -21,6 +21,6 @@ handlers:
     encoding: utf8
 
 root:
-    level: INFO
-    handlers: [console, file]
-    propagate: true
+  level: INFO
+  handlers: [console, file]
+  propagate: true

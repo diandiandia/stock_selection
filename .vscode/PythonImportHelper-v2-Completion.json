@@ -1,0 +1,1172 @@
+[
+    {
+        "label": "print_function",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "random",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "random",
+        "description": "random",
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "akshare",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "akshare",
+        "description": "akshare",
+        "detail": "akshare",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "DataFetcher",
+        "importPath": "src.data_acquisition.data_fecher",
+        "description": "src.data_acquisition.data_fecher",
+        "isExtraImport": true,
+        "detail": "src.data_acquisition.data_fecher",
+        "documentation": {}
+    },
+    {
+        "label": "DataFetcher",
+        "importPath": "src.data_acquisition.data_fecher",
+        "description": "src.data_acquisition.data_fecher",
+        "isExtraImport": true,
+        "detail": "src.data_acquisition.data_fecher",
+        "documentation": {}
+    },
+    {
+        "label": "DataFetcher",
+        "importPath": "src.data_acquisition.data_fecher",
+        "description": "src.data_acquisition.data_fecher",
+        "isExtraImport": true,
+        "detail": "src.data_acquisition.data_fecher",
+        "documentation": {}
+    },
+    {
+        "label": "get_new_trade_date",
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "isExtraImport": true,
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_ts_code",
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "isExtraImport": true,
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_new_trade_date",
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "isExtraImport": true,
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_ts_code",
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "isExtraImport": true,
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_new_trade_date",
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "isExtraImport": true,
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_ts_code",
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "isExtraImport": true,
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_ts_code",
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "isExtraImport": true,
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "add_exchange_suffix",
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "isExtraImport": true,
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_latest_trade_date",
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "isExtraImport": true,
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "baostock",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "baostock",
+        "description": "baostock",
+        "detail": "baostock",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "datetime",
+        "description": "datetime",
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "abstractmethod",
+        "importPath": "abc",
+        "description": "abc",
+        "isExtraImport": true,
+        "detail": "abc",
+        "documentation": {}
+    },
+    {
+        "label": "abstractmethod",
+        "importPath": "abc",
+        "description": "abc",
+        "isExtraImport": true,
+        "detail": "abc",
+        "documentation": {}
+    },
+    {
+        "label": "CsvSaver",
+        "importPath": "src.data_storage.data_csv_saver",
+        "description": "src.data_storage.data_csv_saver",
+        "isExtraImport": true,
+        "detail": "src.data_storage.data_csv_saver",
+        "documentation": {}
+    },
+    {
+        "label": "SqliteSaver",
+        "importPath": "src.data_storage.data_sqlite_saver",
+        "description": "src.data_storage.data_sqlite_saver",
+        "isExtraImport": true,
+        "detail": "src.data_storage.data_sqlite_saver",
+        "documentation": {}
+    },
+    {
+        "label": "LogHelper",
+        "importPath": "src.utils.log_helper",
+        "description": "src.utils.log_helper",
+        "isExtraImport": true,
+        "detail": "src.utils.log_helper",
+        "documentation": {}
+    },
+    {
+        "label": "LogHelper",
+        "importPath": "src.utils.log_helper",
+        "description": "src.utils.log_helper",
+        "isExtraImport": true,
+        "detail": "src.utils.log_helper",
+        "documentation": {}
+    },
+    {
+        "label": "LogHelper",
+        "importPath": "src.utils.log_helper",
+        "description": "src.utils.log_helper",
+        "isExtraImport": true,
+        "detail": "src.utils.log_helper",
+        "documentation": {}
+    },
+    {
+        "label": "LogHelper",
+        "importPath": "src.utils.log_helper",
+        "description": "src.utils.log_helper",
+        "isExtraImport": true,
+        "detail": "src.utils.log_helper",
+        "documentation": {}
+    },
+    {
+        "label": "LogHelper",
+        "importPath": "src.utils.log_helper",
+        "description": "src.utils.log_helper",
+        "isExtraImport": true,
+        "detail": "src.utils.log_helper",
+        "documentation": {}
+    },
+    {
+        "label": "LogHelper",
+        "importPath": "src.utils.log_helper",
+        "description": "src.utils.log_helper",
+        "isExtraImport": true,
+        "detail": "src.utils.log_helper",
+        "documentation": {}
+    },
+    {
+        "label": "LogHelper",
+        "importPath": "src.utils.log_helper",
+        "description": "src.utils.log_helper",
+        "isExtraImport": true,
+        "detail": "src.utils.log_helper",
+        "documentation": {}
+    },
+    {
+        "label": "LogHelper",
+        "importPath": "src.utils.log_helper",
+        "description": "src.utils.log_helper",
+        "isExtraImport": true,
+        "detail": "src.utils.log_helper",
+        "documentation": {}
+    },
+    {
+        "label": "tushare",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "tushare",
+        "description": "tushare",
+        "detail": "tushare",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Union",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "model",
+        "importPath": "xml.parsers.expat",
+        "description": "xml.parsers.expat",
+        "isExtraImport": true,
+        "detail": "xml.parsers.expat",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "StandardScaler",
+        "importPath": "sklearn.preprocessing",
+        "description": "sklearn.preprocessing",
+        "isExtraImport": true,
+        "detail": "sklearn.preprocessing",
+        "documentation": {}
+    },
+    {
+        "label": "MinMaxScaler",
+        "importPath": "sklearn.preprocessing",
+        "description": "sklearn.preprocessing",
+        "isExtraImport": true,
+        "detail": "sklearn.preprocessing",
+        "documentation": {}
+    },
+    {
+        "label": "TimeSeriesSplit",
+        "importPath": "sklearn.model_selection",
+        "description": "sklearn.model_selection",
+        "isExtraImport": true,
+        "detail": "sklearn.model_selection",
+        "documentation": {}
+    },
+    {
+        "label": "train_test_split",
+        "importPath": "sklearn.model_selection",
+        "description": "sklearn.model_selection",
+        "isExtraImport": true,
+        "detail": "sklearn.model_selection",
+        "documentation": {}
+    },
+    {
+        "label": "train_test_split",
+        "importPath": "sklearn.model_selection",
+        "description": "sklearn.model_selection",
+        "isExtraImport": true,
+        "detail": "sklearn.model_selection",
+        "documentation": {}
+    },
+    {
+        "label": "TimeSeriesSplit",
+        "importPath": "sklearn.model_selection",
+        "description": "sklearn.model_selection",
+        "isExtraImport": true,
+        "detail": "sklearn.model_selection",
+        "documentation": {}
+    },
+    {
+        "label": "joblib",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "joblib",
+        "description": "joblib",
+        "detail": "joblib",
+        "documentation": {}
+    },
+    {
+        "label": "Parallel",
+        "importPath": "joblib",
+        "description": "joblib",
+        "isExtraImport": true,
+        "detail": "joblib",
+        "documentation": {}
+    },
+    {
+        "label": "delayed",
+        "importPath": "joblib",
+        "description": "joblib",
+        "isExtraImport": true,
+        "detail": "joblib",
+        "documentation": {}
+    },
+    {
+        "label": "LSTMLGBMPredictor",
+        "importPath": "src.model.lstm_lgbm_predictor",
+        "description": "src.model.lstm_lgbm_predictor",
+        "isExtraImport": true,
+        "detail": "src.model.lstm_lgbm_predictor",
+        "documentation": {}
+    },
+    {
+        "label": "LSTMLGBMPredictor",
+        "importPath": "src.model.lstm_lgbm_predictor",
+        "description": "src.model.lstm_lgbm_predictor",
+        "isExtraImport": true,
+        "detail": "src.model.lstm_lgbm_predictor",
+        "documentation": {}
+    },
+    {
+        "label": "tqdm",
+        "importPath": "tqdm",
+        "description": "tqdm",
+        "isExtraImport": true,
+        "detail": "tqdm",
+        "documentation": {}
+    },
+    {
+        "label": "gc",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "gc",
+        "description": "gc",
+        "detail": "gc",
+        "documentation": {}
+    },
+    {
+        "label": "warnings",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "warnings",
+        "description": "warnings",
+        "detail": "warnings",
+        "documentation": {}
+    },
+    {
+        "label": "variance_inflation_factor",
+        "importPath": "statsmodels.stats.outliers_influence",
+        "description": "statsmodels.stats.outliers_influence",
+        "isExtraImport": true,
+        "detail": "statsmodels.stats.outliers_influence",
+        "documentation": {}
+    },
+    {
+        "label": "ThreadPoolExecutor",
+        "importPath": "concurrent.futures",
+        "description": "concurrent.futures",
+        "isExtraImport": true,
+        "detail": "concurrent.futures",
+        "documentation": {}
+    },
+    {
+        "label": "ThreadPoolExecutor",
+        "importPath": "concurrent.futures",
+        "description": "concurrent.futures",
+        "isExtraImport": true,
+        "detail": "concurrent.futures",
+        "documentation": {}
+    },
+    {
+        "label": "winsorize",
+        "importPath": "scipy.stats.mstats",
+        "description": "scipy.stats.mstats",
+        "isExtraImport": true,
+        "detail": "scipy.stats.mstats",
+        "documentation": {}
+    },
+    {
+        "label": "psutil",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "psutil",
+        "description": "psutil",
+        "detail": "psutil",
+        "documentation": {}
+    },
+    {
+        "label": "talib",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "talib",
+        "description": "talib",
+        "detail": "talib",
+        "documentation": {}
+    },
+    {
+        "label": "DataSaver",
+        "importPath": "src.data_storage.data_saver",
+        "description": "src.data_storage.data_saver",
+        "isExtraImport": true,
+        "detail": "src.data_storage.data_saver",
+        "documentation": {}
+    },
+    {
+        "label": "DataSaver",
+        "importPath": "src.data_storage.data_saver",
+        "description": "src.data_storage.data_saver",
+        "isExtraImport": true,
+        "detail": "src.data_storage.data_saver",
+        "documentation": {}
+    },
+    {
+        "label": "DataSaver",
+        "importPath": "src.data_storage.data_saver",
+        "description": "src.data_storage.data_saver",
+        "isExtraImport": true,
+        "detail": "src.data_storage.data_saver",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "sqlite3",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sqlite3",
+        "description": "sqlite3",
+        "detail": "sqlite3",
+        "documentation": {}
+    },
+    {
+        "label": "tensorflow",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "tensorflow",
+        "description": "tensorflow",
+        "detail": "tensorflow",
+        "documentation": {}
+    },
+    {
+        "label": "Model",
+        "importPath": "keras.models",
+        "description": "keras.models",
+        "isExtraImport": true,
+        "detail": "keras.models",
+        "documentation": {}
+    },
+    {
+        "label": "Model",
+        "importPath": "keras.models",
+        "description": "keras.models",
+        "isExtraImport": true,
+        "detail": "keras.models",
+        "documentation": {}
+    },
+    {
+        "label": "GRU",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "Dense",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "Dropout",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "Input",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "BatchNormalization",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "LSTM",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "Dense",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "Dropout",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "Input",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "BatchNormalization",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "Attention",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "Bidirectional",
+        "importPath": "keras.layers",
+        "description": "keras.layers",
+        "isExtraImport": true,
+        "detail": "keras.layers",
+        "documentation": {}
+    },
+    {
+        "label": "Adam",
+        "importPath": "keras.optimizers",
+        "description": "keras.optimizers",
+        "isExtraImport": true,
+        "detail": "keras.optimizers",
+        "documentation": {}
+    },
+    {
+        "label": "Adam",
+        "importPath": "keras.optimizers",
+        "description": "keras.optimizers",
+        "isExtraImport": true,
+        "detail": "keras.optimizers",
+        "documentation": {}
+    },
+    {
+        "label": "EarlyStopping",
+        "importPath": "keras.callbacks",
+        "description": "keras.callbacks",
+        "isExtraImport": true,
+        "detail": "keras.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "ModelCheckpoint",
+        "importPath": "keras.callbacks",
+        "description": "keras.callbacks",
+        "isExtraImport": true,
+        "detail": "keras.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "ReduceLROnPlateau",
+        "importPath": "keras.callbacks",
+        "description": "keras.callbacks",
+        "isExtraImport": true,
+        "detail": "keras.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "EarlyStopping",
+        "importPath": "keras.callbacks",
+        "description": "keras.callbacks",
+        "isExtraImport": true,
+        "detail": "keras.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "ModelCheckpoint",
+        "importPath": "keras.callbacks",
+        "description": "keras.callbacks",
+        "isExtraImport": true,
+        "detail": "keras.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "ReduceLROnPlateau",
+        "importPath": "keras.callbacks",
+        "description": "keras.callbacks",
+        "isExtraImport": true,
+        "detail": "keras.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "XGBRegressor",
+        "importPath": "xgboost",
+        "description": "xgboost",
+        "isExtraImport": true,
+        "detail": "xgboost",
+        "documentation": {}
+    },
+    {
+        "label": "mean_squared_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_absolute_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_squared_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_absolute_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "bidirectional",
+        "importPath": "unicodedata",
+        "description": "unicodedata",
+        "isExtraImport": true,
+        "detail": "unicodedata",
+        "documentation": {}
+    },
+    {
+        "label": "losses",
+        "importPath": "keras",
+        "description": "keras",
+        "isExtraImport": true,
+        "detail": "keras",
+        "documentation": {}
+    },
+    {
+        "label": "LGBMRegressor",
+        "importPath": "lightgbm",
+        "description": "lightgbm",
+        "isExtraImport": true,
+        "detail": "lightgbm",
+        "documentation": {}
+    },
+    {
+        "label": "early_stopping",
+        "importPath": "lightgbm",
+        "description": "lightgbm",
+        "isExtraImport": true,
+        "detail": "lightgbm",
+        "documentation": {}
+    },
+    {
+        "label": "shap",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "shap",
+        "description": "shap",
+        "detail": "shap",
+        "documentation": {}
+    },
+    {
+        "label": "logging",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
+        "documentation": {}
+    },
+    {
+        "label": "config",
+        "importPath": "logging",
+        "description": "logging",
+        "isExtraImport": true,
+        "detail": "logging",
+        "documentation": {}
+    },
+    {
+        "label": "yaml",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "yaml",
+        "description": "yaml",
+        "detail": "yaml",
+        "documentation": {}
+    },
+    {
+        "label": "DataPreprocessor",
+        "importPath": "src.data_preprocessing.data_preprocessor",
+        "description": "src.data_preprocessing.data_preprocessor",
+        "isExtraImport": true,
+        "detail": "src.data_preprocessing.data_preprocessor",
+        "documentation": {}
+    },
+    {
+        "label": "TechnicalIndicators",
+        "importPath": "src.data_preprocessing.technical_indicators",
+        "description": "src.data_preprocessing.technical_indicators",
+        "isExtraImport": true,
+        "detail": "src.data_preprocessing.technical_indicators",
+        "documentation": {}
+    },
+    {
+        "label": "AkshareDataFetcher",
+        "importPath": "src.data_acquisition.akshare_data",
+        "description": "src.data_acquisition.akshare_data",
+        "isExtraImport": true,
+        "detail": "src.data_acquisition.akshare_data",
+        "documentation": {}
+    },
+    {
+        "label": "cmd_doc",
+        "kind": 5,
+        "importPath": ".venv.bin.runxlrd",
+        "description": ".venv.bin.runxlrd",
+        "peekOfCode": "cmd_doc = \"\"\"\nCommands:\n2rows           Print the contents of first and last row in each sheet\n3rows           Print the contents of first, second and last row in each sheet\nbench           Same as \"show\", but doesn't print -- for profiling\nbiff_count[1]   Print a count of each type of BIFF record in the file\nbiff_dump[1]    Print a dump (char and hex) of the BIFF records in the file\nfonts           hdr + print a dump of all font objects\nhdr             Mini-overview of file (no per-sheet information)\nhotshot         Do a hotshot profile run e.g. ... -f1 hotshot bench bigfile*.xls",
+        "detail": ".venv.bin.runxlrd",
+        "documentation": {}
+    },
+    {
+        "label": "options",
+        "kind": 5,
+        "importPath": ".venv.bin.runxlrd",
+        "description": ".venv.bin.runxlrd",
+        "peekOfCode": "options = None\nif __name__ == \"__main__\":\n    import xlrd\n    import sys\n    import time\n    import glob\n    import traceback\n    import gc\n    from xlrd.timemachine import xrange, REPR\n    class LogHandler(object):",
+        "detail": ".venv.bin.runxlrd",
+        "documentation": {}
+    },
+    {
+        "label": "AkshareDataFetcher",
+        "kind": 6,
+        "importPath": "src.data_acquisition.akshare_data",
+        "description": "src.data_acquisition.akshare_data",
+        "peekOfCode": "class AkshareDataFetcher(DataFetcher):\n    def __init__(self):\n        super().__init__()\n    def login(self, token=''):\n        pass\n    def get_stock_codes_by_symbol(self, symbol: str = '000906', save: bool = False) -> pd.DataFrame:\n        \"\"\"\n        获取指定交易市场的股票代码列表\n        \"\"\"\n        '''",
+        "detail": "src.data_acquisition.akshare_data",
+        "documentation": {}
+    },
+    {
+        "label": "BaostockDataFetcher",
+        "kind": 6,
+        "importPath": "src.data_acquisition.baostock_data",
+        "description": "src.data_acquisition.baostock_data",
+        "peekOfCode": "class BaostockDataFetcher(DataFetcher):\n    def __init__(self, url):\n        super().__init__(url)\n        # 初始化Baostock连接\n        lg = bs.login()\n        if lg.error_code != '0':\n            self.logger.error(f'Baostock登录失败: {lg.error_msg}')\n        else:\n            self.logger.info('Baostock登录成功')\n    def login(self, url, token):",
+        "detail": "src.data_acquisition.baostock_data",
+        "documentation": {}
+    },
+    {
+        "label": "DataFetcher",
+        "kind": 6,
+        "importPath": "src.data_acquisition.data_fecher",
+        "description": "src.data_acquisition.data_fecher",
+        "peekOfCode": "class DataFetcher:\n    def __init__(self):\n        self.logger = LogHelper().get_logger(__name__)\n        self.data_saver = SqliteSaver()\n        self.login()\n    @abstractmethod\n    def login(self, token=''):\n        pass\n    @abstractmethod\n    def get_stock_codes_by_symbol(self, symbol: str, save: bool = True) -> pd.DataFrame:",
+        "detail": "src.data_acquisition.data_fecher",
+        "documentation": {}
+    },
+    {
+        "label": "TushareDataFetcher",
+        "kind": 6,
+        "importPath": "src.data_acquisition.tushare_data",
+        "description": "src.data_acquisition.tushare_data",
+        "peekOfCode": "class TushareDataFetcher(DataFetcher):\n    def __init__(self):\n        super().__init__()\n    def login(self, token='c477c6691a86fa6f410f520f8f2e59f195ba9cb93b76384047de3d8d'):\n        # Tushare通过token认证，此处无需额外登录\n        ts.set_token(token)\n        self.pro = ts.pro_api()\n    def get_all_stock_codes(self, save: bool = True) -> pd.DataFrame:\n        \"\"\"获取所有股票代码列表\"\"\"\n        # 获取A股列表",
+        "detail": "src.data_acquisition.tushare_data",
+        "documentation": {}
+    },
+    {
+        "label": "DataPreprocessor",
+        "kind": 6,
+        "importPath": "src.data_preprocessing.data_preprocessor",
+        "description": "src.data_preprocessing.data_preprocessor",
+        "peekOfCode": "class DataPreprocessor:\n    \"\"\"\n    专为HybridPredictor准备训练数据的数据预处理器\n    接收TechnicalIndicators的输出，专注于数据准备和格式化\n    不再计算技术指标，仅做数据清洗、特征选择和时序数据构建\n    \"\"\"\n    def __init__(self,\n                 lookback_window: int = 20,\n                 prediction_horizon: int = 1,\n                 feature_scaler_type: str = 'standard',",
+        "detail": "src.data_preprocessing.data_preprocessor",
+        "documentation": {}
+    },
+    {
+        "label": "TechnicalIndicators",
+        "kind": 6,
+        "importPath": "src.data_preprocessing.technical_indicators",
+        "description": "src.data_preprocessing.technical_indicators",
+        "peekOfCode": "class TechnicalIndicators:\n    \"\"\"股票技术指标计算器，用于A股T+1交易推荐\"\"\"\n    def __init__(self, df: Optional[pd.DataFrame] = None):\n        self.logger = LogHelper.get_logger(__name__)\n        self._df: Optional[pd.DataFrame] = None\n        if df is not None:\n            self._df = df.copy().sort_values('trade_date').reset_index(drop=True)\n            numeric_cols = ['open', 'high', 'low', 'close', 'volume']\n            if all(col in self._df.columns for col in numeric_cols):\n                self._df[numeric_cols] = self._df[numeric_cols].astype(",
+        "detail": "src.data_preprocessing.technical_indicators",
+        "documentation": {}
+    },
+    {
+        "label": "CsvSaver",
+        "kind": 6,
+        "importPath": "src.data_storage.data_csv_saver",
+        "description": "src.data_storage.data_csv_saver",
+        "peekOfCode": "class CsvSaver(DataSaver):\n    def __init__(self, file_path='./data', file_name='stock_data.csv'):\n        super().__init__(file_path, file_name)\n        self.save_path = os.path.join(file_path, file_name)\n        # 创建保存路径（如果不存在）\n        os.makedirs(self.save_path, exist_ok=True)\n    def init_saver(self):\n        self.logger.info(f'初始化CSV保存器，文件路径: {self.save_path}')\n        # CSV不需要预创建表结构，在首次保存时自动生成\n    def _get_csv_file_path(self, table_name: str) -> str:",
+        "detail": "src.data_storage.data_csv_saver",
+        "documentation": {}
+    },
+    {
+        "label": "DataSaver",
+        "kind": 6,
+        "importPath": "src.data_storage.data_saver",
+        "description": "src.data_storage.data_saver",
+        "peekOfCode": "class DataSaver:\n    def __init__(self, file_path: str, file_name: str):\n        self.file_path = file_path\n        self.file_name = file_name\n        self.logger = LogHelper().get_logger(__name__)\n        self.init_saver()\n    @abstractmethod\n    def init_saver(self):\n        pass\n    @abstractmethod",
+        "detail": "src.data_storage.data_saver",
+        "documentation": {}
+    },
+    {
+        "label": "SqliteSaver",
+        "kind": 6,
+        "importPath": "src.data_storage.data_sqlite_saver",
+        "description": "src.data_storage.data_sqlite_saver",
+        "peekOfCode": "class SqliteSaver(DataSaver):\n    def __init__(self, file_path='./data', file_name='stock_data.db'):\n        super().__init__(file_path, file_name)\n    def init_saver(self):\n        self.save_path = self.file_path + os.sep + self.file_name\n        self.logger.info(f'init saver, file path: {self.save_path}')\n        self.conn = sqlite3.connect(self.save_path)\n        self.cursor = self.conn.cursor()\n        self.create_tables()\n    def create_tables(self):",
+        "detail": "src.data_storage.data_sqlite_saver",
+        "documentation": {}
+    },
+    {
+        "label": "HybridPredictor",
+        "kind": 6,
+        "importPath": "src.model.hybrid_predictor",
+        "description": "src.model.hybrid_predictor",
+        "peekOfCode": "class HybridPredictor:\n    \"\"\"XGBoost + GRU混合预测模型，专为T+1股票推荐设计\"\"\"\n    def __init__(self, config: Optional[Dict] = None):\n        \"\"\"\n        初始化混合预测模型\n        Args:\n            config: 模型配置字典\n        \"\"\"\n        self.logger = LogHelper.get_logger(__name__)\n        self.config = config or self._get_default_config()",
+        "detail": "src.model.hybrid_predictor",
+        "documentation": {}
+    },
+    {
+        "label": "LSTMLGBMPredictor",
+        "kind": 6,
+        "importPath": "src.model.lstm_lgbm_predictor",
+        "description": "src.model.lstm_lgbm_predictor",
+        "peekOfCode": "class LSTMLGBMPredictor:\n    \"\"\"LSTM + LightGBM混合预测模型，专为T+1股票推荐设计\"\"\"\n    TRADING_DAYS = 252  # 年交易日数\n    def __init__(self, config: Optional[Dict] = None):\n        self.logger = LogHelper.get_logger(__name__)\n        self.config = config or self._get_default_config()\n        self.lgbm_model = None\n        self.lstm_model = None\n        self.ensemble_weights = {'lgbm': 0.5, 'lstm': 0.5}  # 初始化为均等权重\n        self.feature_importance_cache = {}",
+        "detail": "src.model.lstm_lgbm_predictor",
+        "documentation": {}
+    },
+    {
+        "label": "TradingStrategy",
+        "kind": 6,
+        "importPath": "src.strategy.trading_strategy",
+        "description": "src.strategy.trading_strategy",
+        "peekOfCode": "class TradingStrategy:\n    \"\"\"T+1交易策略模块，提供卖出条件判断和交易建议\"\"\"\n    def __init__(self, config: Dict = None):\n        self.logger = LogHelper.get_logger(__name__)\n        self.config = config or self._get_default_config()\n    def _get_default_config(self) -> Dict:\n        \"\"\"获取默认策略配置\"\"\"\n        return {\n            # 止盈止损配置\n            'take_profit': 0.05,        # 5%止盈",
+        "detail": "src.strategy.trading_strategy",
+        "documentation": {}
+    },
+    {
+        "label": "get_ts_code",
+        "kind": 2,
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "peekOfCode": "def get_ts_code(stock_code: str) -> str:\n    stock_code_arr = stock_code.split('.')\n    if len(stock_code_arr) != 2:\n        return ''\n    if stock_code_arr[0] == 'SZ' or stock_code_arr[0] == 'SH' or stock_code_arr[0] == 'BJ':\n        stock_code = stock_code_arr[1]\n    else:\n        stock_code = stock_code_arr[0]\n    return stock_code\ndef get_new_trade_date(data_saver: DataSaver, table_name: str, ts_code: str, start_date: str) -> str:",
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_new_trade_date",
+        "kind": 2,
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "peekOfCode": "def get_new_trade_date(data_saver: DataSaver, table_name: str, ts_code: str, start_date: str) -> str:\n    # 先从数据表里面查询最新的时间，然后从最新的时间开始获取数据\n    latest_trade_date: str = data_saver.read_latest_trade_date(\n        table_name, ts_code)\n    if len(latest_trade_date) > 0:\n        start_date = latest_trade_date\n        trade_date = pd.to_datetime(start_date) + pd.DateOffset(days=1)\n        trade_date = trade_date.strftime('%Y%m%d')\n        return trade_date\n    else:",
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "add_exchange_suffix",
+        "kind": 2,
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "peekOfCode": "def add_exchange_suffix(code: str) -> str:\n    \"\"\"\n    根据股票代码添加交易所后缀（sh, sz, bj）\n    参数:\n        code (str): 股票代码，去除空格或后缀\n    返回:\n        str: 带交易所后缀的代码，如 \"600000.sh\"\n    \"\"\"\n    code = str(code).strip()\n    # 北交所规则：83, 87, 43 开头",
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_latest_trade_date",
+        "kind": 2,
+        "importPath": "src.utils.helpers",
+        "description": "src.utils.helpers",
+        "peekOfCode": "def get_latest_trade_date() -> str:\n    day = datetime.datetime.today().strftime('%Y%m%d')\n    time_of_day = datetime.datetime.now().strftime(\"%H:%M:%S\")\n    if time_of_day < '17:00:00':\n        day = datetime.datetime.today() - datetime.timedelta(days=1)\n        day = day.strftime('%Y%m%d')\n    return day",
+        "detail": "src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "LogHelper",
+        "kind": 6,
+        "importPath": "src.utils.log_helper",
+        "description": "src.utils.log_helper",
+        "peekOfCode": "class LogHelper:\n    # src\\config\\log_config.yaml\n    def __init__(self, log_config_path='./src/config/log_config.yaml', default_log_level=logging.INFO):\n        self.log_config_path = log_config_path\n        self.default_log_level = default_log_level\n        self.init_log()\n    def init_log(self):\n        if os.path.exists(self.log_config_path):\n            with open(self.log_config_path, 'rt') as f:\n                yaml_config = yaml.safe_load(f)",
+        "detail": "src.utils.log_helper",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def main():\n    \"\"\"\n    主函数：完整的股票预测模型训练流程\n    \"\"\"\n    try:\n        # ====================== 1. 获取数据 ======================\n        logger.info(\"====== 开始数据获取 ======\")\n        end_date = get_latest_trade_date()\n        start_date = (datetime.datetime.strptime(end_date, '%Y%m%d').date(\n        ) - datetime.timedelta(days=365*10)).strftime('%Y%m%d')",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ['TF_ENABLE_ONEDNN_OPTS']",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'\nos.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'\n# 配置日志\nlogger = LogHelper().get_logger(__name__)\ndef main():\n    \"\"\"\n    主函数：完整的股票预测模型训练流程\n    \"\"\"\n    try:\n        # ====================== 1. 获取数据 ======================",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ['TF_CPP_MIN_LOG_LEVEL']",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'\n# 配置日志\nlogger = LogHelper().get_logger(__name__)\ndef main():\n    \"\"\"\n    主函数：完整的股票预测模型训练流程\n    \"\"\"\n    try:\n        # ====================== 1. 获取数据 ======================\n        logger.info(\"====== 开始数据获取 ======\")",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "logger",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "logger = LogHelper().get_logger(__name__)\ndef main():\n    \"\"\"\n    主函数：完整的股票预测模型训练流程\n    \"\"\"\n    try:\n        # ====================== 1. 获取数据 ======================\n        logger.info(\"====== 开始数据获取 ======\")\n        end_date = get_latest_trade_date()\n        start_date = (datetime.datetime.strptime(end_date, '%Y%m%d').date(",
+        "detail": "main",
+        "documentation": {}
+    }
+]

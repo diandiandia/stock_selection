@@ -26,8 +26,10 @@ class CsvSaver(DataSaver):
             df.to_csv(csv_path, index=False, encoding='utf-8')
         else:
             # 追加模式，不写入表头
-            df.to_csv(csv_path, mode='a', header=False, index=False, encoding='utf-8')
-        self.logger.info(f'保存{table_name}数据到CSV，数据形状: {df.shape}，文件路径: {csv_path}')
+            df.to_csv(csv_path, mode='a', header=False,
+                      index=False, encoding='utf-8')
+        self.logger.info(
+            f'保存{table_name}数据到CSV，数据形状: {df.shape}，文件路径: {csv_path}')
 
     def save_batch(self, df_list: list):
         """批量保存多个DataFrame到对应的表"""
@@ -105,7 +107,7 @@ class CsvSaver(DataSaver):
 
         df['ts_code'] = df['ts_code'].apply(get_full_ts_code)
         return df
-    
+
     def read_all_data(self, table_name: str, ts_code: str = None) -> pd.DataFrame:
         csv_path = self._get_csv_file_path(table_name)
         if not os.path.exists(csv_path):
@@ -116,8 +118,6 @@ class CsvSaver(DataSaver):
         if ts_code is not None:
             df = df[df['ts_code'] == ts_code]
         return df
-
-
 
     def close(self):
         # CSV不需要关闭连接，仅记录日志
