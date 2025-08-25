@@ -340,52 +340,45 @@ class DataPreprocessor:
         self.target_scaler.fit(y.reshape(-1, 1))
         y_scaled = self.target_scaler.transform(y.reshape(-1, 1)).flatten()
 
-        # SHAP特征选择
+        # 使用模型的特征重要性而不是SHAP值
         if model is not None:
-            self.logger.info(f"对动态样本执行SHAP特征选择...")
+            self.logger.info("执行特征重要性评估...")
             available_memory = psutil.virtual_memory().available / (1024 ** 3)  # GB
-            shap_subset_size = min(
-                int(available_memory * 2000), len(X_sequence_scaled), 20000)
+            subset_size = min(int(available_memory * 2000), len(X_sequence_scaled), 20000)
+
+            # 时间分层采样
             time_stratified_idx = []
-            unique_years = np.unique(dates.astype(int) // 10000)  # 将字符串转换为整数
+            unique_years = np.unique(dates.astype(int) // 10000)
             for year in unique_years:
-                year_idx = np.where(dates.astype(int) // 10000 == year)[0]  # 将字符串转换为整数
-                sample_size = min(
-                    len(year_idx) // 5, shap_subset_size // len(unique_years))
-                time_stratified_idx.extend(np.random.choice(
-                    year_idx, size=sample_size, replace=False))
-            subset_idx = time_stratified_idx[:shap_subset_size]
-            self.logger.info(f"SHAP子集大小: {len(subset_idx)}")
+                year_idx = np.where(dates.astype(int) // 10000 == year)[0]
+                sample_size = min(len(year_idx) // 5, subset_size // len(unique_years))
+                time_stratified_idx.extend(np.random.choice(year_idx, size=sample_size, replace=False))
+            subset_idx = time_stratified_idx[:subset_size]
 
             X_subset_scaled = X_sequence_scaled[subset_idx]
             y_subset_scaled = y_scaled[subset_idx]
 
-            # 使用 TimeSeriesSplit 训练模型
-            # 根据样本数量动态调整分割数，确保不会超过样本限制
-            n_splits = min(5, max(2, len(X_subset_scaled) // (int(len(X_subset_scaled) * 0.1) * 2)))
-            tscv = TimeSeriesSplit(n_splits=n_splits, test_size=int(len(X_subset_scaled) * 0.1))
-            for train_idx, val_idx in tscv.split(X_subset_scaled):
-                X_train, X_val = X_subset_scaled[train_idx], X_subset_scaled[val_idx]
-                y_train, y_val = y_subset_scaled[train_idx], y_subset_scaled[val_idx]
-                model.fit(X_sequence=X_train, y=y_train)
+            self.logger.info(f"特征重要性评估样本大小: {len(subset_idx)}")
 
-            # 计算SHAP值
-            shap_values = model.compute_shap_values(X_subset_scaled)
-            shap_importance = np.abs(shap_values).mean(axis=(0, 1))
+            # 使用模型的训练数据进行特征重要性评估
+            model.fit(X_sequence=X_subset_scaled, 
+                     y=y_subset_scaled,
+                     feature_columns=self.feature_columns)  # Add this parameter
+
+            # 获取特征重要性分数
+            feature_importance = model.get_feature_importance()
             importance_df = pd.DataFrame({
                 'feature': self.feature_columns,
-                'importance': shap_importance
+                'importance': feature_importance
             }).sort_values('importance', ascending=False)
 
             # 选择前10个特征
             selected_features = importance_df['feature'].iloc[:10].tolist()
             self.feature_columns = selected_features
-            feature_indices = [self.feature_columns.index(
-                f) for f in selected_features]
+            feature_indices = [self.feature_columns.index(f) for f in selected_features]
             X_sequence_scaled = X_sequence_scaled[:, :, feature_indices]
 
-            self.logger.info(
-                f"SHAP特征选择完成: 保留{len(self.feature_columns)}个特征: {self.feature_columns}")
+            self.logger.info(f"特征选择完成: 保留{len(self.feature_columns)}个特征: {self.feature_columns}")
 
         self.is_fitted = True
         gc.collect()

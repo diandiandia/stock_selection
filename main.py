@@ -87,9 +87,13 @@ def main():
 
         # ====================== 4. 模型训练 ======================
         logger.info("====== 开始模型训练 ======")
-        metrics = model.fit(X_sequence_scaled, y_scaled)
+        metrics = model.fit(X_sequence_scaled, y_scaled, feature_columns=preprocessor.feature_columns)
         logger.info(
-            f"训练完成: LSTM Loss={metrics['lstm_loss']:.4f}, LSTM Val Loss={metrics['lstm_val_loss']:.4f}, LGBM RMSE={metrics['lgbm_rmse']:.4f}")
+            f"训练完成: LSTM Loss={metrics.get('lstm_loss', 0):.4f}, "
+            f"LSTM Val Loss={metrics.get('lstm_val_loss', 0):.4f}, "
+            f"LGBM RMSE={metrics.get('lgbm_rmse', 0):.4f}, "
+            f"Ensemble MSE={metrics.get('ensemble_mse', 0):.4f}"
+        )
 
         # ====================== 5. 模型评估 ======================
         logger.info("====== 开始模型评估 ======")

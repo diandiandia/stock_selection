@@ -33,8 +33,9 @@ class LSTMLGBMPredictor:
         self.config = config or self._get_default_config()
         self.lgbm_model = None
         self.lstm_model = None
-        self.ensemble_weights = {'lgbm': 0.5, 'lstm': 0.5}  # 初始化为均等权重
+        self.ensemble_weights = {'lgbm': 0.5, 'lstm': 0.5}
         self.feature_importance_cache = {}
+        self.feature_columns = []  # Add this line
 
     def _get_default_config(self) -> Dict:
         return {
@@ -86,24 +87,44 @@ class LSTMLGBMPredictor:
     def custom_loss(self, y_true, y_pred):
         return tf.keras.losses.Huber(delta=1.0)(y_true, y_pred)
 
-    def fit(self, X_sequence: np.ndarray, y: np.ndarray) -> None:
+    def fit(self, X_sequence: np.ndarray, y: np.ndarray, feature_columns: Optional[List[str]] = None) -> Dict[str, float]:
+        """
+        训练模型
+        
+        Args:
+            X_sequence: 输入序列数据
+            y: 目标变量
+            feature_columns: 特征列名列表
+        
+        Returns:
+            Dict[str, float]: 包含训练指标的字典
+        """
+        # 保存特征列名
+        if feature_columns is not None:
+            self.feature_columns = feature_columns
+            self.logger.info(f"设置特征列: {len(self.feature_columns)}个特征")
+        
         if self.lgbm_model is None:
-            self.lgbm_model = LGBMRegressor(**self.config['lgbm_params'])
+            self.lgbm_model = self._build_lgbm_model()
         if self.lstm_model is None:
             self.lstm_model = self._build_lstm_model(
                 input_shape=(self.config['lookback_window'], X_sequence.shape[2]))
 
+        # LGBM训练
         X_lgbm = X_sequence.reshape(X_sequence.shape[0], -1)
         X_train, X_val, y_train, y_val = train_test_split(
             X_lgbm, y, test_size=self.config['test_size'], shuffle=False)
         
+        lgbm_eval_set = [(X_val, y_val)]
         self.lgbm_model.fit(
             X_train, y_train,
-            eval_set=[(X_val, y_val)],
+            eval_set=lgbm_eval_set,
             eval_metric='rmse',
             callbacks=[early_stopping(stopping_rounds=50, verbose=False)]
         )
+        lgbm_rmse = np.sqrt(mean_squared_error(y_val, self.lgbm_model.predict(X_val)))
 
+        # LSTM训练
         early_stopping_callback = EarlyStopping(
             monitor='val_loss', patience=self.config['patience'], restore_best_weights=True)
         reduce_lr = ReduceLROnPlateau(
@@ -114,7 +135,7 @@ class LSTMLGBMPredictor:
         y_train_lstm = y[:X_train.shape[0]]
         y_val_lstm = y[X_train.shape[0]:]
         
-        self.lstm_model.fit(
+        history = self.lstm_model.fit(
             X_train_lstm, y_train_lstm,
             validation_data=(X_val_lstm, y_val_lstm),
             epochs=self.config['epochs'],
@@ -133,11 +154,20 @@ class LSTMLGBMPredictor:
             'lgbm': lstm_mse / total_mse if total_mse > 0 else 0.5,
             'lstm': lgbm_mse / total_mse if total_mse > 0 else 0.5
         }
+        
         self.logger.info(f"动态集成权重: LGBM={self.ensemble_weights['lgbm']:.3f}, LSTM={self.ensemble_weights['lstm']:.3f}")
         
         ensemble_pred = self.ensemble_weights['lgbm'] * lgbm_pred + self.ensemble_weights['lstm'] * lstm_pred
         ensemble_mse = mean_squared_error(y_val, ensemble_pred)
         self.logger.info(f"验证集 MSE: LGBM={lgbm_mse:.4f}, LSTM={lstm_mse:.4f}, Ensemble={ensemble_mse:.4f}")
+
+        # 返回训练指标
+        return {
+            'lstm_loss': history.history['loss'][-1],
+            'lstm_val_loss': history.history['val_loss'][-1],
+            'lgbm_rmse': lgbm_rmse,
+            'ensemble_mse': ensemble_mse
+        }
 
     def _optimize_ensemble_weights(self, X: np.ndarray, y: np.ndarray):
         """优化集成权重"""
@@ -291,3 +321,43 @@ class LSTMLGBMPredictor:
         recommendation_df = recommendation_df.sort_values(
             'prediction', ascending=False)
         return recommendation_df.head(top_n)
+
+    def get_feature_importance(self):
+        """
+        获取特征重要性分数
+        返回基于LGBM模型的特征重要性
+        """
+        if hasattr(self, 'lgbm_model') and self.lgbm_model is not None:
+            # 获取LGBM模型的特征重要性
+            importance = self.lgbm_model.feature_importances_
+            
+            # 检查feature_columns是否为空
+            if not self.feature_columns:
+                self.logger.warning("feature_columns为空，返回原始特征重要性scores")
+                return importance
+                
+            # 重塑特征重要性数组
+            try:
+                n_features = len(self.feature_columns)
+                if n_features == 0:
+                    self.logger.error("特征列数为0，无法计算特征重要性")
+                    return None
+                    
+                n_timesteps = len(importance) // n_features
+                if n_timesteps == 0:
+                    self.logger.error("时间步长为0，无法计算特征重要性")
+                    return None
+                    
+                importance = importance.reshape(n_timesteps, n_features).mean(axis=0)
+                
+                # 创建特征名称和重要性的映射
+                feature_importance_dict = dict(zip(self.feature_columns, importance))
+                self.logger.info(f"特征重要性计算完成，特征数量: {len(feature_importance_dict)}")
+                return importance
+                
+            except Exception as e:
+                self.logger.error(f"计算特征重要性时发生错误: {str(e)}")
+                return None
+        else:
+            self.logger.warning("LGBM模型未训练，无法获取特征重要性")
+            return None

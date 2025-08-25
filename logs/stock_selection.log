@@ -4445,3 +4445,242 @@ ValueError: Too many splits=10 for number of samples=20000 with test_size=2000 a
 2025-08-24 23:10:20 - src.model.lstm_lgbm_predictor - INFO - 验证集 MSE: LGBM=0.8265, LSTM=0.8528, Ensemble=0.8336
 2025-08-24 23:10:45 - src.model.lstm_lgbm_predictor - INFO - 动态集成权重: LGBM=0.503, LSTM=0.497
 2025-08-24 23:10:45 - src.model.lstm_lgbm_predictor - INFO - 验证集 MSE: LGBM=1.1050, LSTM=1.1202, Ensemble=1.1084
+2025-08-24 23:11:07 - src.model.lstm_lgbm_predictor - INFO - 动态集成权重: LGBM=0.505, LSTM=0.495
+2025-08-24 23:11:07 - src.model.lstm_lgbm_predictor - INFO - 验证集 MSE: LGBM=1.1326, LSTM=1.1569, Ensemble=1.1394
+2025-08-24 23:11:40 - src.model.lstm_lgbm_predictor - INFO - 动态集成权重: LGBM=0.507, LSTM=0.493
+2025-08-24 23:11:40 - src.model.lstm_lgbm_predictor - INFO - 验证集 MSE: LGBM=1.0176, LSTM=1.0475, Ensemble=1.0274
+2025-08-24 23:12:05 - src.model.lstm_lgbm_predictor - INFO - 动态集成权重: LGBM=0.509, LSTM=0.491
+2025-08-24 23:12:05 - src.model.lstm_lgbm_predictor - INFO - 验证集 MSE: LGBM=0.8647, LSTM=0.8973, Ensemble=0.8763
+2025-08-24 23:12:06 - __main__ - ERROR - 系统执行失败: in user code:
+
+    File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/shap/explainers/_deep/deep_tf.py", line 265, in grad_graph  *
+        x_grad = tape.gradient(out, shap_rAnD)
+
+    LookupError: gradient registry has no entry for: shap_TensorListStack
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 82, in main
+    X_sequence_scaled, y_scaled, stock_codes, dates = preprocessor.fit(
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/data_preprocessor.py", line 373, in fit
+    shap_values = model.compute_shap_values(X_subset_scaled)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/model/lstm_lgbm_predictor.py", line 206, in compute_shap_values
+    shap_values_lstm = explainer.shap_values(X_lstm, check_additivity=False)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/shap/explainers/_deep/__init__.py", line 164, in shap_values
+    return self.explainer.shap_values(X, ranked_outputs, output_rank_order, check_additivity=check_additivity)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/shap/explainers/_deep/deep_tf.py", line 332, in shap_values
+    sample_phis = self.run(self.phi_symbolic(feature_ind), self.model_inputs, joint_input)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/shap/explainers/_deep/deep_tf.py", line 389, in run
+    return self.execute_with_overridden_gradients(anon)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/shap/explainers/_deep/deep_tf.py", line 421, in execute_with_overridden_gradients
+    out = f()
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/shap/explainers/_deep/deep_tf.py", line 381, in anon
+    final_out = out(inputs)
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/tensorflow/python/util/traceback_utils.py", line 153, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/tensorflow/python/eager/polymorphic_function/autograph_util.py", line 52, in autograph_handler
+    raise e.ag_error_metadata.to_exception(e)
+tensorflow.python.autograph.impl.api.StagingError: in user code:
+
+    File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/.venv/lib/python3.9/site-packages/shap/explainers/_deep/deep_tf.py", line 265, in grad_graph  *
+        x_grad = tape.gradient(out, shap_rAnD)
+
+    LookupError: gradient registry has no entry for: shap_TensorListStack
+
+2025-08-24 23:19:51 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-24 23:19:51 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-24 23:19:51 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-24 23:19:51 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150827 and trade_date <= 20250824
+2025-08-24 23:19:53 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-24 23:19:53 - __main__ - INFO - 过滤后剩余股票: 800
+2025-08-24 23:19:53 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-24 23:20:07 - __main__ - INFO - 检查技术指标中的NaN值...
+2025-08-24 23:20:07 - __main__ - INFO - NaN统计: {}
+2025-08-24 23:20:07 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-24 23:20:07 - __main__ - INFO - 数据质量检查...
+2025-08-24 23:20:07 - __main__ - INFO - 初始化LSTM+LightGBM模型...
+2025-08-24 23:20:07 - __main__ - INFO - ====== 数据预处理和SHAP特征选择 ======
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 开始数据预处理和拟合...
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 输入数据形状: (691696, 33)
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成...
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 创建技术信号...
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 691695, 均值: 0.0028, 标准差: 0.4903
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 31
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 31
+2025-08-24 23:20:07 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 31, VIF阈值: 5.0
+2025-08-24 23:20:08 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 70 个 (相关系数>0.8)
+2025-08-24 23:20:41 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 7 个特征
+2025-08-24 23:20:41 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['change', 'change_amount', 'turnover', 'CCI', 'OBV', 'CMF', 'CDL_DOJI']
+2025-08-24 23:20:41 - src.data_preprocessing.data_preprocessor - INFO - 创建时序数据...
+2025-08-24 23:20:41 - src.data_preprocessing.data_preprocessor - INFO - 创建时序数据，特征数量: 7
+2025-08-24 23:20:41 - src.data_preprocessing.data_preprocessor - INFO - Processing stocks: 
+2025-08-24 23:20:45 - src.data_preprocessing.data_preprocessor - INFO - 序列诊断: 总股票 800, 跳过数据不足 1, 跳过NaN序列 0, 有效序列 682827
+2025-08-24 23:20:45 - src.data_preprocessing.data_preprocessor - INFO - 生成序列完成: 682827个样本，维度: (682827, 10, 7)
+2025-08-24 23:20:45 - src.data_preprocessing.data_preprocessor - INFO - 计算特征异常值边界...
+2025-08-24 23:20:45 - src.data_preprocessing.data_preprocessor - INFO - 特征异常值边界计算完成: 7 个特征
+2025-08-24 23:20:45 - src.data_preprocessing.data_preprocessor - INFO - 开始清洗数据...
+2025-08-24 23:20:46 - src.data_preprocessing.data_preprocessor - INFO - 特征 change: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:20:46 - src.data_preprocessing.data_preprocessor - INFO - 特征 change_amount: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:20:47 - src.data_preprocessing.data_preprocessor - INFO - 特征 turnover: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:20:48 - src.data_preprocessing.data_preprocessor - INFO - 特征 CCI: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:20:49 - src.data_preprocessing.data_preprocessor - INFO - 特征 OBV: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:20:49 - src.data_preprocessing.data_preprocessor - INFO - 特征 CMF: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:20:50 - src.data_preprocessing.data_preprocessor - INFO - 特征 CDL_DOJI: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:20:50 - src.data_preprocessing.data_preprocessor - INFO - 数据清洗完成
+2025-08-24 23:20:50 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
+2025-08-24 23:20:50 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: 0.0028
+2025-08-24 23:20:50 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
+2025-08-24 23:20:50 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-1.4777, 1.4833]
+2025-08-24 23:20:50 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 5% 上下限
+2025-08-24 23:20:50 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
+2025-08-24 23:20:50 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
+2025-08-24 23:20:50 - src.data_preprocessing.data_preprocessor - INFO - 执行特征重要性评估...
+2025-08-24 23:20:51 - src.data_preprocessing.data_preprocessor - INFO - 特征重要性评估样本大小: 20000
+2025-08-24 23:21:50 - src.model.lstm_lgbm_predictor - INFO - 动态集成权重: LGBM=0.507, LSTM=0.493
+2025-08-24 23:21:50 - src.model.lstm_lgbm_predictor - INFO - 验证集 MSE: LGBM=0.7897, LSTM=0.8111, Ensemble=0.7977
+2025-08-24 23:21:50 - __main__ - ERROR - 系统执行失败: 'LGBMRegressor' object has no attribute 'feature_importance'
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 82, in main
+    X_sequence_scaled, y_scaled, stock_codes, dates = preprocessor.fit(
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/data_preprocessor.py", line 367, in fit
+    feature_importance = model.get_feature_importance()
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/model/lstm_lgbm_predictor.py", line 302, in get_feature_importance
+    importance = self.lgbm_model.feature_importance(importance_type='gain')
+AttributeError: 'LGBMRegressor' object has no attribute 'feature_importance'
+2025-08-24 23:23:29 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-24 23:23:29 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-24 23:23:29 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-24 23:23:29 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150827 and trade_date <= 20250824
+2025-08-24 23:23:30 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-24 23:23:31 - __main__ - INFO - 过滤后剩余股票: 800
+2025-08-24 23:23:31 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-24 23:23:45 - __main__ - INFO - 检查技术指标中的NaN值...
+2025-08-24 23:23:45 - __main__ - INFO - NaN统计: {}
+2025-08-24 23:23:45 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-24 23:23:45 - __main__ - INFO - 数据质量检查...
+2025-08-24 23:23:45 - __main__ - INFO - 初始化LSTM+LightGBM模型...
+2025-08-24 23:23:45 - __main__ - INFO - ====== 数据预处理和SHAP特征选择 ======
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 开始数据预处理和拟合...
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 输入数据形状: (691696, 33)
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成...
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 创建技术信号...
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 691695, 均值: 0.0028, 标准差: 0.4903
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 31
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 31
+2025-08-24 23:23:45 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 31, VIF阈值: 5.0
+2025-08-24 23:23:46 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 70 个 (相关系数>0.8)
+2025-08-24 23:24:19 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 7 个特征
+2025-08-24 23:24:19 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['change', 'change_amount', 'turnover', 'CCI', 'OBV', 'CMF', 'CDL_DOJI']
+2025-08-24 23:24:19 - src.data_preprocessing.data_preprocessor - INFO - 创建时序数据...
+2025-08-24 23:24:19 - src.data_preprocessing.data_preprocessor - INFO - 创建时序数据，特征数量: 7
+2025-08-24 23:24:19 - src.data_preprocessing.data_preprocessor - INFO - Processing stocks: 
+2025-08-24 23:24:22 - src.data_preprocessing.data_preprocessor - INFO - 序列诊断: 总股票 800, 跳过数据不足 1, 跳过NaN序列 0, 有效序列 682827
+2025-08-24 23:24:22 - src.data_preprocessing.data_preprocessor - INFO - 生成序列完成: 682827个样本，维度: (682827, 10, 7)
+2025-08-24 23:24:22 - src.data_preprocessing.data_preprocessor - INFO - 计算特征异常值边界...
+2025-08-24 23:24:22 - src.data_preprocessing.data_preprocessor - INFO - 特征异常值边界计算完成: 7 个特征
+2025-08-24 23:24:22 - src.data_preprocessing.data_preprocessor - INFO - 开始清洗数据...
+2025-08-24 23:24:23 - src.data_preprocessing.data_preprocessor - INFO - 特征 change: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:24:24 - src.data_preprocessing.data_preprocessor - INFO - 特征 change_amount: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:24:24 - src.data_preprocessing.data_preprocessor - INFO - 特征 turnover: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:24:25 - src.data_preprocessing.data_preprocessor - INFO - 特征 CCI: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:24:26 - src.data_preprocessing.data_preprocessor - INFO - 特征 OBV: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:24:26 - src.data_preprocessing.data_preprocessor - INFO - 特征 CMF: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:24:27 - src.data_preprocessing.data_preprocessor - INFO - 特征 CDL_DOJI: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:24:27 - src.data_preprocessing.data_preprocessor - INFO - 数据清洗完成
+2025-08-24 23:24:27 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
+2025-08-24 23:24:27 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: 0.0028
+2025-08-24 23:24:27 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
+2025-08-24 23:24:27 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-1.4777, 1.4833]
+2025-08-24 23:24:27 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 5% 上下限
+2025-08-24 23:24:27 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
+2025-08-24 23:24:28 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
+2025-08-24 23:24:28 - src.data_preprocessing.data_preprocessor - INFO - 执行特征重要性评估...
+2025-08-24 23:24:28 - src.data_preprocessing.data_preprocessor - INFO - 特征重要性评估样本大小: 20000
+2025-08-24 23:25:27 - src.model.lstm_lgbm_predictor - INFO - 动态集成权重: LGBM=0.501, LSTM=0.499
+2025-08-24 23:25:27 - src.model.lstm_lgbm_predictor - INFO - 验证集 MSE: LGBM=0.8244, LSTM=0.8286, Ensemble=0.8240
+2025-08-24 23:25:27 - __main__ - ERROR - 系统执行失败: integer division or modulo by zero
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 82, in main
+    X_sequence_scaled, y_scaled, stock_codes, dates = preprocessor.fit(
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/data_preprocessing/data_preprocessor.py", line 367, in fit
+    feature_importance = model.get_feature_importance()
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/src/model/lstm_lgbm_predictor.py", line 309, in get_feature_importance
+    n_timesteps = len(importance) // n_features
+ZeroDivisionError: integer division or modulo by zero
+2025-08-24 23:27:14 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-24 23:27:14 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-24 23:27:14 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-24 23:27:14 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150827 and trade_date <= 20250824
+2025-08-24 23:27:15 - __main__ - INFO - 获取数据完成: 20220104至20250819, 共691696条记录, 800支股票
+2025-08-24 23:27:16 - __main__ - INFO - 过滤后剩余股票: 800
+2025-08-24 23:27:16 - __main__ - INFO - ====== 开始计算技术指标 ======
+2025-08-24 23:27:30 - __main__ - INFO - 检查技术指标中的NaN值...
+2025-08-24 23:27:30 - __main__ - INFO - NaN统计: {}
+2025-08-24 23:27:30 - __main__ - INFO - ====== 开始数据预处理 ======
+2025-08-24 23:27:30 - __main__ - INFO - 数据质量检查...
+2025-08-24 23:27:30 - __main__ - INFO - 初始化LSTM+LightGBM模型...
+2025-08-24 23:27:30 - __main__ - INFO - ====== 数据预处理和SHAP特征选择 ======
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 开始数据预处理和拟合...
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 输入数据形状: (691696, 33)
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成...
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 数据排序完成，股票数量: 800
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 创建技术信号...
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 技术信号创建完成，新增特征数量: 1
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 开始创建目标变量，预测周期: 1
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 目标变量创建完成，有效样本数: 691695, 均值: 0.0028, 标准差: 0.4903
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 开始特征选择...
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 原始特征数量: 31
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 缺失值过滤后特征数量: 31
+2025-08-24 23:27:30 - src.data_preprocessing.data_preprocessor - INFO - 开始多重共线性检测，输入特征数量: 31, VIF阈值: 5.0
+2025-08-24 23:27:31 - src.data_preprocessing.data_preprocessor - INFO - 预过滤高相关特征: 70 个 (相关系数>0.8)
+2025-08-24 23:28:03 - src.data_preprocessing.data_preprocessor - INFO - 多重共线性检测完成: 最终选择 7 个特征
+2025-08-24 23:28:03 - src.data_preprocessing.data_preprocessor - INFO - 选择的特征: ['change', 'change_amount', 'turnover', 'CCI', 'OBV', 'CMF', 'CDL_DOJI']
+2025-08-24 23:28:03 - src.data_preprocessing.data_preprocessor - INFO - 创建时序数据...
+2025-08-24 23:28:03 - src.data_preprocessing.data_preprocessor - INFO - 创建时序数据，特征数量: 7
+2025-08-24 23:28:03 - src.data_preprocessing.data_preprocessor - INFO - Processing stocks: 
+2025-08-24 23:28:07 - src.data_preprocessing.data_preprocessor - INFO - 序列诊断: 总股票 800, 跳过数据不足 1, 跳过NaN序列 0, 有效序列 682827
+2025-08-24 23:28:07 - src.data_preprocessing.data_preprocessor - INFO - 生成序列完成: 682827个样本，维度: (682827, 10, 7)
+2025-08-24 23:28:07 - src.data_preprocessing.data_preprocessor - INFO - 计算特征异常值边界...
+2025-08-24 23:28:07 - src.data_preprocessing.data_preprocessor - INFO - 特征异常值边界计算完成: 7 个特征
+2025-08-24 23:28:07 - src.data_preprocessing.data_preprocessor - INFO - 开始清洗数据...
+2025-08-24 23:28:08 - src.data_preprocessing.data_preprocessor - INFO - 特征 change: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:28:09 - src.data_preprocessing.data_preprocessor - INFO - 特征 change_amount: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:28:09 - src.data_preprocessing.data_preprocessor - INFO - 特征 turnover: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:28:10 - src.data_preprocessing.data_preprocessor - INFO - 特征 CCI: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:28:11 - src.data_preprocessing.data_preprocessor - INFO - 特征 OBV: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:28:11 - src.data_preprocessing.data_preprocessor - INFO - 特征 CMF: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:28:12 - src.data_preprocessing.data_preprocessor - INFO - 特征 CDL_DOJI: 裁剪范围 [0.01, 0.01]
+2025-08-24 23:28:12 - src.data_preprocessing.data_preprocessor - INFO - 数据清洗完成
+2025-08-24 23:28:12 - src.data_preprocessing.data_preprocessor - INFO - 处理目标变量...
+2025-08-24 23:28:12 - src.data_preprocessing.data_preprocessor - INFO - 目标变量无需填充，均值: 0.0028
+2025-08-24 23:28:12 - src.data_preprocessing.data_preprocessor - INFO - 计算目标变量异常值阈值...
+2025-08-24 23:28:12 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值范围: [-1.4777, 1.4833]
+2025-08-24 23:28:12 - src.data_preprocessing.data_preprocessor - INFO - 目标变量异常值处理: 裁剪 5% 上下限
+2025-08-24 23:28:12 - src.data_preprocessing.data_preprocessor - INFO - 拟合特征缩放器...
+2025-08-24 23:28:12 - src.data_preprocessing.data_preprocessor - INFO - 拟合目标变量缩放器...
+2025-08-24 23:28:12 - src.data_preprocessing.data_preprocessor - INFO - 执行特征重要性评估...
+2025-08-24 23:28:13 - src.data_preprocessing.data_preprocessor - INFO - 特征重要性评估样本大小: 20000
+2025-08-24 23:28:13 - src.model.lstm_lgbm_predictor - INFO - 设置特征列: 7个特征
+2025-08-24 23:29:04 - src.model.lstm_lgbm_predictor - INFO - 动态集成权重: LGBM=0.504, LSTM=0.496
+2025-08-24 23:29:04 - src.model.lstm_lgbm_predictor - INFO - 验证集 MSE: LGBM=0.8093, LSTM=0.8207, Ensemble=0.8128
+2025-08-24 23:29:04 - src.model.lstm_lgbm_predictor - INFO - 特征重要性计算完成，特征数量: 7
+2025-08-24 23:29:04 - src.data_preprocessing.data_preprocessor - INFO - 特征选择完成: 保留7个特征: ['change', 'change_amount', 'CCI', 'CMF', 'turnover', 'OBV', 'CDL_DOJI']
+2025-08-24 23:29:04 - __main__ - INFO - 数据预处理完成: 获得682827个样本，799支股票
+2025-08-24 23:29:04 - __main__ - INFO - ====== 开始模型训练 ======
+2025-08-25 00:51:02 - src.model.lstm_lgbm_predictor - INFO - 动态集成权重: LGBM=0.501, LSTM=0.499
+2025-08-25 00:51:02 - src.model.lstm_lgbm_predictor - INFO - 验证集 MSE: LGBM=1.1372, LSTM=1.1410, Ensemble=1.1246
+2025-08-25 00:51:02 - __main__ - ERROR - 系统执行失败: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/zhangyuchao/Works/Projects/PythonProjects/stock_selection/main.py", line 92, in main
+    f"训练完成: LSTM Loss={metrics['lstm_loss']:.4f}, LSTM Val Loss={metrics['lstm_val_loss']:.4f}, LGBM RMSE={metrics['lgbm_rmse']:.4f}")
+TypeError: 'NoneType' object is not subscriptable
+2025-08-25 08:12:58 - __main__ - INFO - ====== 开始数据获取 ======
+2025-08-25 08:12:58 - __main__ - INFO - 正常模式：使用10年数据
+2025-08-25 08:12:58 - src.data_storage.data_saver - INFO - init saver, file path: ./data/stock_data.db
+2025-08-25 08:12:58 - src.data_storage.data_saver - INFO - read stock_daily data from sqlite, sql command: select * from stock_daily where trade_date >= 20150827 and trade_date <= 20250824

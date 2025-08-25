@@ -1075,7 +1075,7 @@
         "kind": 6,
         "importPath": "src.model.lstm_lgbm_predictor",
         "description": "src.model.lstm_lgbm_predictor",
-        "peekOfCode": "class LSTMLGBMPredictor:\n    \"\"\"LSTM + LightGBM混合预测模型，专为T+1股票推荐设计\"\"\"\n    TRADING_DAYS = 252  # 年交易日数\n    def __init__(self, config: Optional[Dict] = None):\n        self.logger = LogHelper.get_logger(__name__)\n        self.config = config or self._get_default_config()\n        self.lgbm_model = None\n        self.lstm_model = None\n        self.ensemble_weights = {'lgbm': 0.5, 'lstm': 0.5}  # 初始化为均等权重\n        self.feature_importance_cache = {}",
+        "peekOfCode": "class LSTMLGBMPredictor:\n    \"\"\"LSTM + LightGBM混合预测模型，专为T+1股票推荐设计\"\"\"\n    TRADING_DAYS = 252  # 年交易日数\n    def __init__(self, config: Optional[Dict] = None):\n        self.logger = LogHelper.get_logger(__name__)\n        self.config = config or self._get_default_config()\n        self.lgbm_model = None\n        self.lstm_model = None\n        self.ensemble_weights = {'lgbm': 0.5, 'lstm': 0.5}\n        self.feature_importance_cache = {}",
         "detail": "src.model.lstm_lgbm_predictor",
         "documentation": {}
     },
