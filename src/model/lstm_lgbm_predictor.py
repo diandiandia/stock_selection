@@ -196,10 +196,25 @@ class LSTMLGBMPredictor:
 
         weights = weights or self.ensemble_weights
 
+        # 重塑数据并添加特征名称
         X_lgbm = X_sequence.reshape(X_sequence.shape[0], -1)
-        lgbm_preds = self.lgbm_model.predict(X_lgbm)
+        
+        # 为LGBM创建特征名称
+        n_features = X_sequence.shape[2]
+        n_timesteps = X_sequence.shape[1]
+        feature_names = []
+        for t in range(n_timesteps):
+            for f in range(n_features):
+                feature_names.append(f't{t}_feature_{f}')
+        
+        # 将数据转换为DataFrame并添加特征名称
+        X_lgbm_df = pd.DataFrame(X_lgbm, columns=feature_names)
+        
+        # 分别进行预测
+        lgbm_preds = self.lgbm_model.predict(X_lgbm_df)
         lstm_preds = self.lstm_model.predict(X_sequence, verbose=0).flatten()
 
+        # 组合预测结果
         return weights['lgbm'] * lgbm_preds + weights['lstm'] * lstm_preds
 
     def evaluate(self, X_test: np.ndarray, y_test: np.ndarray, dates: Optional[np.ndarray] = None) -> Dict[str, float]:

@@ -29,7 +29,8 @@ def main():
         end_date = get_latest_trade_date()
         start_date = (datetime.datetime.strptime(end_date, '%Y%m%d').date(
         ) - datetime.timedelta(days=365*10)).strftime('%Y%m%d')
-        logger.info("正常模式：使用10年数据")
+        logger.info("正常模式：使用{} 到 {}年数据".format(start_date, end_date))
+
 
         fetcher = AkshareDataFetcher()
         df = fetcher.get_all_historical_data_from_db(
