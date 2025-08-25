@@ -335,6 +335,30 @@
         "documentation": {}
     },
     {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
         "label": "List",
         "importPath": "typing",
         "description": "typing",
@@ -392,6 +416,46 @@
     },
     {
         "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
         "importPath": "typing",
         "description": "typing",
         "isExtraImport": true,
@@ -647,6 +711,14 @@
         "documentation": {}
     },
     {
+        "label": "stats",
+        "importPath": "scipy",
+        "description": "scipy",
+        "isExtraImport": true,
+        "detail": "scipy",
+        "documentation": {}
+    },
+    {
         "label": "tensorflow",
         "kind": 6,
         "isExtraImport": true,
@@ -665,6 +737,14 @@
     },
     {
         "label": "Model",
+        "importPath": "keras.models",
+        "description": "keras.models",
+        "isExtraImport": true,
+        "detail": "keras.models",
+        "documentation": {}
+    },
+    {
+        "label": "Sequential",
         "importPath": "keras.models",
         "description": "keras.models",
         "isExtraImport": true,
@@ -736,23 +816,7 @@
         "documentation": {}
     },
     {
-        "label": "Input",
-        "importPath": "keras.layers",
-        "description": "keras.layers",
-        "isExtraImport": true,
-        "detail": "keras.layers",
-        "documentation": {}
-    },
-    {
         "label": "BatchNormalization",
-        "importPath": "keras.layers",
-        "description": "keras.layers",
-        "isExtraImport": true,
-        "detail": "keras.layers",
-        "documentation": {}
-    },
-    {
-        "label": "Attention",
         "importPath": "keras.layers",
         "description": "keras.layers",
         "isExtraImport": true,
@@ -913,6 +977,30 @@
         "documentation": {}
     },
     {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "RiskManager",
+        "importPath": "src.risk_management.risk_manager",
+        "description": "src.risk_management.risk_manager",
+        "isExtraImport": true,
+        "detail": "src.risk_management.risk_manager",
+        "documentation": {}
+    },
+    {
+        "label": "RiskConfig",
+        "importPath": "src.risk_management.risk_manager",
+        "description": "src.risk_management.risk_manager",
+        "isExtraImport": true,
+        "detail": "src.risk_management.risk_manager",
+        "documentation": {}
+    },
+    {
         "label": "logging",
         "kind": 6,
         "isExtraImport": true,
@@ -965,19 +1053,19 @@
     {
         "label": "cmd_doc",
         "kind": 5,
-        "importPath": ".venv.bin.runxlrd",
-        "description": ".venv.bin.runxlrd",
+        "importPath": ".venv.Scripts.runxlrd",
+        "description": ".venv.Scripts.runxlrd",
         "peekOfCode": "cmd_doc = \"\"\"\nCommands:\n2rows           Print the contents of first and last row in each sheet\n3rows           Print the contents of first, second and last row in each sheet\nbench           Same as \"show\", but doesn't print -- for profiling\nbiff_count[1]   Print a count of each type of BIFF record in the file\nbiff_dump[1]    Print a dump (char and hex) of the BIFF records in the file\nfonts           hdr + print a dump of all font objects\nhdr             Mini-overview of file (no per-sheet information)\nhotshot         Do a hotshot profile run e.g. ... -f1 hotshot bench bigfile*.xls",
-        "detail": ".venv.bin.runxlrd",
+        "detail": ".venv.Scripts.runxlrd",
         "documentation": {}
     },
     {
         "label": "options",
         "kind": 5,
-        "importPath": ".venv.bin.runxlrd",
-        "description": ".venv.bin.runxlrd",
+        "importPath": ".venv.Scripts.runxlrd",
+        "description": ".venv.Scripts.runxlrd",
         "peekOfCode": "options = None\nif __name__ == \"__main__\":\n    import xlrd\n    import sys\n    import time\n    import glob\n    import traceback\n    import gc\n    from xlrd.timemachine import xrange, REPR\n    class LogHandler(object):",
-        "detail": ".venv.bin.runxlrd",
+        "detail": ".venv.Scripts.runxlrd",
         "documentation": {}
     },
     {
@@ -1021,7 +1109,7 @@
         "kind": 6,
         "importPath": "src.data_preprocessing.data_preprocessor",
         "description": "src.data_preprocessing.data_preprocessor",
-        "peekOfCode": "class DataPreprocessor:\n    \"\"\"\n    专为HybridPredictor准备训练数据的数据预处理器\n    接收TechnicalIndicators的输出，专注于数据准备和格式化\n    不再计算技术指标，仅做数据清洗、特征选择和时序数据构建\n    \"\"\"\n    def __init__(self,\n                 lookback_window: int = 20,\n                 prediction_horizon: int = 1,\n                 feature_scaler_type: str = 'standard',",
+        "peekOfCode": "class DataPreprocessor:\n    \"\"\"\n    专为HybridPredictor准备训练数据的数据预处理器\n    接收TechnicalIndicators的输出，专注于数据准备和格式化\n    不再计算技术指标，仅做数据清洗、特征选择和时序数据构建\n    \"\"\"\n    def __init__(self,\n                 lookback_window: int = 20,\n                 prediction_horizon: int = 5,\n                 shap_subset_size: int = 5000,",
         "detail": "src.data_preprocessing.data_preprocessor",
         "documentation": {}
     },
@@ -1062,6 +1150,15 @@
         "documentation": {}
     },
     {
+        "label": "ModelEvaluator",
+        "kind": 6,
+        "importPath": "src.model.evaluation_metrics",
+        "description": "src.model.evaluation_metrics",
+        "peekOfCode": "class ModelEvaluator:\n    def __init__(self):\n        self.risk_free_rate = 0.03  # 年化无风险利率\n    def calculate_metrics(self, \n                         y_true: np.ndarray, \n                         y_pred: np.ndarray, \n                         dates: np.ndarray,\n                         prices: np.ndarray) -> Dict:\n        \"\"\"计算完整的评估指标集\"\"\"\n        # 基础预测指标",
+        "detail": "src.model.evaluation_metrics",
+        "documentation": {}
+    },
+    {
         "label": "HybridPredictor",
         "kind": 6,
         "importPath": "src.model.hybrid_predictor",
@@ -1077,6 +1174,33 @@
         "description": "src.model.lstm_lgbm_predictor",
         "peekOfCode": "class LSTMLGBMPredictor:\n    \"\"\"LSTM + LightGBM混合预测模型，专为T+1股票推荐设计\"\"\"\n    TRADING_DAYS = 252  # 年交易日数\n    def __init__(self, config: Optional[Dict] = None):\n        self.logger = LogHelper.get_logger(__name__)\n        self.config = config or self._get_default_config()\n        self.lgbm_model = None\n        self.lstm_model = None\n        self.ensemble_weights = {'lgbm': 0.5, 'lstm': 0.5}\n        self.feature_importance_cache = {}",
         "detail": "src.model.lstm_lgbm_predictor",
+        "documentation": {}
+    },
+    {
+        "label": "RiskConfig",
+        "kind": 6,
+        "importPath": "src.risk_management.risk_manager",
+        "description": "src.risk_management.risk_manager",
+        "peekOfCode": "class RiskConfig:\n    max_position_size: float = 0.1      # 单个股票最大仓位\n    max_sector_exposure: float = 0.3    # 单个行业最大敞口\n    stop_loss: float = 0.05            # 止损线\n    take_profit: float = 0.15          # 止盈线\n    max_volatility: float = 0.3        # 最大波动率\n    max_drawdown: float = 0.2          # 最大回撤限制\n    min_liquidity: float = 1e6         # 最小日均成交额\nclass RiskManager:\n    def __init__(self, config: RiskConfig = None):",
+        "detail": "src.risk_management.risk_manager",
+        "documentation": {}
+    },
+    {
+        "label": "RiskManager",
+        "kind": 6,
+        "importPath": "src.risk_management.risk_manager",
+        "description": "src.risk_management.risk_manager",
+        "peekOfCode": "class RiskManager:\n    def __init__(self, config: RiskConfig = None):\n        self.config = config or RiskConfig()\n    def calculate_position_size(self, \n                              prediction: float, \n                              confidence: float, \n                              volatility: float) -> float:\n        \"\"\"计算建议仓位\"\"\"\n        # 基础仓位\n        base_position = abs(prediction) * confidence",
+        "detail": "src.risk_management.risk_manager",
+        "documentation": {}
+    },
+    {
+        "label": "RiskStrategy",
+        "kind": 6,
+        "importPath": "src.strategy.risk_strategy",
+        "description": "src.strategy.risk_strategy",
+        "peekOfCode": "class RiskStrategy:\n    def __init__(self, risk_config: RiskConfig = None):\n        self.risk_manager = RiskManager(risk_config)\n    def apply_position_limits(self, \n                            recommendations: pd.DataFrame, \n                            market_data: pd.DataFrame) -> pd.DataFrame:\n        \"\"\"应用仓位限制\"\"\"\n        risk_adjusted_recs = recommendations.copy()\n        # 计算波动率和流动性指标\n        for idx, row in risk_adjusted_recs.iterrows():",
+        "detail": "src.strategy.risk_strategy",
         "documentation": {}
     },
     {

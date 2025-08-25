@@ -26,50 +26,54 @@ class DataPreprocessor:
 
     def __init__(self,
                  lookback_window: int = 20,
-                 prediction_horizon: int = 1,
+                 prediction_horizon: int = 5,
+                 shap_subset_size: int = 5000,
+                 max_workers: int = 4,
+                 outlier_threshold: float = 5.0,
+                 vif_threshold: float = 10.0,
+                 corr_threshold: float = 0.95,
+                 feature_selection: str = 'combined',
                  feature_scaler_type: str = 'standard',
                  target_scaler_type: str = 'standard',
-                 test_size: float = 0.2,
-                 validation_split: float = 0.1,
                  imputation_strategy: str = 'hybrid',
-                 outlier_detection: str = 'zscore',
-                 outlier_threshold: float = 5.0,
-                 shap_subset_size: int = 10000,
-                 max_workers: int = 4):
+                 outlier_detection: str = 'zscore'  # Add outlier detection parameter
+                 ):
         """
         初始化数据预处理器
 
         Args:
-            lookback_window: 回看窗口大小（用于时序特征）
-            prediction_horizon: 预测周期（T+1就是1）
-            feature_scaler_type: 特征缩放器类型 ('standard' 或 'minmax')
-            target_scaler_type: 目标变量缩放器类型 ('standard' 或 'minmax')
-            test_size: 测试集比例
-            validation_split: 验证集比例
-            imputation_strategy: 缺失值填充策略 ('mean', 'median', 'mode', 'hybrid')
-            outlier_detection: 异常值检测方法 ('iqr', 'zscore', 'none')
-            outlier_threshold: 异常值检测阈值
-            shap_subset_size: 用于SHAP特征选择的子集大小
-            max_workers: 并行处理的最大工作线程数
+            lookback_window (int): 时间窗口大小
+            prediction_horizon (int): 预测周期
+            shap_subset_size (int): SHAP分析样本数量
+            max_workers (int): 并行处理的最大工作进程数
+            outlier_threshold (float): 异常值处理阈值
+            vif_threshold (float): 方差膨胀因子阈值
+            corr_threshold (float): 相关性阈值
+            feature_selection (str): 特征选择方法 ('combined', 'vif', 'correlation')
+            feature_scaler_type (str): 特征缩放方法 ('standard' or 'minmax')
+            target_scaler_type (str): 目标变量缩放方法 ('standard' or 'minmax')
+            imputation_strategy (str): 缺失值填充策略 ('hybrid', 'mean', 'median', 'ffill')
+            outlier_detection (str): 异常值检测方法 ('zscore', 'iqr', 'isolation_forest')
         """
         self.logger = LogHelper.get_logger(__name__)
-
-        # 配置参数
+        
+        # Configuration parameters
         self.lookback_window = lookback_window
         self.prediction_horizon = prediction_horizon
-        self.test_size = test_size
-        self.validation_split = validation_split
-        self.imputation_strategy = imputation_strategy
-        self.outlier_detection = outlier_detection
-        self.outlier_threshold = outlier_threshold
         self.shap_subset_size = shap_subset_size
         self.max_workers = max_workers
+        self.outlier_threshold = outlier_threshold
+        self.vif_threshold = vif_threshold
+        self.corr_threshold = corr_threshold
+        self.feature_selection = feature_selection
+        self.feature_scaler_type = feature_scaler_type
+        self.target_scaler_type = target_scaler_type
+        self.imputation_strategy = imputation_strategy
+        self.outlier_detection = outlier_detection  # Add this line
 
-        # 初始化缩放器
-        self.feature_scaler = StandardScaler(
-        ) if feature_scaler_type == 'standard' else MinMaxScaler()
-        self.target_scaler = StandardScaler(
-        ) if target_scaler_type == 'standard' else MinMaxScaler()
+        # Initialize scalers
+        self.feature_scaler = StandardScaler() if feature_scaler_type == 'standard' else MinMaxScaler()
+        self.target_scaler = StandardScaler() if target_scaler_type == 'standard' else MinMaxScaler()
 
         # 初始化其他属性
         self.feature_columns = []
@@ -454,3 +458,66 @@ class DataPreprocessor:
         self.target_outlier_upper = save_data.get('target_outlier_upper', None)
         self.is_fitted = True
         self.logger.info(f"Preprocessor loaded from {path}")
+
+    def check_data_quality(self, df):
+        """数据质量检查"""
+        # 打印列名以便调试 ['trade_date', 'ts_code', 'open', 'close', 'high', 'low', 'volume', 'amount', 'amplitude', 'change', 'change_amount', 'turnover']
+        self.logger.info(f"DataFrame columns: {df.columns.tolist()}")
+        
+        quality_report = {
+            'missing_values': df.isnull().sum().to_dict(),
+            'duplicates': df.duplicated().sum(),
+            'stock_coverage': len(df['ts_code'].unique()),
+            'date_range': (df['trade_date'].min(), df['trade_date'].max()),
+            'price_anomalies': len(df[df['close'] <= 0]),
+            'volume_anomalies': len(df[df['volume'] <= 0]),
+            'trading_days': df.groupby('ts_code')['trade_date'].count().describe(),
+            'additional_checks': {
+                'negative_open': len(df[df['open'] <= 0]),
+                'negative_high': len(df[df['high'] <= 0]),
+                'negative_low': len(df[df['low'] <= 0]),
+                'invalid_hloc': len(df[
+                    (df['high'] < df['low']) |
+                    (df['open'] > df['high']) |
+                    (df['open'] < df['low']) |
+                    (df['close'] > df['high']) |
+                    (df['close'] < df['low'])
+                ]),
+                'zero_amount': len(df[df['amount'] <= 0]),
+                'zero_turnover': len(df[df['turnover'] <= 0])
+            }
+        }
+        
+        # 记录异常检查结果
+        for check, count in quality_report['additional_checks'].items():
+            if count > 0:
+                self.logger.warning(f"发现 {count} 条{check}异常记录")
+    
+        return quality_report
+
+    def split_data(self, X, y, dates, stock_codes):
+        """改进的数据分割方法"""
+        # 按时间顺序分割
+        train_cutoff = int(len(X) * 0.7)
+        val_cutoff = int(len(X) * 0.85)
+        
+        X_train = X[:train_cutoff]
+        y_train = y[:train_cutoff]
+        dates_train = dates[:train_cutoff]
+        stocks_train = stock_codes[:train_cutoff]
+        
+        X_val = X[train_cutoff:val_cutoff]
+        y_val = y[train_cutoff:val_cutoff]
+        dates_val = dates[train_cutoff:val_cutoff]
+        stocks_val = stock_codes[train_cutoff:val_cutoff]
+        
+        X_test = X[val_cutoff:]
+        y_test = y[val_cutoff:]
+        dates_test = dates[val_cutoff:]
+        stocks_test = stock_codes[val_cutoff:]
+        
+        return {
+            'train': (X_train, y_train, dates_train, stocks_train),
+            'val': (X_val, y_val, dates_val, stocks_val),
+            'test': (X_test, y_test, dates_test, stocks_test)
+        }

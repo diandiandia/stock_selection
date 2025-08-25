@@ -50,34 +50,58 @@ def main():
         df = df[df['ts_code'].isin(valid_stocks)]
         logger.info(f"过滤后剩余股票: {len(valid_stocks)}")
 
-        # ====================== 2. 计算技术指标和信号 ======================
-        logger.info("====== 开始计算技术指标 ======")
-        ti = TechnicalIndicators(df)
-        df_with_indicators = ti.calculate_all_indicators(chunksize=50)
-
-        if df_with_indicators.empty:
-            logger.error("技术指标计算失败")
-            return
-
-        # 检查NaN值
-        logger.info("检查技术指标中的NaN值...")
-        nan_counts = df_with_indicators.isnull().sum()
-        logger.info(f"NaN统计: {nan_counts[nan_counts > 0].to_dict()}")
-
-        # ====================== 3. 数据预处理和特征选择 ======================
-        logger.info("====== 开始数据预处理 ======")
-        logger.info("数据质量检查...")
-
+        logger.info("====== 开始数据质量检查 ======")
         preprocessor = DataPreprocessor(
-            lookback_window=10,  # 与lstm_lgbm_predictor.py一致
-            prediction_horizon=1,
-            shap_subset_size=3000,  # 减小以适应1.14 GB内存
-            max_workers=2,  # 减小以降低内存使用
-            outlier_threshold=3.0  # 更严格的异常值处理
+            lookback_window=20,
+            prediction_horizon=5,
+            shap_subset_size=5000,
+            max_workers=4,
+            outlier_threshold=5.0,
+            vif_threshold=10.0,
+            corr_threshold=0.95,
+            feature_selection='combined',
+            feature_scaler_type='standard',
+            target_scaler_type='standard',
+            imputation_strategy='hybrid',
+            outlier_detection='zscore'  # Add this parameter
         )
 
-        logger.info("初始化LSTM+LightGBM模型...")
-        model = LSTMLGBMPredictor()
+        quality_report = preprocessor.check_data_quality(df)
+        logger.info(f"数据质量报告:\n"
+                    f"缺失值统计: {quality_report['missing_values']}\n"
+                    f"重复记录数: {quality_report['duplicates']}\n"
+                    f"股票覆盖数: {quality_report['stock_coverage']}\n"
+                    f"交易日期范围: {quality_report['date_range']}\n"
+                    f"价格异常数: {quality_report['price_anomalies']}\n"
+                    f"成交量异常数: {quality_report['volume_anomalies']}")
+
+        if quality_report['duplicates'] > 0 or quality_report['price_anomalies'] > 0:
+            logger.warning("数据质量存在问题，请检查")
+
+        # 添加计算技术指标的步骤
+        logger.info("====== 开始计算技术指标 ======")
+        technical_indicator = TechnicalIndicators(df)
+        df_with_indicators = technical_indicator.calculate_all_indicators()
+        
+        # 检查技术指标计算结果
+        nan_cols = df_with_indicators.isna().sum()
+        if nan_cols.any():
+            logger.warning("技术指标中存在NaN值:")
+            for col, nan_count in nan_cols[nan_cols > 0].items():
+                logger.warning(f"{col}: {nan_count}个NaN值")
+        else:
+            logger.info("技术指标计算完成，无NaN值")
+
+        # 保存中间结果
+        gc.collect()  # 清理内存
+
+        logger.info("====== 初始化LSTM+LightGBM模型 ======")
+        try:
+            model = LSTMLGBMPredictor()
+            logger.info("模型初始化成功")
+        except Exception as e:
+            logger.error(f"模型初始化失败: {str(e)}")
+            raise
 
         logger.info("====== 数据预处理和SHAP特征选择 ======")
         X_sequence_scaled, y_scaled, stock_codes, dates = preprocessor.fit(
@@ -88,19 +112,55 @@ def main():
 
         # ====================== 4. 模型训练 ======================
         logger.info("====== 开始模型训练 ======")
-        metrics = model.fit(X_sequence_scaled, y_scaled, feature_columns=preprocessor.feature_columns)
+        metrics = model.fit(
+            X_sequence_scaled, 
+            y_scaled,
+            feature_columns=preprocessor.feature_columns,
+            validation_split=0.2
+        )
+
         logger.info(
-            f"训练完成: LSTM Loss={metrics.get('lstm_loss', 0):.4f}, "
-            f"LSTM Val Loss={metrics.get('lstm_val_loss', 0):.4f}, "
-            f"LGBM RMSE={metrics.get('lgbm_rmse', 0):.4f}, "
-            f"Ensemble MSE={metrics.get('ensemble_mse', 0):.4f}"
+            f"训练完成: LSTM Loss={metrics['lstm_loss']:.4f}, "
+            f"LSTM Val Loss={metrics['lstm_val_loss']:.4f}, "
+            f"LSTM Direction Acc={metrics['lstm_direction_acc']:.4f}, "
+            f"LGBM MSE={metrics['lgbm_mse']:.4f}, "
+            f"集成权重: LSTM={metrics['ensemble_weights']['lstm']:.3f}, "
+            f"LGBM={metrics['ensemble_weights']['lgbm']:.3f}"
         )
 
         # ====================== 5. 模型评估 ======================
         logger.info("====== 开始模型评估 ======")
         eval_metrics = model.evaluate(X_sequence_scaled, y_scaled, dates=dates)
-        logger.info(
-            f"模型评估结果: MSE={eval_metrics['mse']:.4f}, MAE={eval_metrics['mae']:.4f}, Annual Return={eval_metrics.get('annual_return', np.nan):.4f}")
+
+        # 记录详细的评估指标
+        logger.info("\n=== 预测准确性指标 ===")
+        logger.info(f"MSE: {eval_metrics['mse']:.4f}")
+        logger.info(f"RMSE: {eval_metrics['rmse']:.4f}")
+        logger.info(f"MAE: {eval_metrics['mae']:.4f}")
+        logger.info(f"MAPE: {eval_metrics['mape']:.2f}%")
+        logger.info(f"R²: {eval_metrics['r2']:.4f}")
+
+        logger.info("\n=== 方向准确性指标 ===")
+        logger.info(f"方向准确率: {eval_metrics['direction_accuracy']:.2%}")
+        logger.info(f"精确率: {eval_metrics['precision']:.2%}")
+        logger.info(f"召回率: {eval_metrics['recall']:.2%}")
+        logger.info(f"F1分数: {eval_metrics['f1_score']:.2%}")
+
+        logger.info("\n=== 收益相关指标 ===")
+        logger.info(f"年化收益率: {eval_metrics['annual_return']:.2%}")
+        logger.info(f"最大回撤: {eval_metrics['max_drawdown']:.2%}")
+        logger.info(f"Calmar比率: {eval_metrics['calmar_ratio']:.2f}")
+
+        logger.info("\n=== 风险调整指标 ===")
+        logger.info(f"年化波动率: {eval_metrics['annual_volatility']:.2%}")
+        logger.info(f"夏普比率: {eval_metrics['sharpe_ratio']:.2f}")
+        logger.info(f"索提诺比率: {eval_metrics['sortino_ratio']:.2f}")
+        logger.info(f"信息比率: {eval_metrics['information_ratio']:.2f}")
+
+        # 保存评估结果
+        eval_results = pd.DataFrame([eval_metrics])
+        eval_results.to_csv('outputs/model_evaluation.csv', index=False)
+        logger.info("\n评估结果已保存到 outputs/model_evaluation.csv")
 
         # ====================== 6. 生成推荐 ======================
         logger.info("====== 生成股票推荐 ======")
@@ -162,6 +222,51 @@ def main():
         logger.info(f"数据时间范围: {min(dates)} 到 {max(dates)}")
         logger.info(f"最终样本数: {len(X_sequence_scaled)}")
         logger.info("测试运行成功完成！")
+
+        # ====================== 10. 风险管理 ======================
+        logger.info("====== 应用风险管理 ======")
+        from src.risk_management.risk_manager import RiskConfig
+        from src.strategy.risk_strategy import RiskStrategy
+
+        risk_config = RiskConfig(
+            max_position_size=0.1,
+            max_sector_exposure=0.3,
+            stop_loss=0.05,
+            take_profit=0.15,
+            max_volatility=0.3,
+            max_drawdown=0.2,
+            min_liquidity=1e6
+        )
+
+        risk_strategy = RiskStrategy(risk_config)
+
+        # 应用风险管理
+        risk_adjusted_recommendations = risk_strategy.apply_position_limits(
+            recommendations_df, 
+            df_with_indicators
+        )
+
+        logger.info(f"风险调整后推荐数量: {len(risk_adjusted_recommendations)}")
+        logger.info(f"平均建议仓位: {risk_adjusted_recommendations['position_size'].mean():.2%}")
+
+        # 生成止盈止损建议
+        stop_orders = risk_strategy.generate_stop_orders(portfolio, df_with_indicators)
+
+        if stop_orders:
+            logger.info("\n=== 止盈止损建议 ===")
+            for order in stop_orders:
+                logger.info(
+                    f"{order['stock']}: {order['action'].upper()}, "
+                    f"原因: {order['reason']}, "
+                    f"收益率: {order['profit_rate']:.2%}"
+                )
+
+        # 保存风险调整后的推荐结果
+        risk_adjusted_recommendations.to_csv(
+            'outputs/risk_adjusted_recommendations.csv', 
+            index=False
+        )
+        logger.info("风险调整后的推荐结果已保存到 outputs/risk_adjusted_recommendations.csv")
 
     except Exception as e:
         logger.error(f"系统执行失败: {str(e)}", exc_info=True)

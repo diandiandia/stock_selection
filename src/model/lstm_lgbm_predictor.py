@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split, TimeSeriesSplit
 import tensorflow as tf
-from keras.models import Model
-from keras.layers import LSTM, Dense, Dropout, Input, BatchNormalization, Attention
+from keras.models import Model, Sequential
+from keras.layers import LSTM, Dense, Dropout, BatchNormalization, Bidirectional
 from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras import losses
@@ -17,7 +17,6 @@ import shap
 from src.utils.log_helper import LogHelper
 import gc
 import psutil
-from keras.layers import Bidirectional
 
 # 启用混合精度训练以减少内存使用
 tf.keras.mixed_precision.set_global_policy('mixed_float16')
@@ -36,6 +35,7 @@ class LSTMLGBMPredictor:
         self.ensemble_weights = {'lgbm': 0.5, 'lstm': 0.5}
         self.feature_importance_cache = {}
         self.feature_columns = []  # Add this line
+        self.scaler = None
 
     def _get_default_config(self) -> Dict:
         return {
@@ -66,108 +66,140 @@ class LSTMLGBMPredictor:
         }
 
     def _build_lgbm_model(self) -> LGBMRegressor:
-        """构建LightGBM模型"""
-        return LGBMRegressor(**self.config['lgbm_params'])
+        """改进的LightGBM模型配置"""
+        params = {
+            'objective': 'regression',
+            'metric': 'mse',
+            'boosting_type': 'gbdt',
+            'num_leaves': 31,
+            'learning_rate': 0.01,
+            'feature_fraction': 0.8,
+            'bagging_fraction': 0.8,
+            'bagging_freq': 5,
+            'verbose': -1,
+            'max_depth': 6,
+            'min_data_in_leaf': 20,
+            'reg_alpha': 0.1,
+            'reg_lambda': 0.1,
+            'n_estimators': 1000,
+            'early_stopping_rounds': 50
+        }
+        return LGBMRegressor(**params)
 
     def _build_lstm_model(self, input_shape: Tuple[int, int]) -> Model:
-        inputs = Input(shape=input_shape)
-        x = Bidirectional(LSTM(units=64, return_sequences=True))(inputs)
-        x = BatchNormalization()(x)
-        x = Dropout(self.config['dropout_rate'])(x)
-        x = Bidirectional(LSTM(units=32))(x)
-        x = BatchNormalization()(x)
-        x = Dropout(self.config['dropout_rate'])(x)
-        x = Dense(16, activation='relu')(x)
-        outputs = Dense(1, dtype='float32')(x)
-        model = Model(inputs, outputs)
-        optimizer = Adam(learning_rate=self.config.get('learning_rate', 0.001))
-        model.compile(optimizer=optimizer, loss=self.custom_loss, metrics=['mae'])
+        model = Sequential([
+            # 双向LSTM层以捕获更复杂的时序模式
+            Bidirectional(LSTM(128, return_sequences=True), 
+                         input_shape=input_shape),
+            BatchNormalization(),
+            Dropout(0.3),
+            
+            # 第二个双向LSTM层
+            Bidirectional(LSTM(64, return_sequences=False)),
+            BatchNormalization(),
+            Dropout(0.2),
+            
+            # 全连接层
+            Dense(64, activation='relu'),
+            BatchNormalization(),
+            Dense(32, activation='relu'),
+            Dense(1)
+        ])
+        
+        # 使用自定义损失函数
+        model.compile(
+            optimizer=Adam(learning_rate=1e-3),
+            loss=self._direction_weighted_loss,
+            metrics=['mae', self._direction_accuracy]
+        )
         return model
 
-    def custom_loss(self, y_true, y_pred):
-        return tf.keras.losses.Huber(delta=1.0)(y_true, y_pred)
+    def _direction_weighted_loss(self, y_true, y_pred):
+        """方向感知损失函数"""
+        # MSE损失
+        mse_loss = losses.mean_squared_error(y_true, y_pred)
+        
+        # 方向惩罚项
+        direction_true = tf.sign(y_true)
+        direction_pred = tf.sign(y_pred)
+        direction_penalty = tf.where(
+            direction_true != direction_pred,
+            0.5,
+            0.0
+        )
+        
+        return mse_loss + direction_penalty
 
-    def fit(self, X_sequence: np.ndarray, y: np.ndarray, feature_columns: Optional[List[str]] = None) -> Dict[str, float]:
-        """
-        训练模型
+    def _direction_accuracy(self, y_true, y_pred):
+        """计算方向预测准确率"""
+        return tf.reduce_mean(
+            tf.cast(tf.sign(tf.cast(y_true, tf.float32)) == tf.sign(tf.cast(y_pred, tf.float32)), tf.float32)
+        )
+
+    def _initialize_models(self, input_shape):
+        """初始化LSTM和LightGBM模型"""
+        self.lstm_model = self._build_lstm_model(input_shape)
+        self.lgbm_model = self._build_lgbm_model()
+
+    def fit(self, X_sequence, y, feature_columns=None, validation_split=0.2):
+        """训练模型"""
+        if self.lstm_model is None or self.lgbm_model is None:
+            input_shape = (X_sequence.shape[1], X_sequence.shape[2])
+            self._initialize_models(input_shape)
         
-        Args:
-            X_sequence: 输入序列数据
-            y: 目标变量
-            feature_columns: 特征列名列表
-        
-        Returns:
-            Dict[str, float]: 包含训练指标的字典
-        """
-        # 保存特征列名
         if feature_columns is not None:
             self.feature_columns = feature_columns
             self.logger.info(f"设置特征列: {len(self.feature_columns)}个特征")
-        
-        if self.lgbm_model is None:
-            self.lgbm_model = self._build_lgbm_model()
-        if self.lstm_model is None:
-            self.lstm_model = self._build_lstm_model(
-                input_shape=(self.config['lookback_window'], X_sequence.shape[2]))
 
-        # LGBM训练
-        X_lgbm = X_sequence.reshape(X_sequence.shape[0], -1)
-        X_train, X_val, y_train, y_val = train_test_split(
-            X_lgbm, y, test_size=self.config['test_size'], shuffle=False)
-        
-        lgbm_eval_set = [(X_val, y_val)]
-        self.lgbm_model.fit(
-            X_train, y_train,
-            eval_set=lgbm_eval_set,
-            eval_metric='rmse',
-            callbacks=[early_stopping(stopping_rounds=50, verbose=False)]
-        )
-        lgbm_rmse = np.sqrt(mean_squared_error(y_val, self.lgbm_model.predict(X_val)))
-
-        # LSTM训练
-        early_stopping_callback = EarlyStopping(
-            monitor='val_loss', patience=self.config['patience'], restore_best_weights=True)
-        reduce_lr = ReduceLROnPlateau(
-            monitor='val_loss', factor=0.5, patience=3, min_lr=1e-5)
-        
-        X_train_lstm = X_sequence[:X_train.shape[0]]
-        X_val_lstm = X_sequence[X_train.shape[0]:]
-        y_train_lstm = y[:X_train.shape[0]]
-        y_val_lstm = y[X_train.shape[0]:]
-        
-        history = self.lstm_model.fit(
-            X_train_lstm, y_train_lstm,
-            validation_data=(X_val_lstm, y_val_lstm),
-            epochs=self.config['epochs'],
-            batch_size=self.config['batch_size'],
-            callbacks=[early_stopping_callback, reduce_lr],
-            verbose=0
-        )
-
-        # 动态集成权重
-        lgbm_pred = self.lgbm_model.predict(X_val)
-        lstm_pred = self.lstm_model.predict(X_val_lstm, verbose=0).flatten()
-        lgbm_mse = mean_squared_error(y_val, lgbm_pred)
-        lstm_mse = mean_squared_error(y_val, lstm_pred)
-        total_mse = lgbm_mse + lstm_mse
-        self.ensemble_weights = {
-            'lgbm': lstm_mse / total_mse if total_mse > 0 else 0.5,
-            'lstm': lgbm_mse / total_mse if total_mse > 0 else 0.5
-        }
-        
-        self.logger.info(f"动态集成权重: LGBM={self.ensemble_weights['lgbm']:.3f}, LSTM={self.ensemble_weights['lstm']:.3f}")
-        
-        ensemble_pred = self.ensemble_weights['lgbm'] * lgbm_pred + self.ensemble_weights['lstm'] * lstm_pred
-        ensemble_mse = mean_squared_error(y_val, ensemble_pred)
-        self.logger.info(f"验证集 MSE: LGBM={lgbm_mse:.4f}, LSTM={lstm_mse:.4f}, Ensemble={ensemble_mse:.4f}")
-
-        # 返回训练指标
-        return {
-            'lstm_loss': history.history['loss'][-1],
-            'lstm_val_loss': history.history['val_loss'][-1],
-            'lgbm_rmse': lgbm_rmse,
-            'ensemble_mse': ensemble_mse
-        }
+        try:
+            # Split data
+            split_idx = int(len(X_sequence) * (1 - validation_split))
+            X_train, X_val = X_sequence[:split_idx], X_sequence[split_idx:]
+            y_train, y_val = y[:split_idx], y[split_idx:]
+            
+            # Train LSTM
+            lstm_history = self.lstm_model.fit(
+                X_train, y_train,
+                validation_data=(X_val, y_val),
+                epochs=50,
+                batch_size=64,
+                callbacks=[
+                    EarlyStopping(monitor='val_loss', patience=10),
+                    ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5)
+                ],
+                verbose=0
+            )
+            
+            # Train LightGBM
+            X_lgb = X_sequence.reshape(X_sequence.shape[0], -1)
+            self.lgbm_model.fit(
+                X_lgb[:split_idx], y_train,
+                eval_set=[(X_lgb[split_idx:], y_val)]
+            )
+            
+            # Calculate ensemble weights
+            lstm_pred_val = self.lstm_model.predict(X_val)
+            lgbm_pred_val = self.lgbm_model.predict(X_lgb[split_idx:])
+            
+            lstm_mse = mean_squared_error(y_val, lstm_pred_val)
+            lgbm_mse = mean_squared_error(y_val, lgbm_pred_val)
+            
+            total_error = lstm_mse + lgbm_mse
+            self.ensemble_weights = {
+                'lstm': lgbm_mse / total_error,
+                'lgbm': lstm_mse / total_error
+            }
+            
+            return {
+                'lstm_loss': lstm_history.history['loss'][-1],
+                'lstm_val_loss': lstm_history.history['val_loss'][-1],
+                'lgbm_mse': lgbm_mse,
+                'ensemble_weights': self.ensemble_weights
+            }
+            
+        except Exception as e:
+            self.logger.error(f"模型训练失败: {str(e)}")
+            raise
 
     def _optimize_ensemble_weights(self, X: np.ndarray, y: np.ndarray):
         """优化集成权重"""
@@ -189,53 +221,63 @@ class LSTMLGBMPredictor:
         self.logger.info(
             f"最佳权重: LGBM {self.ensemble_weights['lgbm']:.2f}, LSTM {self.ensemble_weights['lstm']:.2f}")
 
-    def predict(self, X_sequence: np.ndarray, weights: Optional[Dict] = None) -> np.ndarray:
-        """生成预测"""
-        if self.lgbm_model is None or self.lstm_model is None:
-            raise ValueError("模型未训练")
-
-        weights = weights or self.ensemble_weights
-
-        # 重塑数据并添加特征名称
-        X_lgbm = X_sequence.reshape(X_sequence.shape[0], -1)
+    def predict(self, X_sequence):
+        """改进的预测函数"""
+        # LSTM预测
+        lstm_pred = self.lstm_model.predict(X_sequence)
         
-        # 为LGBM创建特征名称
-        n_features = X_sequence.shape[2]
-        n_timesteps = X_sequence.shape[1]
-        feature_names = []
-        for t in range(n_timesteps):
-            for f in range(n_features):
-                feature_names.append(f't{t}_feature_{f}')
+        # LightGBM预测
+        X_lgb = X_sequence.reshape(X_sequence.shape[0], -1)
+        lgbm_pred = self.lgbm_model.predict(X_lgb)
         
-        # 将数据转换为DataFrame并添加特征名称
-        X_lgbm_df = pd.DataFrame(X_lgbm, columns=feature_names)
+        # 集成预测
+        ensemble_pred = (
+            self.ensemble_weights['lstm'] * lstm_pred +
+            self.ensemble_weights['lgbm'] * lgbm_pred.reshape(-1, 1)
+        )
         
-        # 分别进行预测
-        lgbm_preds = self.lgbm_model.predict(X_lgbm_df)
-        lstm_preds = self.lstm_model.predict(X_sequence, verbose=0).flatten()
+        # 添加预测置信度
+        confidence = self._calculate_prediction_confidence(
+            lstm_pred, lgbm_pred.reshape(-1, 1)
+        )
+        
+        return ensemble_pred, confidence
 
-        # 组合预测结果
-        return weights['lgbm'] * lgbm_preds + weights['lstm'] * lstm_preds
+    def _calculate_prediction_confidence(self, lstm_pred, lgbm_pred):
+        """计算预测置信度"""
+        # 基于模型预测一致性计算置信度
+        pred_diff = np.abs(lstm_pred - lgbm_pred)
+        max_diff = np.max(pred_diff)
+        confidence = 1 - (pred_diff / max_diff)
+        
+        return confidence
 
-    def evaluate(self, X_test: np.ndarray, y_test: np.ndarray, dates: Optional[np.ndarray] = None) -> Dict[str, float]:
+    def evaluate(self, X_sequence, y_true, dates=None, stock_codes=None):
         """评估模型性能"""
-        predictions = self.predict(X_test)
-        mse = mean_squared_error(y_test, predictions)
-        mae = mean_absolute_error(y_test, predictions)
-
-        result = {'mse': mse, 'mae': mae}
-
-        if dates is not None:
-            df_eval = pd.DataFrame({
-                'date': dates,
-                'true': y_test,
-                'pred': predictions
-            }).sort_values('date')
-            annual_return = (
-                1 + df_eval['pred'].mean()) ** self.TRADING_DAYS - 1
-            result['annual_return'] = annual_return
-
-        return result
+        from src.model.evaluation_metrics import ModelEvaluator
+        evaluator = ModelEvaluator()
+        
+        # 获取预测值
+        y_pred = self.predict(X_sequence)
+        
+        # 如果没有日期信息，使用索引
+        if dates is None:
+            dates = np.arange(len(y_true))
+        
+        # 获取收盘价序列（如果可用）
+        prices = None
+        if hasattr(self, 'last_known_prices'):
+            prices = self.last_known_prices
+        
+        # 计算完整评估指标
+        metrics = evaluator.calculate_metrics(
+            y_true=y_true,
+            y_pred=y_pred,
+            dates=dates,
+            prices=prices
+        )
+        
+        return metrics
 
     def compute_shap_values(self, X_sequence: np.ndarray) -> np.ndarray:
         shap_subset_size = min(int(psutil.virtual_memory().available / (1024 ** 3) * 2000), len(X_sequence), 20000)

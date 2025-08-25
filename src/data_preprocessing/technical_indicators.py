@@ -245,6 +245,52 @@ class TechnicalIndicators:
         volume = self._to_float64(volume)
         return {'VOL_MA5': talib.SMA(volume, timeperiod=period).astype(np.float32)}
 
+    def calculate_fundamental_features(self) -> pd.DataFrame:
+        """计算基本面特征"""
+        if self._df is None:
+            self.logger.error("DataFrame is None")
+            return pd.DataFrame()
+
+        if not all(col in self._df.columns for col in ['eps', 'bvps', 'revenue', 'net_profit', 'total_equity', 'total_assets']):
+            self.logger.error("Missing required fundamental columns")
+            return pd.DataFrame()
+
+        df = self._df.copy()
+
+        # 计算估值指标
+        df['PE'] = df['close'] / df['eps']
+        df['PB'] = df['close'] / df['bvps']
+
+        # 计算成长性指标
+        df['revenue_growth'] = df.groupby('ts_code')['revenue'].pct_change(4)
+        df['profit_growth'] = df.groupby('ts_code')['net_profit'].pct_change(4)
+
+        # 计算质量指标
+        df['ROE'] = df['net_profit'] / df['total_equity']
+        df['asset_turnover'] = df['revenue'] / df['total_assets']
+
+        return df
+
+    def calculate_market_indicators(self) -> pd.DataFrame:
+        """计算市场指标"""
+        if self._df is None:
+            self.logger.error("DataFrame is None")
+            return pd.DataFrame()
+
+        df = self._df.copy()
+
+        # 计算相对强弱
+        df['RSI'] = self.calculate_rsi(df['close'], window=14)
+
+        # 计算波动性指标
+        df['volatility'] = df.groupby('ts_code')['close'].pct_change().rolling(20).std()
+
+        # 计算市场情绪指标
+        df['money_flow'] = (df['close'] - df['low']) / (df['high'] - df['low'])
+        df['money_flow'] = df['money_flow'] * df['vol']
+
+        return df
+
     def calculate_all_indicators(self, fillna_method: str = 'hybrid', min_data_points: int = 20, chunksize: int = 100) -> pd.DataFrame:
         """计算所有技术指标，过滤数据不足的股票"""
         if self._df is None:
@@ -380,3 +426,60 @@ class TechnicalIndicators:
 
         gc.collect()
         return result_df
+
+    def calculate_basic_indicators(self) -> pd.DataFrame:
+        """计算基本指标"""
+        if self._df is None:
+            self.logger.error("DataFrame is None")
+            return pd.DataFrame()
+
+        df = self._df.copy()
+
+        # 计算涨跌幅
+        df['pct_change'] = df['close'].pct_change()
+
+        # 计算换手率
+        df['turnover_rate'] = df['volume'] / df['volume'].rolling(window=10).sum()
+
+        # 计算市值
+        df['market_cap'] = df['close'] * df['total_shares']
+
+        return df
+
+    def add_fundamental_features(self):
+        """添加基本面特征"""
+        # 计算估值指标
+        self.df['PE'] = self.df['close'] / self.df['eps']
+        self.df['PB'] = self.df['close'] / self.df['bvps']
+        
+        # 计算成长性指标
+        self.df['revenue_growth'] = self.df.groupby('ts_code')['revenue'].pct_change(4)
+        self.df['profit_growth'] = self.df.groupby('ts_code')['net_profit'].pct_change(4)
+        
+        # 计算质量指标
+        self.df['ROE'] = self.df['net_profit'] / self.df['total_equity']
+        self.df['asset_turnover'] = self.df['revenue'] / self.df['total_assets']
+        
+        return self.df
+    
+    def add_market_indicators(self):
+        """添加市场指标"""
+        # 计算相对强弱
+        self.df['RSI'] = self.calculate_rsi(self.df['close'], window=14)
+        
+        # 计算波动性指标
+        self.df['volatility'] = self.df.groupby('ts_code')['close'].pct_change().rolling(20).std()
+        
+        # 计算市场情绪指标
+        self.df['money_flow'] = (self.df['close'] - self.df['low']) / (self.df['high'] - self.df['low'])
+        self.df['money_flow'] = self.df['money_flow'] * self.df['vol']
+        
+        return self.df
+        
+    def calculate_all_indicators_v2(self, chunksize=50):
+        """计算所有技术指标"""
+        self.df = self.calculate_basic_indicators()
+        self.df = self.add_fundamental_features()
+        self.df = self.add_market_indicators()
+        self.df = self.calculate_moving_averages()
+        return self.df
